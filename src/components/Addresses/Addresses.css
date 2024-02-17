@@ -1,0 +1,85 @@
+.address-box{
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--border-r-4);
+    position: relative;
+    border: 1px solid #ddd;
+    height: 100%;
+    transition: all .3s ease;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    
+}
+.address-box:last-child{
+    margin-bottom:0;
+}
+.address-box.active{
+    border-color: var(--main-color);
+}
+.address-box .details-item{
+    font-size: 16px;
+    margin-bottom: .5rem;
+}
+.address-box .details-item:last-child{
+    margin-bottom: 0;
+}
+.address-box .address-actions{
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.5rem;
+}
+.address-box .address-actions >*{
+    flex: 1;
+}
+.address-box  .edit-btn{
+    position: absolute;
+    right: .75rem;
+    top: .75rem;
+    z-index: 10;
+    transition: all .3s ease;
+    border: none;
+    padding: 0;
+}
+.address-box  .edit-btn:hover{
+    color: var(--main-color) !important;
+}
+
+
+.address-form .form-group:not(:last-child){
+    margin-bottom: 1.5rem;
+}
+.address-form .form-group .form-label{
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+
+.addresses-empty{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: var(--border-r-4);
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    gap: 1rem;
+    width: 100% !important;
+}
+
+.addresses-empty .empty-text{
+    font-size: var(--title-4);
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+    max-width: 600px;
+
+}
+.addresses-empty .empty-text a{
+    color: var(--main-color);
+    border-bottom: 1px solid;
+    display: inline-block;
+    transition: all .3s ease;
+}

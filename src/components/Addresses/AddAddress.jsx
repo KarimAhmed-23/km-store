@@ -1,0 +1,166 @@
+import React, { useState } from "react";
+import AccountTabs from "../Account/AccountTabs";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import { baseUrl } from "../../utilities/baseUrl";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
+
+function AddAddress() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  async function addAddress(values) {
+    setLoading(true);
+    try {
+      const { data } = await axios.post(`${baseUrl}addresses`, values, {
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+      });
+      console.log(data);
+      setLoading(false);
+
+      if (data) {
+        toast.success(data.message);
+        navigate("/addresses");
+      }
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+      toast.error(
+        error.response.data.message ||
+          "oops !! , something went wrong please try again"
+      );
+    }
+  }
+  const validationSchema = Yup.object({
+    name: Yup.string().min(3, "Invalid name").required("name is required"),
+    city: Yup.string().required("name is required"),
+    phone: Yup.string()
+      .matches(/^(002)?01[0125][0-9]{8}$/, "Invalid phone")
+      .required("phone is required"),
+    details: Yup.string().required("details is required"),
+  });
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      phone: "",
+      city: "",
+      details: "",
+    },
+    validationSchema,
+    onSubmit: addAddress,
+  });
+  return (
+    <>
+      <Helmet>
+        <title>FreshCart | Addresses</title>
+      </Helmet>
+      <section className="section-style account-section">
+        <div className="container">
+          <div className="row gx-lg-5">
+            <div className="col-lg-3">
+              <AccountTabs active={"addresses"} />
+            </div>
+            <div className="col-lg-9">
+              <div className="addresses-wrapper">
+                <div className="wrapper-head">
+                  <h1 className="wrapper-title">add address</h1>
+                </div>
+
+                <form className="address-form" onSubmit={formik.handleSubmit}>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="">
+                      name
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="name"
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.errors.name && formik.touched.name && (
+                      <div className="mt-2 text-danger">
+                        {formik.errors.name}
+                      </div>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="phone">
+                      phone
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-control"
+                      name="phone"
+                      value={formik.values.phone}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.errors.phone && formik.touched.phone && (
+                      <div className="mt-2 text-danger">
+                        {formik.errors.phone}
+                      </div>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="city">
+                      city
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="city"
+                      value={formik.values.city}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    />
+                    {formik.errors.city && formik.touched.city && (
+                      <div className="mt-2 text-danger">
+                        {formik.errors.city}
+                      </div>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="details">
+                      details
+                    </label>
+                    <textarea
+                      className="form-control"
+                      name="details"
+                      rows={4}
+                      value={formik.values.details}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                    ></textarea>
+                    {formik.errors.details && formik.touched.details && (
+                      <div className="mt-2 text-danger">
+                        {formik.errors.details}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="submit"
+                    className={`btn bg-main text-white px-4 loading-btn ${
+                      loading ? "loading-overlay" : ""
+                    }`}
+                    disabled={!(formik.isValid && formik.dirty)}
+                  >
+                    Confirm
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+export default AddAddress;

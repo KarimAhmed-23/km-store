@@ -1,0 +1,16 @@
+.brand-card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 120px;
+}
+.brand-card img{
+    height: 100%;
+    object-fit: contain;
+    transition: all .3s ease;
+}
+
+.brand-card img:hover{
+    filter: grayscale(100%) invert(100%) sepia(100%) saturate(0%) brightness(100%) contrast(100%) hue-rotate(110deg);
+}

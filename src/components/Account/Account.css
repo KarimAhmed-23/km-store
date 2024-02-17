@@ -1,0 +1,59 @@
+.account-tabs{
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-r-4);
+}
+.account-tabs .tab-list{
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.account-tabs .tab-list .item-link{
+    display: flex;
+    align-items: center;
+    padding: .75rem;
+    transition: all .3s ease;
+    gap: .5rem;
+    font-size: 16px;
+    border-radius:  var(--border-r-4);
+    font-weight: 600;
+
+}
+.account-tabs .tab-list .item-link.active{
+    background-color: var(--main-color);
+    color: #fff;
+}
+.account-tabs .tab-list .item-link:hover:not(.active){
+    background-color: #eee;
+
+}
+
+
+
+.account-section .wrapper-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+
+}
+
+.account-section .wrapper-head .wrapper-title{
+    font-weight: bold;
+    font-size: var(--title-2);
+}
+
+
+.profile-info .form-group:not(:last-child){
+    margin-bottom: 1.5rem;
+}
+.profile-info .form-group .form-label{
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
