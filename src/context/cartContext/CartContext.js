@@ -15,16 +15,17 @@ function CartContextProvider({ children }) {
 
   async function getCart() {
     try {
-      let { data } = await axios.get(`${baseUrl}cart`, {
+      let  data  = await axios.get(`${baseUrl}cart`, {
         headers: {
           token: localStorage.getItem("token"),
         },
       });
-      setCartItems(data.numOfCartItems);
-      setCartId(data.data._id);
+      setCartItems(data.data.numOfCartItems);
+      setCartId(data.data.data._id);
       return data;
     } catch (error) {
       console.log(error);
+      return error;
     }
   }
 

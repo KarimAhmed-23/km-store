@@ -21,14 +21,16 @@ function Cart() {
     let data = await getCart();
     setIsLoaded(true);
     console.log(data);
-    if (data) {
-      
-      setCartProducts(data.data.products);
-      setCartData(data);
-      
+    if (data?.data?.status === "success") {
+      setCartProducts(data.data.data.products);
+      setCartData(data.data); 
     }else{
-      setError("error , try again");
+      if(!(data?.response.data.statusMsg)){
+        setError("error , try again");
+      }
     }
+
+
   }
 
   async function removeCartItem(productId) {
@@ -74,8 +76,9 @@ function Cart() {
       <section className="section-style cart-section">
         <div className="container">
           
+          
           {
-            isLoaded && !cartProducts?.length && !error  ?  (
+            isLoaded && !cartProducts?.length  ?  (
 
               <div className="empty-box d-flex align-items-center justify-content-center flex-column text-center gap-4">
                     <img src={emptyCart} alt="empty-box" width={150} height={150} loading="lazy"/>
@@ -169,7 +172,7 @@ function Cart() {
             </div>
             )
           }
-          {error &&  <div className="alert alert-danger w-100">{error}</div> }
+          {error && <div className="alert alert-danger w-100">{error}</div> }
           
         </div>
       </section>
