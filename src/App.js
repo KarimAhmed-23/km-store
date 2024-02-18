@@ -1,4 +1,4 @@
-import React, {  Suspense , useState } from 'react'
+import React, {  Suspense , useEffect, useLayoutEffect, useState } from 'react'
 import { RouterProvider , createBrowserRouter , useLocation} from 'react-router-dom'
 import Layout from './layouts/Layout';
 import Home from './components/Home/Home'
@@ -30,7 +30,10 @@ import WishlistContextProvider from './context/wishlistContext/WishlistContext';
 
 function App() {
 
+
+
   const queryClient = new QueryClient();
+
   const routes =  createBrowserRouter([
 
     { path:"/" ,
@@ -49,7 +52,7 @@ function App() {
           loader: ({ params, request }) => {
             console.log(params);
             console.log(request);
-            return switchLoader(`https://ecommerce.routemisr.com/api/v1/products/${params.id}`); 
+            return switchLoader(`https://ecommerce.routemisr.com/api/v1/products/${params.id}` , null ); 
           },
         },
         {path:"/cart" , element: <ProtectedRoute> <Cart/> </ProtectedRoute> },
@@ -83,7 +86,7 @@ function App() {
          
          <WishlistContextProvider>
 
-           <RouterProvider router={routes}/>    
+              <RouterProvider router={routes}/> 
 
          </WishlistContextProvider>
             
@@ -95,6 +98,9 @@ function App() {
 
 
       <ToastContainer theme='colored' autoClose={2500} closeOnClick={true} icon={false} position="bottom-right"/>
+
+      
+
       
       {/* <ReactQueryDevtools initialIsOpen="false" position='bottom-right'/> */}
 

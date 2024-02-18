@@ -25,7 +25,7 @@ function Cart() {
       setCartProducts(data.data.data.products);
       setCartData(data.data); 
     }else{
-      if(!(data?.response.data.statusMsg)){
+      if(!(data?.response?.data?.statusMsg)){
         setError("error , try again");
       }
     }
