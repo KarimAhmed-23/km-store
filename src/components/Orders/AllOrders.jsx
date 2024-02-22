@@ -14,7 +14,6 @@ function AllOrders() {
   const [data, isLoaded, error] = useGetApi(
     `${baseUrl}orders/user/${userId}`,
     null,
-    userId
   );
   console.log(userId);
   console.log(data);
@@ -107,7 +106,7 @@ function AllOrders() {
                                     <div className="item-img position-relative">
                                       <Link
                                         className="d-block h-100"
-                                        to={`/products/${
+                                        to={`/product/${
                                           item.product._id
                                         }/${item.product.title
                                           .replace(/[^\w\s\-]/gi, "")
@@ -129,7 +128,7 @@ function AllOrders() {
                                     <div className="item-details">
                                       <h4 className="item-title">
                                         <Link
-                                          to={`/products/${
+                                          to={`/product/${
                                             item.product._id
                                           }/${item.product.title
                                             .replace(/[^\w\s\-]/gi, "")

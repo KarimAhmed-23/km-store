@@ -4,10 +4,19 @@ import CatchImage from "../CatchImage";
 import { CartContext } from "../../context/cartContext/CartContext";
 import { toast } from "react-toastify";
 import { wishlistContext } from "../../context/wishlistContext/WishlistContext";
+import useGetApi from "../../customHooks/UseGetApi";
+import { baseUrl } from "../../utilities/baseUrl";
 
-export default function ProductCard({ product, isFav, withFav , updateData }) {
+export default function ProductCard({
+  product,
+  favItems,
+  reFetchFav,
+  updateData,
+  withFav,
+  isFav,
+}) {
   const { addToCart } = useContext(CartContext);
-  const {addToWishlist , removeFromWishlist} = useContext(wishlistContext);
+  const { addToWishlist, removeFromWishlist } = useContext(wishlistContext);
   const [cartBtnLoading, setCartBtnLoading] = useState(false);
   const [wishlistBtnLoading, setWishlistBtnLoading] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -34,28 +43,37 @@ export default function ProductCard({ product, isFav, withFav , updateData }) {
     if (data) {
       setWishlistBtnLoading(false);
       toast.success(data.message);
-      
+      if (reFetchFav) {
+        reFetchFav();
+      }
     } else {
       setWishlistBtnLoading(false);
       toast.error(errorMsg);
     }
   }
 
-  async function removeProductFromWishlist(productId){
-
+  async function removeProductFromWishlist(productId) {
     setWishlistBtnLoading(true);
-    const data = await removeFromWishlist(productId);
+    const { data, errorMsg } = await removeFromWishlist(productId);
     console.log(data);
     if (data) {
       setWishlistBtnLoading(false);
-      updateData(data.data);
       toast.success(data.message);
-      
+      if (updateData) {
+        updateData();
+      }
+      if (reFetchFav) {
+        reFetchFav();
+      }
     } else {
       setWishlistBtnLoading(false);
-      toast.error("Oops!! Something went wrong. Please try again");
+      toast.error(errorMsg);
     }
+  }
 
+  function checkProductFav(productId) {
+    const result = favItems?.data?.some((el) => el._id === productId);
+    return result;
   }
 
   return (
@@ -64,13 +82,19 @@ export default function ProductCard({ product, isFav, withFav , updateData }) {
         {withFav && (
           <button
             type="button"
-            className={`fav-btn loading-btn ${isFav ? "active" : ""} ${wishlistBtnLoading ? "loading-overlay" :""}`}
+            className={`fav-btn loading-btn ${
+              checkProductFav(product._id) || isFav ? "active" : ""
+            } ${wishlistBtnLoading ? "loading-overlay" : ""} ${
+              favItems ? "" : "loading-overlay opacity-50"
+            } ${localStorage.getItem("token") ? "" : "d-none"}`}
             role="add to wishlist"
-            onClick={()=>{
-              isFav ? removeProductFromWishlist(product._id) : addProductToWishlist(product._id);
+            onClick={(e) => {
+              checkProductFav(product._id) || isFav
+                ? removeProductFromWishlist(product._id)
+                : addProductToWishlist(product._id);
             }}
           >
-            {isFav ? (
+            {checkProductFav(product._id) || isFav ? (
               <i className="fa-solid fa-heart"></i>
             ) : (
               <i className="far fa-heart"></i>
@@ -80,7 +104,7 @@ export default function ProductCard({ product, isFav, withFav , updateData }) {
 
         <Link
           className="product-img"
-          to={`/products/${product._id}/${product.title
+          to={`/product/${product._id}/${product.title
             .replace(/[^\w\s\-]/gi, "")
             .replace(/\s+/g, "+")}`}
         >
@@ -156,7 +180,7 @@ export default function ProductCard({ product, isFav, withFav , updateData }) {
             <span className="product-category">{product.category.name}</span>
             <h5 className="product-name">
               <Link
-                to={`/products/${product._id}/${product.title
+                to={`/product/${product._id}/${product.title
                   .replace(/[^\w\s\-]/gi, "")
                   .replace(/\s+/g, "+")}`}
               >

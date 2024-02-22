@@ -39,7 +39,7 @@ function CartBox({
       <div className="item-img position-relative">
         <Link
           className="d-block h-100"
-          to={`/products/${product.product._id}/${product.product.title
+          to={`/product/${product.product._id}/${product.product.title
             .replace(/[^\w\s\-]/gi, "")
             .replace(/\s+/g, "+")}`}
         >
@@ -61,7 +61,7 @@ function CartBox({
         <div className="item-info">
           <h4 className="item-title">
             <Link
-              to={`/products/${product.product._id}/${product.product.title
+              to={`/product/${product.product._id}/${product.product.title
                 .replace(/[^\w\s\-]/gi, "")
                 .replace(/\s+/g, "+")}`}
             >

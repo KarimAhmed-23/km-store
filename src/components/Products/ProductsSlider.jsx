@@ -7,10 +7,17 @@ import "swiper/css/pagination";
 import ProductsList from "./ProductsList";
 import ProductCardLoading from "./ProductCardLoading";
 import ProductCard from "./ProductCard";
+import { baseUrl } from "../../utilities/baseUrl";
 
 function ProductsSlider({ items }) {
   const [data, isLoaded, error] = useGetApi(`${items}`);
   const products = data?.data;
+
+  const [favItems, , , fetchData] = useGetApi(
+    `${baseUrl}wishlist`,
+    { headers: { token: localStorage.getItem("token") } },
+    "withAuth"
+  );
 
   return (
     <>
@@ -55,7 +62,7 @@ function ProductsSlider({ items }) {
           : products &&
             products.map((item) => (
               <SwiperSlide key={item._id}>
-                <ProductCard product={item} />
+                <ProductCard product={item} favItems={favItems} reFetchFav={fetchData} />
               </SwiperSlide>
             ))}
       </Swiper>

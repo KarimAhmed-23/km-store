@@ -19,7 +19,7 @@ function EditAddress() {
   });
 
   const validationSchema = Yup.object({
-    name: Yup.string().min(3, "Invalid name").required("name is required"),
+    name: Yup.string().required("name is required"),
     city: Yup.string().required("name is required"),
     phone: Yup.string()
       .matches(/^(002)?01[0125][0-9]{8}$/, "Invalid phone")
@@ -29,12 +29,16 @@ function EditAddress() {
 
   const formik = useFormik({
     initialValues: {
-        name: "loading...",
-        phone: "loading...",
-        city: "loading...",
-        details: "loading...",
+        name: address?.data.name ? address.data.name : "loading...",
+        phone: address?.data.phone ? address.data.phone : "loading...",
+        city: address?.data.city ? address.data.city : "loading...",
+        details: address?.data.details ? address.data.details : "loading...",
     },
     validationSchema,
+    enableReinitialize:true,
+    validateOnBlur:true,
+    validateOnChange:true,
+
     onSubmit: () => {
       console.log(id);
       setLoading(true);
@@ -47,13 +51,14 @@ function EditAddress() {
 
   useEffect(() => {
     if (addressLoaded && address) {
-      const { name, phone, city, details } = address.data;
-      formik.setValues({ name, phone, city, details });
-      formik.setTouched({});
+      // const { name, phone, city, details } = address.data;
+      // formik.setValues({ name, phone, city, details });
+      // formik.setTouched({});
       
     }
-  }, [addressLoaded, address]);
+  }, [ addressLoaded, address]);
 
+  
 
   return (
     <>

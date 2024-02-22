@@ -222,10 +222,8 @@ footer {
 
 
 /********** styles **********/
-.sign-form {
-  max-width: 1000px;
-  margin: 0 auto;
-  
+.active>.page-link, .page-link.active{
+  pointer-events: none;
 }
 
 
@@ -268,8 +266,7 @@ footer {
     top: 50%;
     margin-top: -10px;
     left: 50%;
-    margin-left: -10px;
-    right: auto;
+    margin-left: -9.5px;
     animation: button-loading-spinner 1s ease infinite;
     z-index: 100;
   

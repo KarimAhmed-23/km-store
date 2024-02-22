@@ -36,12 +36,12 @@ function AddAddress() {
     }
   }
   const validationSchema = Yup.object({
-    name: Yup.string().min(3, "Invalid name").required("name is required"),
-    city: Yup.string().required("name is required"),
+    name: Yup.string().required(),
+    city: Yup.string().required(),
     phone: Yup.string()
-      .matches(/^(002)?01[0125][0-9]{8}$/, "Invalid phone")
-      .required("phone is required"),
-    details: Yup.string().required("details is required"),
+      .matches(/^(002)?01[0125][0-9]{8}$/, )
+      .required(),
+    details: Yup.string().required(),
   });
   const formik = useFormik({
     initialValues: {
@@ -50,7 +50,7 @@ function AddAddress() {
       city: "",
       details: "",
     },
-    validationSchema,
+    // validationSchema,
     onSubmit: addAddress,
   });
   return (
@@ -82,6 +82,7 @@ function AddAddress() {
                       value={formik.values.name}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      required
                     />
                     {formik.errors.name && formik.touched.name && (
                       <div className="mt-2 text-danger">
@@ -100,6 +101,7 @@ function AddAddress() {
                       value={formik.values.phone}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      required
                     />
                     {formik.errors.phone && formik.touched.phone && (
                       <div className="mt-2 text-danger">
@@ -118,6 +120,7 @@ function AddAddress() {
                       value={formik.values.city}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      required
                     />
                     {formik.errors.city && formik.touched.city && (
                       <div className="mt-2 text-danger">
@@ -136,6 +139,7 @@ function AddAddress() {
                       value={formik.values.details}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      required
                     ></textarea>
                     {formik.errors.details && formik.touched.details && (
                       <div className="mt-2 text-danger">
@@ -149,7 +153,6 @@ function AddAddress() {
                     className={`btn bg-main text-white px-4 loading-btn ${
                       loading ? "loading-overlay" : ""
                     }`}
-                    disabled={!(formik.isValid && formik.dirty)}
                   >
                     Confirm
                   </button>

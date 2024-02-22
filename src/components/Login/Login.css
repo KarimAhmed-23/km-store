@@ -1,1 +1,155 @@
-.Login {}
+.sign-form {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--box-py-res) var(--box-px);
+  border: 1px solid #e3e5e8;
+  border-radius: var(--border-r-4);
+}
+
+.sign-form .form-title {
+  margin-bottom: var(--box-py-res);
+  font-size: var(--title-2);
+  font-weight: bold;
+  text-align: start;
+}
+
+.sign-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.sign-form .form-group .form-label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+.sign-form .forget-pass {
+  font-size: 16px;
+  color: #959ead;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+.sign-form .forget-pass:hover {
+  color: var(--main-color);
+}
+
+.sign-form .note-btn {
+  font-size: 16px;
+  color: #959ead;
+  font-weight: 600;
+  transition: all .3s ease;
+  margin-bottom: 0;
+  margin-top: 10px;
+  display: block;
+  text-align: center;
+  text-transform: capitalize;
+}
+.sign-form .note-btn a{
+    transition: inherit;
+    color: var(--main-color);
+}
+
+.sign-form .form-control{
+    outline: none;
+    display: block;
+    width: 100%;
+    height: 45px;
+    border: 1px solid #e3e5e8;
+    background-color: #f4f6f8;
+    border-radius: 4px;
+    padding: 0.75rem;
+    transition: all .3s ease;
+    box-shadow: none;
+    font-weight: 400;
+    color: var(--clr-gray-4);
+    line-height: 1.5;
+    background-clip: padding-box;
+    margin: 0;
+    font-size: 1rem;
+
+}
+
+.sign-form .form-control:focus{
+    background-color: #f4f6f8;
+    box-shadow: none;
+    border-color: #66afe9!important;
+    box-shadow: inset 0 1px 1px rgb(0 0 0/8%),0 0 8px rgba(102,175,233,.6)!important;
+    outline: none;
+}
+
+.sign-form .btn{
+    height: 45px;
+}
+
+
+.sign-form .btns-container{
+    padding-top: .5rem;
+}
+
+.sign-form .form-head{
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    text-align: start;
+    flex-direction: column;
+    gap: 1rem;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: var(--box-py-res);
+    
+}
+.sign-form .form-head >*{
+    margin-bottom: 0 !important;
+}
+
+.sign-form .form-head p{
+    color:#959ead ;
+}
+
+
+.password-field {
+    position: relative
+}
+
+.password-field .form-control {
+    padding-inline-end:45px!important}
+
+.password-field .eye-icon {
+    position: absolute;
+    inset-inline-end: .75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: calc(100% - 2px);
+    font-size: 30px;
+    transition: all .15s ease-in-out;
+    background-size: cover;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none
+}
+
+.password-field .eye-icon .text-clrGray-3{
+    color: #9c9c9c;
+}
+
+
+.code-wrap{
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.code-wrap input{
+  width: auto;
+  text-align: center;
+  font-weight: bold !important;
+}

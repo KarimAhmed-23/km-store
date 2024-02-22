@@ -10,14 +10,21 @@ import { CartContext } from "../../context/cartContext/CartContext";
 import { toast } from "react-toastify";
 import { wishlistContext } from "../../context/wishlistContext/WishlistContext";
 import { baseUrl } from "../../utilities/baseUrl";
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  FreeMode,
+  Navigation,
+  Thumbs,
+  Mousewheel,
+  Pagination,
+} from "swiper/modules";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+import CatchImage from "../CatchImage";
+import ReactImageMagnify from "react-image-magnify";
 
 
-export const singleProductLoader = async (id) => {
-  let {
-    data: { data: product },
-  } = await axios.get(`https://ecommerce.routemisr.com/api/v1/products/${id}`);
-  return product;
-};
 
 function SingleProduct() {
   const { addToCart } = useContext(CartContext);
@@ -25,16 +32,12 @@ function SingleProduct() {
   const [cartBtnLoading, setCartBtnLoading] = useState(false);
   const [wishlistBtnLoading, setWishlistBtnLoading] = useState(false);
   const { response, errorContent } = useLoaderData();
-  const product = response?.data?.data;
-
-  const { pathname } = useLocation();
   const { id, productName } = useParams();
+  const product = response?.data?.data;
+  const [mainSwiper, setMainSwiper] = useState(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
-  const [favItems , isFavLoaded ,  , fetchData  ] = useGetApi(`${baseUrl}wishlist`, {
-    headers: {
-      token: localStorage.getItem("token"),
-    },
-  });
+
 
   async function addProductToCart(productId) {
     setCartBtnLoading(true);
@@ -50,6 +53,14 @@ function SingleProduct() {
     }
   }
 
+
+  const [favItems, isFavLoaded, , fetchData] = useGetApi(`${baseUrl}wishlist`, {
+    headers: {
+      token: localStorage.getItem("token"),
+    },
+  } , "withAuth");
+
+  
   async function addProductToWishlist(productId) {
     setWishlistBtnLoading(true);
     const { data, errorMsg } = await addToWishlist(productId);
@@ -66,7 +77,7 @@ function SingleProduct() {
 
   async function removeProductFromWishlist(productId) {
     setWishlistBtnLoading(true);
-    const data = await removeFromWishlist(productId);
+    const { data, errorMsg } = await removeFromWishlist(productId);
     console.log(data);
     if (data) {
       setWishlistBtnLoading(false);
@@ -74,14 +85,27 @@ function SingleProduct() {
       fetchData();
     } else {
       setWishlistBtnLoading(false);
-      toast.error("Oops!! Something went wrong. Please try again");
+      toast.error(errorMsg);
+    }
+  }
+  function checkProductFav(productId) {
+    const result = favItems?.data?.some((el) => el._id === productId );
+    return result;
+  }
+
+
+  function resetSwiper() {
+    if (mainSwiper && thumbsSwiper) {
+      mainSwiper.slideTo(0);
+      thumbsSwiper.slideTo(0);
     }
   }
 
-  function checkProductFav(productId) {
-    const result = favItems?.data?.some((el) => el._id.includes(productId));
-    return result;
-  }
+  useEffect(() => {
+    resetSwiper();
+  }, [id]);
+
+
 
   return (
     <>
@@ -94,22 +118,131 @@ function SingleProduct() {
       )}
       {product && (
         <>
-          <section className="section-style product-details-section">
+          <section className="section-style product-details-section sticky-inside">
             <div className="container">
               <div className="row">
-                <div className="col-lg-4">
+                <div className="col-xl-4 col-lg-5">
                   <div className="product-description-imgs">
                     <div className="product-gallery">
-                      <img
-                        className="img-fluid w-100"
-                        src={product.imageCover}
-                        alt={product.title}
-                      />
+                      <div className="slider-container thumbs-slider-container ">
+                        <Swiper
+                          onSwiper={setThumbsSwiper}
+                          watchSlidesProgress={true}
+                          spaceBetween={10}
+                          slidesPerView={4}
+                          navigation={{
+                            nextEl: ".thumbs-slider-container .arrow-bottom",
+                            prevEl: ".thumbs-slider-container .arrow-top",
+                          }}
+                          mousewheel={true}
+                          allowTouchMove={false}
+                          direction={"vertical"}
+                          modules={[FreeMode, Mousewheel, Navigation, Thumbs]}
+                          className="thumbs-slider"
+                        >
+                          <SwiperSlide>
+                            <div className="slide-item">
+                              <CatchImage>
+                                <img
+                                  className="img-fluid loading-img"
+                                  src={product.imageCover}
+                                  alt={product.title}
+                                />
+                              </CatchImage>
+                            </div>
+                          </SwiperSlide>
+                          {product.images.map((img, index) => (
+                            <SwiperSlide key={index}>
+                              <div className="slide-item">
+                                <CatchImage>
+                                  <img
+                                    className="img-fluid loading-img"
+                                    src={img}
+                                    alt={product.title}
+                                  />
+                                </CatchImage>
+                              </div>
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+                        <button className="arrow-top thumbs-arrow">
+                          <span className="arrow-icon">
+                            <i className="fa-solid fa-chevron-up"></i>
+                          </span>
+                        </button>
+                        <button className="arrow-bottom thumbs-arrow">
+                          <span className="arrow-icon">
+                            <i className="fa-solid fa-chevron-up"></i>
+                          </span>
+                        </button>
+                      </div>
+
+                      <div className="slider-container main-slider-container">
+                        <Swiper
+                          onSwiper={setMainSwiper}
+                          spaceBetween={10}
+                          slidesPerView={1}
+                          thumbs={{ swiper: thumbsSwiper }}
+                          allowTouchMove={false}
+                          modules={[Navigation, Thumbs]}
+                          className="main-slider"
+                        >
+                          <SwiperSlide className="w-100">
+                            <div className="slide-item">
+                              <CatchImage>
+                                <img
+                                  className="img-fluid loading-img"
+                                  src={product.imageCover}
+                                  alt={product.title}
+                                />
+                              </CatchImage>
+                            </div>
+                          </SwiperSlide>
+                          {product.images.map((img, index) => (
+                            <SwiperSlide key={index} className="w-100">
+                              <div className="slide-item">
+                                <CatchImage>
+                                  <img
+                                    className="img-fluid loading-img"
+                                    src={img}
+                                    alt={product.title}
+                                  />
+                                </CatchImage>
+                              </div>
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+
+                        <div className="zoomed-image-container d-none">
+                          <ReactImageMagnify
+                            {...{
+                              smallImage: {
+                                alt: product.imageCover.title,
+                                isFluidWidth: true,
+                                src: product.imageCover,
+                              },
+                              largeImage: {
+                                src: product.imageCover,
+                                width: 1200,
+                                height: 1200,
+                              },
+                              enlargedImageContainerClassName:"enlargedImage-2222",
+                              isHintEnabled: true,
+                              shouldHideHintAfterFirstActivation: false,
+                              shouldUsePositiveSpaceLens: true,
+                            }}
+                          />
+                        </div>
+
+
+
+
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className=" col-lg-8">
+                <div className="col-xl-8 col-lg-7">
                   <div className="product-description-details">
                     <h3 className="product-name"> {product.title} </h3>
                     <p className="product-desc">{product.description}</p>
@@ -154,7 +287,9 @@ function SingleProduct() {
                       <button
                         type="button"
                         className={`btn fav-btn  ${
-                          wishlistBtnLoading || !isFavLoaded ? "loading-overlay" : ""
+                          wishlistBtnLoading || (!isFavLoaded && localStorage.getItem("token"))
+                            ? "loading-overlay"
+                            : ""
                         } ${checkProductFav(product._id) ? "active" : ""}`}
                         onClick={() =>
                           checkProductFav(product._id)

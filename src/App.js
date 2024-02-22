@@ -24,6 +24,9 @@ import EditAddress from './components/Addresses/EditAddress';
 import AddAddress from './components/Addresses/AddAddress';
 import AllOrders from './components/Orders/AllOrders';
 import WishlistContextProvider from './context/wishlistContext/WishlistContext';
+import ForgetPassword from './components/RestPassword/ForgetPassword';
+import VerifyResetCode from './components/RestPassword/VerifyResetCode';
+import RestPassword from './components/RestPassword/RestPassword';
 
 
 
@@ -43,11 +46,16 @@ function App() {
 
         {index:true , element: <Home/> },
         {path:"/login" , element: <Login/> },
+        {path:"/forget-password" , element: <ForgetPassword/> },
+        {path:"/verify-code" , element: <VerifyResetCode/> },
+        {path:"/rest-password" , element: <RestPassword/> },
         {path:"/register" , element: <Register/> },
         {path:"/products" , element: <Products/> },
-        {path:"/categories/:id/:categoryName" , element: <Products/> },
+        {path:"/products/:id/:categoryName/*" , element: <Products/> },
+
+        
         {
-          path:"/products/:id/:productName" ,
+          path:"/product/:id/:productName" ,
           element: <SingleProduct/> ,
           loader: ({ params, request }) => {
             console.log(params);
@@ -106,11 +114,11 @@ function App() {
 
     </QueryClientProvider>
 
-    {/* <Offline>
+    <Offline>
       <div className='offline'>
         you are offline
       </div>
-    </Offline> */}
+    </Offline>
 
     </>
   );

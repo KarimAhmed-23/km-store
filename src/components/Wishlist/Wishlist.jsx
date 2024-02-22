@@ -29,7 +29,7 @@ function Wishlist() {
     }
   }
 
-  function updateData(updatedData) {
+  function updateData() {
     getWishlistItems();
   }
 

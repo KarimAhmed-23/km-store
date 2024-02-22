@@ -157,6 +157,15 @@
   }
 
 
+  .loading-overlay.opacity-50{
+    --loading-clr:#fff !important;
+  }
+ .loading-overlay.opacity-50::after{
+    border-top-color: var(--main-color) !important;
+    border-bottom-color: var(--main-color) !important;
+  }
+
+
   .products-slider-container.slider-container .arrow{
     background: transparent !important;
     width: auto;
@@ -171,4 +180,84 @@
   }
 
 
-  
+
+
+
+  /********** products filters **********/
+  .filters-accordion .accordion-item{
+    border: none;
+    margin-bottom: 1.5rem;
+  }
+  .filters-accordion .accordion-button{
+    background-color: #eee !important;
+    box-shadow: none !important;
+    border-radius: 0px !important;
+    padding: .75rem;
+    border-radius: 0px;
+    font-weight: bold;
+    text-transform: capitalize;
+    z-index: 5;
+    color: var(--main-color) !important;
+  }
+
+  .filters-accordion .accordion-body{
+    padding: 0;
+    border: none;
+    padding-top: 1.5rem;
+  }
+
+ 
+  .filters-accordion .form-check{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    transition: all .3s ease;
+    padding: 0;
+    margin-bottom: 0;
+  }
+  .filters-accordion .body-checks .form-check:not(:last-child){
+    margin-bottom: 1rem;
+  }
+  .filters-accordion .form-check .form-check-input{
+    float: none;
+    margin: 0;
+    transition: inherit;
+    flex-shrink: 0;
+    border-color:#ccc;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  .filters-accordion .form-check .form-check-label{
+    font-size: 16px;
+    font-weight: 600;
+    transition: inherit;
+    cursor: pointer;
+  }
+  .filters-accordion .form-check .form-check-input:checked{
+    box-shadow: none;
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+    
+  }
+  .filters-accordion .form-check .form-check-input:checked + .form-check-label{
+    color: var(--main-color);
+  }
+
+  .filters-accordion .price-wrap{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .filters-accordion .price-wrap .to{
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .filters-accordion .price-wrap .btn,
+  .filters-accordion .clear-price{
+    color: var(--bs-link-hover-color);
+    font-weight: bold;
+    z-index: 10;
+  }
+

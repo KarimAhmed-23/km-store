@@ -23,7 +23,6 @@ function WishlistContextProvider({ children }) {
     }
   }
 
-
   async function addToWishlist(productId) {
     try {
       let { data } = await axios.post(
@@ -42,7 +41,7 @@ function WishlistContextProvider({ children }) {
       return { data };
     } catch (error) {
       console.log(error);
-      if (error.response.data.message) {
+      if (error?.response?.data?.message) {
         let errorMsg = error.response.data.message;
         return { errorMsg };
       } else {
@@ -60,9 +59,16 @@ function WishlistContextProvider({ children }) {
         },
       });
       setWishlistCounter(data.data.length); 
-      return data;
+      return {data};
     } catch (error) {
       console.log(error);
+      if (error?.response?.data?.message) {
+        let errorMsg = error.response.data.message;
+        return { errorMsg };
+      } else {
+        let errorMsg = "Oops!! Something went wrong. Please try again.";
+        return { errorMsg };
+      }
     }
   }
   

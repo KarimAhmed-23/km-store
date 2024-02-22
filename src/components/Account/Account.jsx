@@ -14,8 +14,9 @@ import AccountTabs from "./AccountTabs";
 function Account() {
   const { userData, setUserData } = useContext(AuthContext);
   const [updateLoading, setUpdateLoading] = useState(false);
-  const userObj = JSON.parse(localStorage.getItem("userData"));
+  const userObj = localStorage.getItem("userData") !== "undefined" ? JSON.parse(localStorage.getItem("userData")) : "";
 
+  console.log(userData);
 
   async function updateProfile(values, { resetForm }) {
     setUpdateLoading(true);
@@ -41,9 +42,10 @@ function Account() {
   }
   const formik = useFormik({
     initialValues: {
-      name: "loading...",
-      phone: "loading...",
+      name: typeof userData === "string" ?  JSON.parse(userData)?.name : userData?.name,
+      phone: typeof userData === "string" ?  JSON.parse(userData)?.phone || "01228594886" : userData?.phone || "01228594886",
     },
+    enableReinitialize:true,
     validate: (values) => {
       let errors = {};
       if (!values.name) {
@@ -58,22 +60,24 @@ function Account() {
 
       return errors;
     },
+    
     onSubmit: (values, { resetForm }) => updateProfile(values, { resetForm }),
   });
 
 useEffect(() => {
 
-  if(userData){
-    formik.setValues({
-      name: typeof userData === "string" ?  JSON.parse(userData)?.name : userData?.name ,
-      phone: typeof userData === "string" ?  JSON.parse(userData)?.phone || "01228594886" : userData?.phone || "01228594886",
-    });
-    formik.setTouched({});  
+  // if(userData){
+  //   formik.setValues({
+  //     name: typeof userData === "string" ?  JSON.parse(userData)?.name : userData?.name ,
+  //     phone: typeof userData === "string" ?  JSON.parse(userData)?.phone || "01228594886" : userData?.phone || "01228594886",
+  //   });
+  //   formik.setTouched({});  
     
-  }
+  // }
   
   
 }, [userData , setUserData]);
+
 
 
   return (

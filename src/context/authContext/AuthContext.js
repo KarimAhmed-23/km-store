@@ -14,7 +14,7 @@ export default function AuthContextProvider({children}){
  useEffect(()=>{
 
     if(token) {
-      setUserToken(token);
+      setUserToken(localStorage.getItem("token"));
       setUserData(localStorage.getItem("userData"));
       try {
          const {id} = jwtDecode(token);

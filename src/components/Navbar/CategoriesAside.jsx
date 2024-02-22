@@ -5,19 +5,17 @@ import { baseUrl } from "../../utilities/baseUrl";
 import axios from "axios";
 import handleUrlName from "../../utilities/handleUrlName";
 
-function CategoriesAside({children}) {
-
-  const userData = JSON.parse(localStorage.getItem("userData"));
+function CategoriesAside({ children }) {
+  const userData = localStorage.getItem("userData") !== "undefined" ? JSON.parse(localStorage.getItem("userData")) : "";
   const [openDetails, setOpenDetails] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [mainCategory, setMainCategory] = useState(null);
   const [subcategories, setSubCategories] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
-  const asideBtn = React.cloneElement(children , {
-    onClick : ()=> setShowPanel(!showPanel),
-  })
+  const asideBtn = React.cloneElement(children, {
+    onClick: () => setShowPanel(!showPanel),
+  });
 
   const [categories, categoriesLoaded, categoriesError] = useGetApi(
     `${baseUrl}categories`
@@ -40,7 +38,6 @@ function CategoriesAside({children}) {
     }
   }
 
-
   return (
     <>
       {asideBtn}
@@ -48,7 +45,9 @@ function CategoriesAside({children}) {
         <div className="aside-panel">
           <div className="panel-top">
             <div className="user-info">
-              Hi Dear {userData && `, ${userData.name.split(" ").splice(0, 1).join(" ")}` }
+              Hi Dear{" "}
+              {userData &&
+                `, ${userData?.name?.split(" ").splice(0, 1).join(" ")}`}
             </div>
             <button
               type="button"
@@ -61,7 +60,7 @@ function CategoriesAside({children}) {
           <div className="panel-body">
             <div className="menu-list main-list">
               <div className="list-wrap">
-                <h4 className="menu-title">all categories</h4>
+                <h4 className="menu-title"> categories</h4>
                 {!categoriesLoaded && (
                   <ul className="list-items skeleton">
                     {[...Array(8)].map((_, index) => (
@@ -71,6 +70,12 @@ function CategoriesAside({children}) {
                 )}
                 {categories && (
                   <ul className="list-items">
+                    <li className="item-li" onClick={() => setShowPanel(false)}>
+                      <Link className="item-link" to={"/products"}>
+                        <span>featured products</span>
+                        <i className="fa-solid fa-chevron-right"></i>
+                      </Link>
+                    </li>
                     {categories?.data.map((item) => (
                       <li
                         key={item._id}
@@ -120,10 +125,13 @@ function CategoriesAside({children}) {
                       <li className="item-li">
                         <Link
                           className="item-link"
-                          to={`/categories/${mainCategory._id}/${handleUrlName(
+                          to={`/products/${mainCategory._id}/${handleUrlName(
                             mainCategory.name
                           )}`}
-                          onClick={() => setShowPanel(false)}
+                          onClick={() => {
+                            setOpenDetails(false);
+                            setShowPanel(false);
+                          }}
                         >
                           <span>All {mainCategory.name}</span>
                           <i className="fa-solid fa-chevron-right"></i>
@@ -133,10 +141,13 @@ function CategoriesAside({children}) {
                         <li className="item-li" key={item._id}>
                           <Link
                             className="item-link"
-                            to={`/categories/${item._id}/${handleUrlName(
+                            to={`/products/${item._id}/${handleUrlName(
                               item.name
                             )}`}
-                            onClick={() => setShowPanel(false)}
+                            onClick={() => {
+                              setOpenDetails(false);
+                              setShowPanel(false);
+                            }}
                           >
                             <span>{item.name}</span>
                             <i className="fa-solid fa-chevron-right"></i>
@@ -157,7 +168,6 @@ function CategoriesAside({children}) {
       </aside>
     </>
   );
-
 }
 
 export default CategoriesAside;

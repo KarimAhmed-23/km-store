@@ -176,6 +176,7 @@
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
+    text-transform: capitalize;
 }
 .aside-panel .menu-list .list-items .item-link:hover{
     background-color: #eee;
