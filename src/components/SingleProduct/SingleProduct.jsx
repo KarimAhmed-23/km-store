@@ -22,7 +22,7 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import CatchImage from "../CatchImage";
-import ReactImageMagnify from "react-image-magnify";
+// import ReactImageMagnify from "react-image-magnify";
 
 
 
@@ -213,7 +213,7 @@ function SingleProduct() {
                           ))}
                         </Swiper>
 
-                        <div className="zoomed-image-container d-none">
+                        {/* <div className="zoomed-image-container d-none">
                           <ReactImageMagnify
                             {...{
                               smallImage: {
@@ -232,7 +232,7 @@ function SingleProduct() {
                               shouldUsePositiveSpaceLens: true,
                             }}
                           />
-                        </div>
+                        </div> */}
 
 
 
