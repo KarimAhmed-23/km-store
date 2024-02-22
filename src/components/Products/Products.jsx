@@ -14,17 +14,22 @@ function Products() {
   const { id: categoryId, categoryName } = useParams();
   const x = useParams();
   const navigate = useNavigate();
-  const [priceRange, setPriceRange] = useState({
-    from: 1,
-    to: 1000000,
-    change: true,
-    submitted: false,
+  const queryParamsFromUrl = queryString.parse(search, {
+    arrayFormat: "comma",
+    parseBooleans: true,
+    decode: true,
   });
-
   const [queryParams, setQueryParams] = useState({
-    limit:  12,
-    page:  "1",
-    category: [categoryId],
+    limit: queryParamsFromUrl.limit || 12,
+    page: queryParamsFromUrl.page || "1",
+    category: categoryId,
+    ...queryParamsFromUrl,
+  });
+  const [priceRange, setPriceRange] = useState({
+    from: queryParams["price[gte]"] || 1,
+    to: queryParams["price[lte]"] || 1000000,
+    change: false,
+    submitted: false,
   });
 
   const [products, productsLoaded, productsError, productsRefetch] = useGetApi(
@@ -35,12 +40,8 @@ function Products() {
   );
 
   function applyFilters(filters) {
-
     setQueryParams({ ...queryParams, ...filters });
   }
-
- 
-  
 
   const [
     subcategories,
@@ -64,9 +65,14 @@ function Products() {
       subcategoriesRefetch();
       brandsRefetch();
     }
-
-    
-
+    const queryStringified = queryString.stringify(queryParams, {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: false,
+      arrayFormat: "comma",
+    });
+    navigate(`${pathname}?${queryStringified}`);
+    // console.log(queryStringified);
   }, [pathname, queryParams]);
 
   return (
@@ -122,7 +128,7 @@ function Products() {
                                 value="All"
                                 id="allCategories"
                                 name="categories-checks"
-                                checked={!categoryId}
+                                defaultChecked={!queryParams.category}
                                 onChange={() => {
                                   applyFilters({
                                     category: null,
@@ -157,7 +163,9 @@ function Products() {
                                       )}`
                                     );
                                   }}
-                                  defaultChecked={categoryId === item._id}
+                                  defaultChecked={queryString
+                                    .stringify(queryParams)
+                                    .includes(item._id)}
                                   disabled={!productsLoaded}
                                 />
                                 <label
@@ -217,10 +225,14 @@ function Products() {
                                     onChange={(e) => {
                                       if (e.target.checked) {
                                         applyFilters({
-                                          category: [
-                                            ...queryParams.category,
-                                            item._id,
-                                          ],
+                                          category: Array.isArray(
+                                            queryParams.category
+                                          )
+                                            ? [
+                                                ...queryParams.category,
+                                                item._id,
+                                              ]
+                                            : [queryParams.category, item._id],
                                           page: "1",
                                         });
                                       } else {
@@ -233,9 +245,9 @@ function Products() {
                                       }
                                     }}
                                     disabled={!productsLoaded}
-                                    defaultChecked={queryParams?.category?.some(
-                                      (el) => el === item._id
-                                    )}
+                                    defaultChecked={queryString
+                                      .stringify(queryParams)
+                                      .includes(item._id)}
                                   />
                                   <label
                                     className="form-check-label"
@@ -341,7 +353,9 @@ function Products() {
                           >
                             go
                           </button>
-                          {priceRange.submitted && (
+                          {(priceRange.submitted ||
+                            queryParams["price[gte]"] ||
+                            queryParams["price[lte]"]) && (
                             <button
                               className="btn btn-link p-0"
                               type="button"
@@ -354,7 +368,7 @@ function Products() {
                                 setPriceRange({
                                   from: 1,
                                   to: 1000000,
-                                  change: true,
+                                  change: false,
                                   submitted: false,
                                 });
                               }}
@@ -408,14 +422,18 @@ function Products() {
                                   onChange={(e) => {
                                     if (e.target.checked) {
                                       applyFilters({
-                                        brand: queryParams.brand
+                                        brand: Array.isArray(queryParams.brand)
                                           ? [...queryParams.brand, item._id]
-                                          : [item._id],
+                                          : queryParams.brand
+                                          ? [queryParams.brand, item._id]
+                                          : item._id,
                                         page: "1",
                                       });
                                     } else {
-                                      if (queryParams.brand.length > 1) {
-                                        console.log("error");
+                                      if (
+                                        Array.isArray(queryParams.brand) &&
+                                        queryParams.brand.length > 1
+                                      ) {
                                         applyFilters({
                                           brand: queryParams.brand.filter(
                                             (el) => el !== item._id
@@ -430,9 +448,9 @@ function Products() {
                                       }
                                     }
                                   }}
-                                  defaultChecked={queryParams?.brand?.some(
-                                    (el) => el === item._id
-                                  )}
+                                  defaultChecked={queryString
+                                    .stringify(queryParams)
+                                    .includes(item._id)}
                                   disabled={!productsLoaded}
                                 />
                                 <label
@@ -483,6 +501,7 @@ function Products() {
                           page: "1",
                         });
                       }}
+                      value={queryParams.sort || "default"}
                     >
                       <option value="default">Default</option>
                       <option value="-price">Price: High to Low</option>
@@ -508,8 +527,9 @@ function Products() {
                           page: "1",
                         });
                       }}
+                      value={queryParams.limit || "12"}
                     >
-                      <option value="10">12 items </option>
+                      <option value="12">12 items </option>
                       <option value="20">20 items </option>
                       <option value="30">30 items </option>
                       <option value="40">40 items </option>
@@ -630,18 +650,3 @@ function Products() {
 }
 
 export default Products;
-
-// const applyFilters = (filters) => {
-//   const queryStringParams = queryString.stringify(filters, {
-//     arrayFormat: "comma",
-//   });
-//   navigate(
-//     `/products/${categoryId}/${handleUrlName(
-//       categoryName
-//     )}?${queryStringParams}`
-//   );
-// };
-
-// const handleFilterSelection = (selectedFilter) => {
-//   applyFilters({ ...queryParams, ...selectedFilter });
-// };
