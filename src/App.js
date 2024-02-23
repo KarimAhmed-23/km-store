@@ -105,18 +105,17 @@ function App() {
       </AuthContextProvider>
 
 
-      <ToastContainer theme='colored' autoClose={2500} closeOnClick={true} icon={false} position="bottom-right"/>
-
       
-
       
       {/* <ReactQueryDevtools initialIsOpen="false" position='bottom-right'/> */}
 
     </QueryClientProvider>
 
+    <ToastContainer theme='colored' autoClose={2500} closeOnClick={true} icon={false} position="bottom-right"/>
+
     <Offline>
       <div className='offline'>
-        you are offline
+        You Are Offline
       </div>
     </Offline>
 

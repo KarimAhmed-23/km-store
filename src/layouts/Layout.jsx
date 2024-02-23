@@ -26,7 +26,7 @@ function Layout() {
         setProgress(15);
         progressInterval = setInterval(() => {
           setProgress((progress) => {
-            if (progress <= 95) {
+            if (progress <= 90) {
               return progress + 5;
             } else {
               clearInterval(progressInterval);
@@ -43,8 +43,7 @@ function Layout() {
         clearInterval(progressInterval);
       }
       
-    }
-    
+    }    
   }, [state, setProgress]);
 
 

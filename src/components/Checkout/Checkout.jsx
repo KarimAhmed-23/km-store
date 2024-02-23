@@ -25,7 +25,6 @@ function Checkout() {
 
 
 
-
   async function checkout(cartId) {
     if (!shippingAddress) {
       toast.error("please select shipping address");
@@ -41,7 +40,7 @@ function Checkout() {
       paymentMethod === "cash-payment"
         ? `${baseUrl}orders/${cartId}`
         : paymentMethod === "online-payment" &&
-          `${baseUrl}orders/checkout-session/${cartId}?url=http://localhost:${window.location.port}`;
+          `${baseUrl}orders/checkout-session/${cartId}?url=${window.location.origin}`;
 
     setLoading(true);
     try {
