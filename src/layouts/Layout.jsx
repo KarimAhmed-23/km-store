@@ -11,7 +11,7 @@ import useGetPrevState from "../customHooks/UseGetPrevState";
 function Layout() {
   const { state } = useNavigation();
   const [loading, setLoading] = useState(true);
-  const [process, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   const prevState = useGetPrevState(state);
 
@@ -21,14 +21,33 @@ function Layout() {
 
   useEffect(() => {
     if (prevState) {
-      setProgress(10);
+      let progressInterval;
       if (state === "loading") {
-        setProgress(25);
+        setProgress(15);
+        progressInterval = setInterval(() => {
+          setProgress((progress) => {
+            if (progress <= 95) {
+              return progress + 5;
+            } else {
+              clearInterval(progressInterval);
+              return progress;
+            }
+          });
+        }, 1000);
       } else {
         setProgress(100);
+        clearInterval(progressInterval);
       }
+      
+      return () => {
+        clearInterval(progressInterval);
+      }
+      
     }
-  }, [state]);
+    
+  }, [state, setProgress]);
+
+
 
   return (
     <>
@@ -41,7 +60,7 @@ function Layout() {
 
         <LoadingBar
           color="#0aad0a"
-          progress={process}
+          progress={progress}
           height={4}
           loaderSpeed={500}
           waitingTime={300}
@@ -74,3 +93,17 @@ function Layout() {
 }
 
 export default Layout;
+
+
+
+
+
+// Direct Value Update:
+// setProgress(progress + 5);
+// In this approach, you directly update the state of progress by adding 5 to its current value. However, this method might cause issues if there are multiple state updates queued up simultaneously. React's state updates are asynchronous and may be batched together. When you rely on the current state's value directly, you might inadvertently use a stale state.
+
+// Functional Update:
+// setProgress(progress => progress + 5);
+// Here, you pass a function to setProgress that receives the current state (progress) as an argument and returns the new state value by adding 5 to it. React guarantees that the function you provide to setProgress will receive the most up-to-date state value. This method is recommended when the new state depends on the previous state.
+
+// The difference lies in how React handles state updates and ensures the correctness of the updated state. The functional update form (setProgress(progress => progress + 5)) is safer, especially when dealing with asynchronous updates or relying on the current state value. It helps prevent issues like stale state or race conditions that might occur with direct value updates (setProgress(progress + 5)).

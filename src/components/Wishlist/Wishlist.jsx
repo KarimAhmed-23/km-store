@@ -70,6 +70,7 @@ function Wishlist() {
                               withFav={true}
                               isFav={true}
                               updateData={updateData}
+                              favItems={wishlistProducts}
                             />
                           ))
                         ) : (
