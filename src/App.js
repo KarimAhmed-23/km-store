@@ -1,5 +1,5 @@
-import React, {  Suspense , useEffect, useLayoutEffect, useState } from 'react'
-import { RouterProvider , createBrowserRouter , useLocation} from 'react-router-dom'
+import React, {  Suspense , useEffect, useLayoutEffect, useState , lazy } from 'react'
+import { RouterProvider , createBrowserRouter , createHashRouter, useLocation} from 'react-router-dom'
 import Layout from './layouts/Layout';
 import Home from './components/Home/Home'
 import Login from './components/Login/Login'
@@ -27,6 +27,8 @@ import WishlistContextProvider from './context/wishlistContext/WishlistContext';
 import ForgetPassword from './components/RestPassword/ForgetPassword';
 import VerifyResetCode from './components/RestPassword/VerifyResetCode';
 import RestPassword from './components/RestPassword/RestPassword';
+import ProductsApi from './components/Products/ProductsApi';
+
 
 
 
@@ -37,7 +39,7 @@ function App() {
 
   const queryClient = new QueryClient();
 
-  const routes =  createBrowserRouter([
+  const routes =  createHashRouter([
 
     { path:"/" ,
       element : <Layout/> , 
@@ -50,7 +52,7 @@ function App() {
         {path:"/verify-code" , element: <VerifyResetCode/> },
         {path:"/rest-password" , element: <RestPassword/> },
         {path:"/register" , element: <Register/> },
-        {path:"/products" , element: <Products/> },
+        {path:"/products" , element: <Products/>},
         {path:"/products/:id/:categoryName/*" , element: <Products/> },
 
         
@@ -58,7 +60,6 @@ function App() {
           path:"/product/:id/:productName" ,
           element: <SingleProduct/> ,
           loader: ({ params, request }) => {
-            console.log(params);
             console.log(request);
             return switchLoader(`https://ecommerce.routemisr.com/api/v1/products/${params.id}` , null ); 
           },
@@ -71,6 +72,7 @@ function App() {
         {path:"/add-address/" , element:<ProtectedRoute> <AddAddress/> </ProtectedRoute> },
         {path:"/edit-address/:id" , element:<ProtectedRoute> <EditAddress/> </ProtectedRoute> },
         {path:"/allorders" , element:<ProtectedRoute> <AllOrders/> </ProtectedRoute> },
+        {path:"test" , element : <ProductsApi/> },
         {path:"*" , element : <NotFound/> }
 
       ]
@@ -107,7 +109,7 @@ function App() {
 
       
       
-      {/* <ReactQueryDevtools initialIsOpen="false" position='bottom-right'/> */}
+      
 
     </QueryClientProvider>
 

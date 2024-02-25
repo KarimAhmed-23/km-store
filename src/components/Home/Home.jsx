@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState , Suspense ,lazy } from "react";
 import { Helmet } from "react-helmet";
 import "./Home.css";
 import ProductsList from "../Products/ProductsList";
 import useGetApi from "../../customHooks/UseGetApi";
-import ProductsApi from "../Products/ProductsApi";
 import ProductCardLoading from "../Products/ProductCardLoading";
 import CategoriesSlider from "../Categories/CategoriesSlider";
 import ProductsSlider from "../Products/ProductsSlider";
@@ -11,6 +10,8 @@ import { Link } from "react-router-dom";
 import BrandsSlider from "../Brands/BrandsSlider";
 import HeroSlider from "./HeroSlider";
 import styled from 'styled-components';
+
+
 
 
 function Home() {
@@ -37,9 +38,10 @@ function Home() {
         <title>FreshCart | Home</title>
       </Helmet>
 
+
       <section className="section-style hero-section">
         <div className="container">
-          <HeroSlider />
+            <HeroSlider />
         </div>
       </section>
 
@@ -70,8 +72,6 @@ function Home() {
               )
             )}
            
-
-            
           </div>
         </div>
       </section>

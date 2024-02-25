@@ -15,7 +15,7 @@ function Layout() {
 
   const prevState = useGetPrevState(state);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setLoading(false);
   }, []);
 
@@ -23,7 +23,7 @@ function Layout() {
     if (prevState) {
       let progressInterval;
       if (state === "loading") {
-        setProgress(15);
+        setProgress(10);
         progressInterval = setInterval(() => {
           setProgress((progress) => {
             if (progress <= 90) {
@@ -36,16 +36,14 @@ function Layout() {
         }, 1000);
       } else {
         setProgress(100);
-        clearInterval(progressInterval);
-      }
-      
-      return () => {
-        clearInterval(progressInterval);
+        // clearInterval(progressInterval);
+        return () => {
+          clearInterval(progressInterval);
+        }
       }
       
     }    
   }, [state, setProgress]);
-
 
 
   return (
@@ -100,6 +98,8 @@ export default Layout;
 // Direct Value Update:
 // setProgress(progress + 5);
 // In this approach, you directly update the state of progress by adding 5 to its current value. However, this method might cause issues if there are multiple state updates queued up simultaneously. React's state updates are asynchronous and may be batched together. When you rely on the current state's value directly, you might inadvertently use a stale state.
+
+
 
 // Functional Update:
 // setProgress(progress => progress + 5);

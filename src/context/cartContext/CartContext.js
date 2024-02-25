@@ -29,7 +29,6 @@ function CartContextProvider({ children }) {
     }
   }
 
-
   async function addToCart(productId) {
     try {
       let { data } = await axios.post(

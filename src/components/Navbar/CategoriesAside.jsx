@@ -45,9 +45,9 @@ function CategoriesAside({ children }) {
         <div className="aside-panel">
           <div className="panel-top">
             <div className="user-info">
-              Hi Dear{" "}
+              Welcome{" "}
               {userData &&
-                `, ${userData?.name?.split(" ").splice(0, 1).join(" ")}`}
+                `${userData?.name?.split(" ").splice(0, 1).join(" ")}`}
             </div>
             <button
               type="button"

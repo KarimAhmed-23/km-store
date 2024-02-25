@@ -88,6 +88,7 @@ function SingleProduct() {
       toast.error(errorMsg);
     }
   }
+  
   function checkProductFav(productId) {
     const result = favItems?.data?.some((el) => el._id === productId );
     return result;
@@ -101,9 +102,7 @@ function SingleProduct() {
     }
   }
 
-  useEffect(() => {
-    resetSwiper();
-  }, [id]);
+
 
 
 
@@ -112,6 +111,8 @@ function SingleProduct() {
       <Helmet>
         <title>FreshCart | {productName.split("+").join(" ")}</title>
       </Helmet>
+
+
 
       {errorContent && (
         <div className="container alert alert-danger">{errorContent}</div>

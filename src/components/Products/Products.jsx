@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , Suspense , lazy } from "react";
 import { Helmet } from "react-helmet";
 import useGetApi from "../../customHooks/UseGetApi";
 import ProductCardLoading from "./ProductCardLoading";
@@ -8,6 +8,8 @@ import { baseUrl } from "../../utilities/baseUrl";
 import handleUrlName from "../../utilities/handleUrlName";
 import queryString from "query-string";
 import emptyList from "../../assets/images/empty-cart.svg";
+import "./Products.css";
+
 
 function Products() {
   const { pathname, search } = useLocation();
@@ -540,6 +542,8 @@ function Products() {
 
               <div className="products-wrapper">
                 <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-sm-2">
+
+
                   {!productsLoaded ? (
                     [...Array(12)].map((_, index) => (
                       <ProductCardLoading key={index} />
@@ -566,6 +570,8 @@ function Products() {
                       </div>
                     ))
                   )}
+
+
                 </div>
 
                 {products && products?.data?.length ? (
