@@ -27,7 +27,7 @@ import WishlistContextProvider from './context/wishlistContext/WishlistContext';
 import ForgetPassword from './components/RestPassword/ForgetPassword';
 import VerifyResetCode from './components/RestPassword/VerifyResetCode';
 import RestPassword from './components/RestPassword/RestPassword';
-import ProductsApi from './components/Products/ProductsApi';
+import ProductsApi from './components/Products/ProductsApi'
 
 
 
