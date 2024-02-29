@@ -1,33 +1,19 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import { baseUrl } from "../../utilities/baseUrl";
 import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import actVerifyRestCode from "../../store/auth/act/actVerifyRestCode";
+import { removeAsyncStates } from "../../store/auth/authSlice";
 
 function VerifyResetCode() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  async function handleResetCode(values) {
-    const verificationCode = `${values.code1}${values.code2}${values.code3}${values.code4}${values.code5}${values.code6}`;
-    setLoading(true);
-    setError(null);
-    try {
-      let { data } = await axios.post(`${baseUrl}auth/verifyResetCode`, {
-        resetCode: verificationCode,
-      });
-      console.log(data);
-      setLoading(false);
-      navigate("/rest-password");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      setError(error.response.data.message);
-    }
-  }
+  const dispatch = useDispatch();
+  const {isLoading , error} = useSelector((state => state.auth))
 
   const validationSchema = Yup.object({
     code1: Yup.number().required(),
@@ -48,7 +34,14 @@ function VerifyResetCode() {
       code6: "",
     },
     validationSchema,
-    onSubmit: handleResetCode,
+    onSubmit: (values)=>{
+      const verificationCode = `${values.code1}${values.code2}${values.code3}${values.code4}${values.code5}${values.code6}`;
+      dispatch(actVerifyRestCode(verificationCode)).then((act)=>{
+        if(!act.error){
+          navigate("/rest-password");
+        }
+      });
+    },
   });
 
   const moveFocus = (event, nextFieldName, prevFieldName) => {
@@ -58,6 +51,12 @@ function VerifyResetCode() {
       document.getElementById(nextFieldName).focus();
     }
   };
+
+  useEffect(()=> {
+    dispatch(removeAsyncStates());
+  },[dispatch]);
+
+  
 
   return (
     <>
@@ -92,6 +91,7 @@ function VerifyResetCode() {
                   onChange={(event) => {
                     formik.handleChange(event);
                     moveFocus(event, 'code2', null);
+                    
                   }}
                   value={formik.values.code1}
                 />
@@ -164,7 +164,7 @@ function VerifyResetCode() {
               <button
                 type="submit"
                 className={`btn bg-main text-white loading-btn w-100 ${
-                  loading ? "loading-overlay" : ""
+                  isLoading ? "loading-overlay" : ""
                 }`}
                 disabled={!(formik.isValid && formik.dirty)}
               >

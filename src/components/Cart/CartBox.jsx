@@ -2,37 +2,57 @@ import React, { useState } from "react";
 import CatchImage from "../CatchImage";
 import QtyCounter from "../QtyCounter";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import actUpdateCartItemQty from "../../store/cart/act/actUpdateCartItemQty";
 
-function CartBox({
-  product,
-  cartItems,
-  removeCartItem,
-  updateItemQty,
-  cartOrder,
-}) {
+function CartBox({ product, removeCartItem, updateItemQty, cartOrder }) {
+
+  
   const [loading, setLoading] = useState(false);
+  const [itemCount , setItemCount]=useState(product.count);
+  const [countDebounce , setCountDebounce] = useState(null);
+
 
   function handleCounter(action, productId, count) {
-    if (action === "increase") {
-      setLoading(true);
-      updateItemQty(productId, count + 1).finally(() => {
-        setLoading(false);
-      });
-    }
+    clearTimeout(countDebounce)
 
-    if (action === "decrease") {
+    if (action === "increase"){
+      setItemCount(prev => prev + 1);
+    }
+    if (action === "decrease"){
+      setItemCount(prev => (prev <= 1 ? 1 : prev - 1));
+    }
+    const counterDebounce = setTimeout( async ()=>{
       setLoading(true);
-      if (count <= 1) {
-        removeCartItem(productId).finally(() => {
-          setLoading(false);
-        });
-      } else {
-        updateItemQty(productId, count - 1).finally(() => {
+      const updatedItemCount = action === "increase" ? itemCount + 1 : itemCount - 1;
+      if (action === "increase") {
+        updateItemQty(productId, updatedItemCount).finally(() => {
           setLoading(false);
         });
       }
-    }
+      if (action === "decrease") {
+        if (updatedItemCount <= 1) {
+          removeCartItem(productId).finally(() => {
+            setLoading(false);
+          });
+        } else {
+          updateItemQty(productId, updatedItemCount).finally(() => {
+            setLoading(false);
+          });
+        }
+      }
+    },500);
+    setCountDebounce(counterDebounce);
+
   }
+
+  function handleDelete(productId){
+    setLoading(true);
+    removeCartItem(productId).finally(() => {
+      setLoading(false);
+    });
+  }
+
 
   return (
     <div className="cart-item">
@@ -73,12 +93,7 @@ function CartBox({
             <button
               type="button"
               className="btn remove-btn"
-              onClick={() => {
-                setLoading(true);
-                removeCartItem(product.product._id).finally(() => {
-                  setLoading(false);
-                });
-              }}
+              onClick={() => handleDelete(product.product._id)}
             >
               <span>
                 <i className="far fa-trash-alt me-1"></i>
@@ -86,9 +101,7 @@ function CartBox({
               remove
             </button>
           ) : (
-
-            <p className="item-price item-text">Quantity : {product.count}</p>
-
+            <p className="item-price item-text">Quantity : {product.quantity}</p>
           )}
         </div>
         {!cartOrder ? (
@@ -108,7 +121,7 @@ function CartBox({
                       )
                     }
                   >
-                    {product.count <= 1 ? (
+                    {itemCount <= 1 ? (
                       <i className="far fa-trash-alt"></i>
                     ) : (
                       <i className="fas fa-minus"></i>
@@ -119,7 +132,7 @@ function CartBox({
                     type="text"
                     name="quant"
                     className="qty-num form-control "
-                    value={product.count}
+                    value={itemCount}
                     step="1"
                     inputMode="tel"
                     min={1}
@@ -133,7 +146,7 @@ function CartBox({
                     role="increase"
                     className={`qty-btn qty-add btn bg-main text-white 
                                   ${
-                                    product.count >= product.product.quantity
+                                    itemCount >= product.product.quantity
                                       ? "disabled"
                                       : ""
                                   }

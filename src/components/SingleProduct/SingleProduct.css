@@ -210,3 +210,9 @@
     
   }
   
+
+  @media(max-width:575.98px){
+    .product-gallery{
+        margin-bottom: 3rem;
+    }
+  }

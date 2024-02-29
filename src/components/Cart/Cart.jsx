@@ -8,63 +8,43 @@ import { Link, useNavigate } from "react-router-dom";
 import CartBoxLoading from "./CartBoxLoading";
 import emptyCart from "../../assets/images/empty-cart.svg"
 import SummaryBoxLoading from "./SummaryBoxLoading";
+import { useDispatch, useSelector } from "react-redux";
+import actUpdateCartItemQty from "../../store/cart/act/actUpdateCartItemQty";
+import actRemoveFromCart from "../../store/cart/act/actRemoveFromCart";
+import actGetCart from "../../store/cart/act/actGetCart";
+
 
 function Cart() {
 
-  const { cartId , cartItems, setCartItems, getCart, removeFromCart , updateQty } = useContext(CartContext);
-  const [cartProducts, setCartProducts] = useState(null);
-  const [cartData, setCartData] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState(false);
+  const dispatch = useDispatch();
 
-  async function getCartItems() {
-    let data = await getCart();
-    setIsLoaded(true);
-    console.log(data);
-    if (data?.data?.status === "success") {
-      setCartProducts(data.data.data.products);
-      setCartData(data.data); 
-    }else{
-      if(!(data?.response?.data?.statusMsg)){
-        setError("error , try again");
-      }
+  const {isLoaded , error , cartProducts , cartData , cartItems} = useSelector((state=>state.cart));
+
+  async function updateItemQty(productId, count) {
+    try {
+      await dispatch(actUpdateCartItemQty({  productId, count })).unwrap();
+      toast.info("Item updated successfully");
+    } catch (error) {
+      toast.error("Oops! Something went wrong. Please try again.");
     }
-
-
   }
 
   async function removeCartItem(productId) {
-
-    const data = await removeFromCart(productId);
-    console.log(data);
-
-    if (data) {
-      setCartProducts(data.data.products);
-      setCartData(data);
-      toast.success("item deleted successfully");
-    } else {
-      toast.error("oops !! , something went wrong please try again");
+    try {
+      await dispatch(actRemoveFromCart(productId)).unwrap();
+      toast.info("Item deleted successfully");
+    } catch (error) {
+      toast.error("Oops! Something went wrong. Please try again.");
     }
-  }
-
-  async function updateItemQty(productId , count){
-
-    let data = await updateQty(productId , count);
-    console.log(data);
-
-    if(data){
-      setCartProducts(data.data.products);
-      setCartData(data);
-      toast.info("item updated successfully");
-    }else{
-      toast.error("oops !! , something went wrong please try again");
-    }
-
   }
 
   useEffect(() => {
-    getCartItems();
-  }, []);
+    const promise =dispatch(actGetCart());
+    return () => {
+      promise.abort()
+    }
+  }, [dispatch]);
+
 
   
   return (
@@ -106,9 +86,8 @@ function Cart() {
                             <CartBox
                               key={item.product._id}
                               product={item}
-                              cartItems={cartItems}
                               removeCartItem={removeCartItem}
-                              updateItemQty = {updateItemQty}
+                              updateItemQty={updateItemQty}
                             />
                           )) )
                         
@@ -136,8 +115,8 @@ function Cart() {
                         <div className="box-wrap box-body">
                           <ul className="order-details">
                             <li className="list-item">
-                              <span className="name">Subtotal({cartData?.data.products.length} item)</span>
-                              <span className="val"> {cartData ? `${cartData?.data.totalCartPrice} EGP`  : "loading..."}</span>
+                              <span className="name">Subtotal({cartData?.products} item)</span>
+                              <span className="val"> {cartData ? `${cartData?.totalCartPrice} EGP`  : "loading..."}</span>
 
                             </li> 
                             <li className="list-item">
@@ -157,7 +136,7 @@ function Cart() {
                         <ul className="order-details">
                             <li className="list-item order-total">
                               <span className="name">Total (Incl. VAT)</span>
-                              <span className="val text-main">{cartData ? `${cartData?.data.totalCartPrice} EGP`  : "loading..."}</span>
+                              <span className="val text-main">{cartData ? `${cartData?.totalCartPrice} EGP`  : "loading..."}</span>
 
                             </li> 
 

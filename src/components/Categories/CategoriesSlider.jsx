@@ -6,12 +6,22 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import CategoryCard from "./CategoryCard";
 import CategoryCardLoading from "./CategoryCardLoading";
+import { useDispatch, useSelector } from "react-redux";
+import actGetData from "../../store/general/act/actGetData";
+import { baseUrl } from "../../utilities/baseUrl";
+import { useEffect } from "react";
 
 function CategoriesSlider() {
-  const [data, isLoaded, error] = useGetApi(
-    "https://ecommerce.routemisr.com/api/v1/categories"
-  );
+ 
+  const dispatch = useDispatch();
+  const {data:{categories:data} , isLoaded:{categories:isLoaded} , error:{categories:error}}= useSelector((state=>state.general));
   const categories = data?.data;
+  useEffect(()=>{
+    const promise=  dispatch(actGetData({title:"categories" , url: `${baseUrl}categories` , options: null , withAuth: null}));
+    return()=>{
+      promise.abort();
+    }
+  },[dispatch]);
 
   return (
     <>

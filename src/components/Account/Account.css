@@ -57,3 +57,10 @@
     margin-bottom: 10px;
     text-transform: capitalize;
 }
+
+
+@media(max-width:575.98px){
+    .account-tabs{
+        margin-bottom: var(--section-padding);
+    }
+}

@@ -81,7 +81,11 @@
     margin-bottom: .75rem;
 }
 
-
+@media(max-width:575.98px){
+    .cart-item  .item-details{
+        flex-wrap: wrap;
+    }
+}
 
 
 .summary-box{

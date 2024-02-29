@@ -9,35 +9,25 @@ import ProductCard from "../Products/ProductCard";
 import { Link } from "react-router-dom";
 import { wishlistContext } from "../../context/wishlistContext/WishlistContext";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
 
 function Wishlist() {
-  const { wishlistCounter , getWishlist } = useContext(wishlistContext);
   
-  const [wishlistProducts, setWishlistProducts] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error , setError] = useState(false);
-
-  async function getWishlistItems() {
-    setIsLoading(true);
-    let data = await getWishlist();
-    setIsLoading(false);
-    console.log(data);
-    if (data) {
-      setWishlistProducts(data);      
-    }else{
-      setError("error , try again");
-    }
-  }
+  const dispatch = useDispatch();
+  const {wishlistCounter , wishlistProducts , isLoaded , error} = useSelector((state=>state.wishlist));
+  const [update,setUpdate]=useState(false);
 
   function updateData() {
-    getWishlistItems();
+    setUpdate(!update);
   }
 
-  useEffect(()=>{
-    getWishlistItems();
-  },[]);
-
-
+  useEffect(() => {
+    const promise =  dispatch(actGetWishlist());
+    return () => {
+      promise.abort()
+    }
+  }, [dispatch,update]);
 
 
   return (
@@ -59,18 +49,17 @@ function Wishlist() {
                 <div className="wishlist-boxes">
                   <div className="boxes-wrapper">
                     <div className="row row-cols-xl-3 row row-cols-lg-2 row row-cols-md-3 row row-cols-sm-2 ">
-                      {isLoading && <LoadingBox text="wishlist" />}
+                      {!isLoaded && <LoadingBox text="wishlist" />}
                       {error && <div className="alert alert-danger w-100">{error}</div>}
-                      {wishlistProducts  && !isLoading &&
-                        (wishlistProducts.data.length ? (
-                          wishlistProducts.data.map((item) => (
+                      {wishlistProducts  && isLoaded &&
+                        (wishlistProducts?.length ? (
+                          wishlistProducts.map((item) => (
                             <ProductCard
                               product={item}
                               key={item._id}
                               withFav={true}
                               isFav={true}
                               updateData={updateData}
-                              favItems={wishlistProducts}
                             />
                           ))
                         ) : (

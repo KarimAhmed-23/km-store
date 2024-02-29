@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -6,99 +6,14 @@ import * as Yup from "yup";
 import axios from "axios";
 import { Helmet } from "react-helmet";
 import PasswordInput from "../Login/PasswordInput";
+import { useDispatch, useSelector } from "react-redux";
+import actRegister from "../../store/auth/act/actRegister";
+import { removeAsyncStates } from "../../store/auth/authSlice";
 
 function Register() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [inputsError, setInputsError] = useState({});
-
-  async function handleRegister(inputsVal) {
-    // setIsLoading(true);
-    // setError(null);
-    //  axios.post("https://ecommerce.routemisr.com/api/v1/auth/signup" , values)
-    // .then(({data}) =>{
-    //   console.log(data);
-    //   setIsLoading(false);
-    //   navigate('/login');
-    // })
-    // .catch(error =>{
-    //   console.log(error);
-    //   setIsLoading(false);
-    //   setError(error.response.data.message);
-
-    // });
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      setInputsError({});
-      let { data } = await axios.post(
-        "https://ecommerce.routemisr.com/api/v1/auth/signup",
-        inputsVal
-      );
-      console.log(data);
-      setIsLoading(false);
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-
-      if (error.response?.data?.errors) {
-        let { param, msg } = error.response.data.errors;
-        setInputsError({ ...inputsError, [param]: msg });
-      } else if (error.response.data.message) {
-        setError(error.response.data.message);
-      } else {
-        setError(error.message);
-      }
-    }
-  }
-
-  // function validate(values){
-  //   let errors = {};
-
-  //   if(!values.name){
-  //     errors.name = "name is required"
-  //   }else if(values.name.length < 3){
-  //     errors.name = "Invalid name"
-  //   }
-
-  //   if (!values.email) {
-  //     errors.email = 'email is required';
-  //   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-  //     errors.email = 'Invalid email ';
-  //   }
-
-  //   if(!values.phone){
-  //     errors.phone = "phone is required"
-  //   }else if(!/^(002)?01[0125][0-9]{8}$/.test(values.phone)){
-  //     errors.phone = "Invalid phone"
-  //   }
-
-  //   if(!values.password){
-  //     errors.password = "password is required"
-  //   }else if(!/^[a-z][a-z0-9]{5,10}$/i.test(values.password)){
-  //     errors.password = "Invalid password"
-  //   }
-
-  //   if(!values.rePassword){
-  //     errors.rePassword = "rePassword is required"
-  //   }else if(values.password != values.rePassword){
-  //     errors.rePassword = "rePassword does not match"
-  //   }
-
-  //   console.log(formik.touched.name);
-  //   return errors
-  // }
-
-  // const validationSchema = Yup.object({
-  //   name : Yup.string().min(5 , "Too short").max(20 , "Too long").required("name is required"),
-  //   email : Yup.string().email('Invalid email address').required('email is required'),
-  //   phone : Yup.string().matches(/^(002)?01[0125][0-9]{8}$/ , "Invalid phone number" ).required("phone is required"),
-  //   password : Yup.string().matches(/^[a-z][a-z0-9]{5,10}$/ , "Invalid password").required("password is required"),
-  //   rePassword : Yup.string().oneOf([Yup.ref("password")] , "rePassword does not match").required("rePassword is required"),
-  // });
+  const dispatch = useDispatch();
+  const {isLoading , error , inputsError} = useSelector((state => state.auth));
 
   const validationSchema = Yup.object({
     name: Yup.string().min(3, "name at least 3 least").required(),
@@ -122,75 +37,21 @@ function Register() {
       password: "",
       rePassword: "",
     },
-    // validate ,
     validationSchema,
-    onSubmit: handleRegister,
+    onSubmit: (values)=>{
+      dispatch(actRegister(values)).then((act)=>{
+        if(!act.error){
+          navigate("/login");
+        }
+      });
+    },
   });
 
-  // // manual formik
-  // const [inputsVal , setInputsVal] = useState({
 
-  //     name : "" ,
-  //     email :"",
-  //     phone : "",
-  //     password :"",
-  //     rePassword:"",
+  useEffect(()=> {
+    dispatch(removeAsyncStates());
+  },[dispatch]);
 
-  // });
-
-  // function handleSubmit(e){
-  //   e.preventDefault();
-  //   if(validate()){
-  //     handleRegister(inputsVal);
-  //     console.log("valid");
-  //   }
-  // }
-
-  // function handleChange(e){
-  //   const key = e.target.id;
-  //   const val = e.target.value;
-
-  //   setInputsVal({...inputsVal , [key] : val});
-
-  // }
-
-  // function validate(){
-  //   let allInputsValid = false;
-
-  //   if(!inputsVal.name){
-  //     allInputsValid = false;
-  //   }else{
-  //     allInputsValid = true;
-  //   }
-
-  //   if(!inputsVal.email){
-  //     allInputsValid = false;
-  //   }else{
-  //     allInputsValid = true;
-  //   }
-
-  //   if(!inputsVal.phone){
-  //     allInputsValid = false;
-  //   }else{
-  //     allInputsValid = true;
-  //   }
-
-  //   if(!inputsVal.password){
-  //     allInputsValid = false;
-  //   }else{
-  //     allInputsValid = true;
-  //   }
-
-  //   if(!inputsVal.rePassword){
-  //     allInputsValid = false;
-  //   }else{
-  //     allInputsValid = true;
-  //   }
-
-  //   return allInputsValid;
-
-  // }
-  
 
   return (
     <>

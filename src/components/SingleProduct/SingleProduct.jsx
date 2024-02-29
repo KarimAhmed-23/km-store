@@ -22,6 +22,14 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import CatchImage from "../CatchImage";
+import { useDispatch, useSelector } from "react-redux";
+import actAddToCart from "../../store/cart/act/actAddToCart";
+import actGetCart from "../../store/cart/act/actGetCart";
+import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
+import { checkProductFav } from "../../store/wishlist/wishlistSlice";
+import actAddToWishlist from "../../store/wishlist/act/actAddToWishlist";
+import actRemoveFromWishlist from "../../store/wishlist/act/actRemoveFromWishlist";
+import actGetProducts from "../../store/products/act/actGetProducts";
 // import ReactImageMagnify from "react-image-magnify";
 
 
@@ -38,63 +46,55 @@ function SingleProduct() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
 
+  const dispatch = useDispatch();
+  const {wishlistProductsID , isLoaded:isFavLoaded} = useSelector((state=>state.wishlist));
+  const {products , isLoaded , error} =useSelector((state=>state.products));
+  const {userToken} = useSelector((state=>state.auth))
+
 
   async function addProductToCart(productId) {
     setCartBtnLoading(true);
-    const { data, errorMsg } = await addToCart(productId);
-    console.log(data);
-
-    if (data) {
+    dispatch(actAddToCart(productId))
+    .unwrap()
+    .then((data)=>{
       setCartBtnLoading(false);
       toast.success(data.message);
-    } else {
+    }).catch(data=>{
       setCartBtnLoading(false);
-      toast.error(errorMsg);
-    }
+      toast.error(data);
+    })
+
   }
 
-
-  const [favItems, isFavLoaded, , fetchData] = useGetApi(`${baseUrl}wishlist`, {
-    headers: {
-      token: localStorage.getItem("token"),
-    },
-  } , "withAuth");
-
-  
   async function addProductToWishlist(productId) {
     setWishlistBtnLoading(true);
-    const { data, errorMsg } = await addToWishlist(productId);
-    console.log(data);
-    if (data) {
+    dispatch(actAddToWishlist(productId)).unwrap()
+    .then(data=>{
       setWishlistBtnLoading(false);
       toast.success(data.message);
-      fetchData();
-    } else {
+    })
+    .catch(data=>{
       setWishlistBtnLoading(false);
-      toast.error(errorMsg);
-    }
+      toast.error(data);
+      
+    })
+
   }
 
   async function removeProductFromWishlist(productId) {
     setWishlistBtnLoading(true);
-    const { data, errorMsg } = await removeFromWishlist(productId);
-    console.log(data);
-    if (data) {
+    dispatch(actRemoveFromWishlist(productId)).unwrap()
+    .then(data=>{
       setWishlistBtnLoading(false);
       toast.success(data.message);
-      fetchData();
-    } else {
+    })
+    .catch(data=>{
       setWishlistBtnLoading(false);
-      toast.error(errorMsg);
-    }
+      toast.error(data);
+      
+    })
   }
-  
-  function checkProductFav(productId) {
-    const result = favItems?.data?.some((el) => el._id === productId );
-    return result;
-  }
-
-
+ 
   function resetSwiper() {
     if (mainSwiper && thumbsSwiper) {
       mainSwiper.slideTo(0);
@@ -104,6 +104,14 @@ function SingleProduct() {
 
 
 
+ useEffect(()=>{
+  const relatedProductsPromise = dispatch(actGetProducts({title : "relatedProducts" , params:{limit : "20" , category : `${product.category._id}`}}));
+
+  return()=>{
+    relatedProductsPromise.abort();
+  }
+
+ },[dispatch]);
 
 
   return (
@@ -288,17 +296,17 @@ function SingleProduct() {
                       <button
                         type="button"
                         className={`btn fav-btn  ${
-                          wishlistBtnLoading || (!isFavLoaded && localStorage.getItem("token"))
+                          wishlistBtnLoading || (!isFavLoaded && userToken)
                             ? "loading-overlay"
                             : ""
-                        } ${checkProductFav(product._id) ? "active" : ""}`}
+                        } ${checkProductFav(product._id , wishlistProductsID) && !wishlistBtnLoading ? "active" : ""}`}
                         onClick={() =>
-                          checkProductFav(product._id)
+                          checkProductFav(product._id , wishlistProductsID)
                             ? removeProductFromWishlist(product._id)
                             : addProductToWishlist(product._id)
                         }
                       >
-                        {checkProductFav(product._id) ? (
+                        {checkProductFav(product._id , wishlistProductsID) ? (
                           <i className="fa-solid fa-heart"></i>
                         ) : (
                           <i className="far fa-heart"></i>
@@ -314,9 +322,10 @@ function SingleProduct() {
             <div className="container">
               <h1 className="main-title">related products</h1>
               <div className="slider-container products-slider-container">
-                <ProductsSlider
-                  items={`https://ecommerce.routemisr.com/api/v1/products?category[in]=${product.category._id}`}
-                />
+                {/* <ProductsSlider
+                  items={{limit : "20" , category : `${product.category._id}`}}
+                /> */}
+                <ProductsSlider isLoaded={isLoaded.relatedProducts} error={error.relatedProducts} products={products?.relatedProducts?.data} />
               </div>
             </div>
           </section>

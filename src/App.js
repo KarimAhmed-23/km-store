@@ -28,6 +28,9 @@ import ForgetPassword from './components/RestPassword/ForgetPassword';
 import VerifyResetCode from './components/RestPassword/VerifyResetCode';
 import RestPassword from './components/RestPassword/RestPassword';
 import ProductsApi from './components/Products/ProductsApi'
+import { Provider, useDispatch } from 'react-redux';
+import store from './store';
+import { checkAuth } from './store/auth/authSlice';
 
 
 
@@ -35,11 +38,14 @@ import ProductsApi from './components/Products/ProductsApi'
 
 function App() {
 
-
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    dispatch(checkAuth());
+  },[dispatch]);
 
   const queryClient = new QueryClient();
 
-  const routes =  createHashRouter([
+  const routes =  createBrowserRouter([
 
     { path:"/" ,
       element : <Layout/> , 
@@ -60,7 +66,6 @@ function App() {
           path:"/product/:id/:productName" ,
           element: <SingleProduct/> ,
           loader: ({ params, request }) => {
-            console.log(request);
             return switchLoader(`https://ecommerce.routemisr.com/api/v1/products/${params.id}` , null ); 
           },
         },
@@ -87,29 +92,25 @@ function App() {
   return (
     <>
 
+
     <QueryClientProvider client={queryClient}>
 
       <AuthContextProvider>
           
         <CartContextProvider>
 
-         
-         <WishlistContextProvider>
+        
+        <WishlistContextProvider>
 
               <RouterProvider router={routes}/> 
 
-         </WishlistContextProvider>
+        </WishlistContextProvider>
             
 
         </CartContextProvider>
-       
+      
         
       </AuthContextProvider>
-
-
-      
-      
-      
 
     </QueryClientProvider>
 

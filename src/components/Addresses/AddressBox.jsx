@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { baseUrl } from "../../utilities/baseUrl";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import actDeleteAddresses from "../../store/addresses/act/actDeleteAddresses";
 
 function AddressBox({
   address,
@@ -11,32 +13,20 @@ function AddressBox({
   setUpdate
 }) {
   const [loading, setLoading] = useState(false);
-  async function deleteAddress(addressId) {
+  const dispatch = useDispatch();
+   async function deleteAddress(addressId) {
     setLoading(true);
-    try {
-      const { data } = await axios.delete(`${baseUrl}addresses/${addressId}`, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
-      console.log(data);
+    dispatch(actDeleteAddresses(addressId)).unwrap()
+    .then((data)=>{
       setLoading(false);
-      
-      if (data) {
-        toast.success(data.message);
-        setUpdate(data);
-      }
-    } catch (error) {
-      console.log(error);
+      toast.success(data.message);
+    })
+    .catch(data=>{
       setLoading(false);
-      toast.error(
-        error.response.data.message ||
-          "oops !! , something went wrong please try again"
-      );
-    }
+      toast.error(data);
+    });
   }
 
-  
 
   return (
     <div className="box-wrap" key={address._id}>

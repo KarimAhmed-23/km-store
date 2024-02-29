@@ -10,36 +10,16 @@ import { toast } from "react-toastify";
 import useGetApi from "../../customHooks/UseGetApi";
 import AddressBox from "../Addresses/AddressBox";
 import AccountTabs from "./AccountTabs";
+import { useDispatch, useSelector } from "react-redux";
+import actUpdateProfile from "../../store/auth/act/actUpdateProfile";
+import { removeAsyncStates } from "../../store/auth/authSlice";
 
 function Account() {
-  const { userData, setUserData } = useContext(AuthContext);
-  const [updateLoading, setUpdateLoading] = useState(false);
-  const userObj = localStorage.getItem("userData") !== "undefined" ? JSON.parse(localStorage.getItem("userData")) : "";
+  
+  const dispatch = useDispatch();
+  const {isLoading:updateLoading , userData} = useSelector((state=>state.auth))
 
-  console.log(userData);
 
-  async function updateProfile(values, { resetForm }) {
-    setUpdateLoading(true);
-    try {
-      let { data } = await axios.put(`${baseUrl}users/updateMe`, values, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
-
-      setUpdateLoading(false);
-
-      localStorage.setItem("userData", JSON.stringify(data.user));
-      setUserData(data.user);
-      toast.success("profile updated successfully");
-      resetForm();  
-      
-    } catch (error) {
-      console.log(error);
-      setUpdateLoading(false);
-      toast.error("oops !! , something went wrong please try again");
-    }
-  }
   const formik = useFormik({
     initialValues: {
       name: typeof userData === "string" ?  JSON.parse(userData)?.name : userData?.name,
@@ -61,23 +41,22 @@ function Account() {
       return errors;
     },
     
-    onSubmit: (values, { resetForm }) => updateProfile(values, { resetForm }),
+    onSubmit: (values) => {
+      dispatch(actUpdateProfile(values)).
+      unwrap()
+      .then(data =>{
+        toast.success("profile updated successfully");
+      })
+      .catch(data =>{
+        toast.error("oops !! , something went wrong please try again");
+      })
+
+    },
   });
 
-useEffect(() => {
-
-  // if(userData){
-  //   formik.setValues({
-  //     name: typeof userData === "string" ?  JSON.parse(userData)?.name : userData?.name ,
-  //     phone: typeof userData === "string" ?  JSON.parse(userData)?.phone || "01228594886" : userData?.phone || "01228594886",
-  //   });
-  //   formik.setTouched({});  
-    
-  // }
-  
-  
-}, [userData , setUserData]);
-
+  useEffect(()=>{
+    dispatch(removeAsyncStates());
+  },[dispatch]);
 
 
   return (

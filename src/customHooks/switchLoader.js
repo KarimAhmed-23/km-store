@@ -10,17 +10,21 @@ export const switchLoader = async (url  , options) => {
 
   } catch (error) {
 
-    if(error?.response?.data?.message){
-        let errorContent =error.response.data.message
-        return {errorContent}
-      }else{
-        let errorContent =error.message
-        return {errorContent}
-      }
+    const errorContent = error.response ? (error.response.data.message) : (error.message);
+    return {errorContent}
     
   }
 
     
 }
+
+
+ // if(error?.response?.data?.message){
+    //     let errorContent =error.response.data.message
+    //     return {errorContent}
+    //   }else{
+    //     let errorContent =error.message
+    //     return {errorContent}
+    //   }
 
 

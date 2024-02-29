@@ -10,25 +10,27 @@ import { Link } from "react-router-dom";
 import BrandsSlider from "../Brands/BrandsSlider";
 import HeroSlider from "./HeroSlider";
 import styled from 'styled-components';
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import actGetProducts from "../../store/products/act/actGetProducts";
 
 
 
 
 function Home() {
 
+  const dispatch = useDispatch();
+  const {products , isLoaded , error} =useSelector((state=>state.products));
+  useEffect(()=>{
+    const featuredProductsPromise = dispatch(actGetProducts({title : "featuredProducts" , params:{limit : "15" , category : "6439d5b90049ad0b52b90048"}}));
+    const newProductsPromise = dispatch(actGetProducts({title : "newProducts" , params:{limit : "20" , category : "6439d2d167d9aa4ca970649f"}}));
+    
+    return()=>{
+      featuredProductsPromise.abort();
+      newProductsPromise.abort();
+    }
 
-  const [products, isLoaded, error] = useGetApi(
-    "https://ecommerce.routemisr.com/api/v1/products?limit=15&&category[in]=6439d5b90049ad0b52b90048"
-  );
-
-  const MainTitle = styled.h1`
-    margin-bottom: var(--section-padding);
-    color: var(--main-color);
-    font-weight: bold;
-    font-size: var(--title-1);
-    text-align: center;
-    text-transform: capitalize;
-  `;
+  },[dispatch]);
 
 
 
@@ -55,18 +57,18 @@ function Home() {
 
       <section className="section-style products-section">
         <div className="container">
-          <MainTitle>featured products</MainTitle>
+          <h1 className="main-title">featured products</h1>
           <div className="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2">
 
-            { !isLoaded  && (
+            { !isLoaded.featuredProducts  && (
               [...Array(10)].map((_, index) => (
                 <ProductCardLoading key={index} />
               ))
             )}
-            {error &&  <div className="alert alert-danger w-100">{error}</div>}
-            {products && (
-              products?.data?.length ? (
-                <ProductsList products={products?.data} />
+            {error.featuredProducts &&  <div className="alert alert-danger w-100">{error}</div>}
+            {products?.featuredProducts && (
+              products?.featuredProducts?.data?.length ? (
+                <ProductsList products={products?.featuredProducts?.data} />
               ) : (
                 <div className="alert alert-danger w-100">no data found</div>
               )
@@ -92,9 +94,7 @@ function Home() {
         <div className="container">
           <h1 className="main-title">New Products</h1>
           <div className="slider-container products-slider-container">
-            <ProductsSlider
-              items={`https://ecommerce.routemisr.com/api/v1/products?category[in]=6439d2d167d9aa4ca970649f`}
-            />
+            <ProductsSlider isLoaded={isLoaded.newProducts} error={error.newProducts} products={products?.newProducts?.data} />
           </div>
         </div>
       </section>

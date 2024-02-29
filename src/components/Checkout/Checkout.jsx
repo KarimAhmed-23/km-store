@@ -14,15 +14,20 @@ import { Helmet } from "react-helmet";
 import AddressBoxLoading from "../Addresses/AddressBoxLoading";
 import EmptyAddresses from "../Addresses/EmptyAddresses";
 import AddressBox from "../Addresses/AddressBox";
+import { useDispatch, useSelector } from "react-redux";
+import { clearCart } from "../../store/cart/cartSlice";
+import actGetAddresses from "../../store/addresses/act/actGetAddresses";
 
 function Checkout() {
+
   const navigate = useNavigate();
-  const { cartId, setCartItems, getCart, cartItems } = useContext(CartContext);
+  const dispatch = useDispatch();
+  const {cartId , cartData , cartProducts , isLoaded:isCartLoaded} = useSelector((state=>state.cart));
+  const {addresses , isLoaded:isAddressesLoaded , error:addressesError} = useSelector((state) => state.addresses)
   const [loading, setLoading] = useState(false);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [activeAddress, setActiveAddress] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
-
 
 
   async function checkout(cartId) {
@@ -57,7 +62,8 @@ function Checkout() {
       );
       if (data) {
         console.log(data);
-        setCartItems(0);
+        // setCartItems(0);
+        dispatch(clearCart());
         setLoading(false);
         if (paymentMethod === "cash-payment") {
           navigate("/allorders");
@@ -72,30 +78,31 @@ function Checkout() {
       toast.error("oops !! , something went wrong please try again");
     }
   }
-
-  const [addresses, isAddressesLoaded, addressesError] = useGetApi(
-    `${baseUrl}addresses`,
-    {
-      headers: {
-        token: localStorage.getItem("token"),
-      },
-    }
-  );
-  const [cartData, isCartLoaded] = useGetApi(
-    `${baseUrl}cart`,
-    {
-      headers: {
-        token: localStorage.getItem("token"),
-      },
-    }
-  );
-
   function selectAddress(addressId , item){
    
     setActiveAddress(addressId);
     setShippingAddress(item);
     
   }
+
+  // const [cartData, isCartLoaded] = useGetApi(
+  //   `${baseUrl}cart`,
+  //   {
+  //     headers: {
+  //       token: localStorage.getItem("token"),
+  //     },
+  //   }
+  // );
+
+  useEffect(() => {
+    const getAddressesPromise= dispatch(actGetAddresses());
+    return()=>{
+      getAddressesPromise.abort();
+    }
+  }, [dispatch]);
+
+
+  console.log(cartData);
   
 
   return (
@@ -124,7 +131,7 @@ function Checkout() {
                         [...Array(2)].map((_, index) => (
                           <AddressBoxLoading key={index}  selectAddress={true} />
                         ))}
-                      {addresses &&
+                      {addresses && isAddressesLoaded &&
                         (addresses.data.length ? (
                           addresses.data.map((item) => (
                             <AddressBox key={item._id} address={item} activeAddress={activeAddress} selectAddress={selectAddress}/>
@@ -145,12 +152,11 @@ function Checkout() {
                       [...Array(3)].map((_, index) => (
                         <CartBoxLoading key={index} cartOrder={true} />
                       ))}
-                    {cartData?.data.products &&
-                      cartData.data.products?.map((item) => (
+                    {cartProducts &&
+                      cartProducts?.map((item) => (
                         <CartBox
                           key={item.product._id}
                           product={item}
-                          cartItems={cartItems}
                           cartOrder={true}
                         />
                       ))}
@@ -207,11 +213,11 @@ function Checkout() {
                     <ul className="order-details">
                       <li className="list-item">
                         <span className="name">
-                          Subtotal({cartData?.data.products.length} item)
+                          Subtotal({cartData?.products} item)
                         </span>
                         <span className="val">
                           {cartData
-                            ? `${cartData?.data.totalCartPrice} EGP`
+                            ? `${cartData?.totalCartPrice} EGP`
                             : "loading..."}
                         </span>
                       </li>
@@ -231,7 +237,7 @@ function Checkout() {
                         <span className="name">Total (Incl. VAT)</span>
                         <span className="val text-main">
                           {cartData
-                            ? `${cartData?.data.totalCartPrice} EGP`
+                            ? `${cartData?.totalCartPrice} EGP`
                             : "loading..."}
                         </span>
                       </li>

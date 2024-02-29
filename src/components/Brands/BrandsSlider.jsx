@@ -6,12 +6,22 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import BrandCardLoading from "./BrandCardLoading";
 import BrandCard from "./BrandCard";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import actGetData from "../../store/general/act/actGetData";
+import { baseUrl } from "../../utilities/baseUrl";
 
 function BrandsSlider() {
-  const [data, isLoaded, error] = useGetApi(
-    "https://ecommerce.routemisr.com/api/v1/brands"
-  );
+  
+  const dispatch = useDispatch();
+  const {data:{brands:data} , isLoaded:{brands:isLoaded} , error:{brands:error}}= useSelector((state=>state.general));
   const brands = data?.data;
+  useEffect(()=>{
+    const promise=  dispatch(actGetData({title:"brands" , url: `${baseUrl}brands` , options: null , withAuth: null}));
+    return()=>{
+      promise.abort();
+    }
+  },[dispatch]);
 
   return (
     <>

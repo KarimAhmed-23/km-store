@@ -5,29 +5,33 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/authContext/AuthContext";
 import { CartContext } from "../../context/cartContext/CartContext";
 import CategoriesAside from "./CategoriesAside";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/auth/authSlice";
+import actGetCart from "../../store/cart/act/actGetCart";
+import token from "../../utilities/getToken";
+import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
+import { clearCart } from "../../store/cart/cartSlice";
+import { clearWishlist } from "../../store/wishlist/wishlistSlice";
+import { clearAddresses } from "../../store/addresses/addressesSlice";
 
 function Navbar() {
-  const { userToken, setUserToken , setUserData} = useContext(AuthContext);
-  const { cartItems, setCartItems, getCart } = useContext(CartContext);
+  
+  const {userToken} = useSelector((state => state.auth));
+  const {cartItems} = useSelector((state => state.cart));
+  const {wishlistProducts} = useSelector((state => state.wishlist));
+  const dispatch = useDispatch();
   function handleLogout() {
-    localStorage.removeItem("token");
-    setUserToken(null);
-    localStorage.removeItem("userData");
-    setUserData(null);
+    dispatch(logout());
+    dispatch(clearCart());
+    dispatch(clearWishlist());
+    dispatch(clearAddresses());
   }
-
-  async function getCartItems() {
-    let data = await getCart();
-    // if(!data){
-    //   setCartItems(0);
-    // }
-  }
-
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      getCartItems();
+    if (userToken) {
+      dispatch(actGetCart());
+      dispatch(actGetWishlist());
     }
-  }, []);
+  }, [dispatch , userToken]);
 
   return (
     <>

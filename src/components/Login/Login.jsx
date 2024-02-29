@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState ,useEffect } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -8,60 +8,37 @@ import { AuthContext } from "../../context/authContext/AuthContext";
 import { Helmet } from "react-helmet";
 import { CartContext } from "../../context/cartContext/CartContext";
 import PasswordInput from "./PasswordInput";
+import { useDispatch, useSelector } from "react-redux";
+import actLogin from "../../store/auth/act/actLogin";
+import { removeAsyncStates } from "../../store/auth/authSlice";
+
 
 function Login() {
   const navigate = useNavigate();
-  const { getCart } = useContext(CartContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const { setUserToken, setUserData } = useContext(AuthContext);
-
-  async function handleLogin(values) {
-    try {
-      setIsLoading(true);
-      setError(null);
-      let { data } = await axios.post(
-        "https://ecommerce.routemisr.com/api/v1/auth/signin",
-        values
-      );
-      console.log(data);
-      setIsLoading(false);
-      localStorage.setItem("token", data.token);
-      setUserToken(data.token);
-      localStorage.setItem("userData", JSON.stringify(data.user));
-      setUserData(data.user);
-      getCart();
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-      
-      if(error.response?.data?.message){
-        setError(error.response.data.message);
-      }else{
-        setError(error.message);
-        console.log(error.message);
-      }
-
-
-    }
-  }
-
-  const validationSchema = Yup.object({
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("email is required"),
-    password: Yup.string().min(6).required("password is required"),
-  });
+  const dispatch = useDispatch();
+  const {isLoading , error } = useSelector((state => state.auth));
 
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    // validationSchema,
-    onSubmit: handleLogin,
+    onSubmit: (values)=>{
+      dispatch(actLogin(values)).
+      unwrap()
+      .then(_ =>{
+        navigate("/");
+      }).catch(data =>{
+        console.log(data);
+      })
+    },
   });
+
+
+  useEffect(()=> {
+    dispatch(removeAsyncStates());
+  },[dispatch]);
+
 
   return (
     <>

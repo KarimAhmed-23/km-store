@@ -179,7 +179,16 @@
     left: -25px !important;
   }
 
+@media(max-width:575.98px){
+  .products-slider-container.slider-container .arrow.arrow-left{
+    right: -.5rem !important;
+  }
 
+  .products-slider-container.slider-container .arrow.arrow-right{
+    left: -.5rem !important;
+  }
+
+}
 
 
 

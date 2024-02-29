@@ -16,6 +16,7 @@ function Products() {
   const { id: categoryId, categoryName } = useParams();
   const x = useParams();
   const navigate = useNavigate();
+
   const queryParamsFromUrl = queryString.parse(search, {
     arrayFormat: "comma",
     parseBooleans: true,
@@ -44,6 +45,8 @@ function Products() {
   function applyFilters(filters) {
     setQueryParams({ ...queryParams, ...filters });
   }
+
+  console.log(queryParams);
 
   const [
     subcategories,
@@ -473,7 +476,7 @@ function Products() {
             </div>
             <div className="col-xl-9 col-lg-8">
               <div
-                className="d-flex  align-items-center gap-4  mb-5"
+                className="d-flex  align-items-center gap-4 flex-wrap  mb-5"
                 style={{ justifyContent: "space-between" }}
               >
                 <h3 className="products-title fw-bold mb-0">

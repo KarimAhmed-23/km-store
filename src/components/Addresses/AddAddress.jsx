@@ -7,34 +7,28 @@ import { baseUrl } from "../../utilities/baseUrl";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import actAddAddresses from "../../store/addresses/act/actAddAddresses";
+import { useDispatch } from "react-redux";
 
 function AddAddress() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  
   async function addAddress(values) {
     setLoading(true);
-    try {
-      const { data } = await axios.post(`${baseUrl}addresses`, values, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
-      console.log(data);
+    dispatch(actAddAddresses(values)).unwrap()
+    .then((data)=>{
       setLoading(false);
-
-      if (data) {
-        toast.success(data.message);
-        navigate("/addresses");
-      }
-    } catch (error) {
-      console.log(error);
+      toast.success(data.message);
+      navigate("/addresses");
+    })
+    .catch(data=>{
       setLoading(false);
-      toast.error(
-        error.response.data.message ||
-          "oops !! , something went wrong please try again"
-      );
-    }
+      toast.error(data);
+    });
   }
+
   const validationSchema = Yup.object({
     name: Yup.string().required(),
     city: Yup.string().required(),
@@ -51,7 +45,9 @@ function AddAddress() {
       details: "",
     },
     // validationSchema,
-    onSubmit: addAddress,
+    onSubmit: (values)=>{
+      addAddress(values);
+    },
   });
   return (
     <>

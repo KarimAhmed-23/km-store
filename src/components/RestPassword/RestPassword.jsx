@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState ,useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import { baseUrl } from "../../utilities/baseUrl";
@@ -8,37 +8,33 @@ import { AuthContext } from "../../context/authContext/AuthContext";
 import { CartContext } from "../../context/cartContext/CartContext";
 import PasswordInput from "../Login/PasswordInput";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import actResetPassword from "../../store/auth/act/actResetPassword";
+import { removeAsyncStates } from "../../store/auth/authSlice";
 
 function RestPassword() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const { setUserToken, setUserData } = useContext(AuthContext);
-  const { getCart } = useContext(CartContext);
+
   const navigate = useNavigate();
-
-  async function handleResetPassword(values) {
-    setLoading(true);
-    setError(null);
-    try {
-      let { data } = await axios.put(`${baseUrl}auth/resetPassword`, values);
-      console.log(data);
-      setLoading(false);
-      toast.success("password change successfully");
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      setError(error.response.data.message);
-    }
-  }
-
+  const dispatch = useDispatch();
+  const {isLoading,error} = useSelector((state => state.auth));
   const formik = useFormik({
     initialValues: {
       email: "",
       newPassword: "",
     },
-    onSubmit: handleResetPassword,
+    onSubmit: (values)=>{
+      dispatch(actResetPassword(values)).then((act)=>{
+        if(!act.error){
+          toast.success("password change successfully");
+          navigate("/login");
+        }
+      })
+    },
   });
+
+  useEffect(()=> {
+    dispatch(removeAsyncStates());
+  },[dispatch]);
 
   return (
     <>
@@ -95,7 +91,7 @@ function RestPassword() {
               <button
                 type="submit"
                 className={`btn bg-main text-white loading-btn w-100 ${
-                  loading ? "loading-overlay" : ""
+                  isLoading ? "loading-overlay" : ""
                 }`}
               >
                 Next

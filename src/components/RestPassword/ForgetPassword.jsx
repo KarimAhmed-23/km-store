@@ -4,37 +4,33 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import { baseUrl } from "../../utilities/baseUrl";
+import { useDispatch, useSelector } from "react-redux";
+import actForgetPassword from "../../store/auth/act/actForgetPassword";
+import { useEffect } from "react";
+import { removeAsyncStates } from "../../store/auth/authSlice";
 
 function ForgetPassword() {
 
-   const [loading , setLoading]=useState(false);
-   const [error , setError] = useState(null);
-   const navigate= useNavigate();
-
-   async function handleForgetPassword(values){
-    setLoading(true);
-    setError(null);
-    try {
-        let {data} = await axios.post(`${baseUrl}auth/forgotPasswords` , values);
-        console.log(data);
-        setLoading(false);
-        navigate('/verify-code')
-        
-    } catch (error) {
-        console.log(error);
-        setLoading(false);
-        setError(error.response.data.message);
-    }
-
-
-   } 
-  
-   const formik = useFormik({
+  const navigate= useNavigate();
+  const dispatch =useDispatch();
+  const {isLoading , error} = useSelector((state => state.auth));
+  const formik = useFormik({
     initialValues :{
         email : ""
     },
-    onSubmit:handleForgetPassword,
+    onSubmit:(values)=>{
+      dispatch(actForgetPassword(values)).then((act)=>{
+        if(!act.error){
+          navigate("/verify-code");
+        }
+      });
+    },
    }) ;
+  
+
+  useEffect(()=> {
+    dispatch(removeAsyncStates());
+  },[dispatch]);
 
 
 
@@ -75,7 +71,7 @@ function ForgetPassword() {
             <div className="btns-container">
               <button
                 type="submit"
-                className={`btn bg-main text-white loading-btn w-100 ${loading ? "loading-overlay" : ""}`}
+                className={`btn bg-main text-white loading-btn w-100 ${isLoading ? "loading-overlay" : ""}`}
               >
                 Next
               </button>

@@ -11,44 +11,23 @@ import AddressBoxLoading from "./AddressBoxLoading";
 import EmptyAddresses from "./EmptyAddresses";
 import { Helmet } from "react-helmet";
 import LoadingBox from "../LoadingBox";
+import { useDispatch, useSelector } from "react-redux";
+import actGetData from "../../store/general/act/actGetData";
+import actGetAddresses from "../../store/addresses/act/actGetAddresses";
 
 function Addresses() {
-  const [
-    addresses,
-    isAddressesLoaded,
-    addressesError,
-    fetchData,
-    setAddresses,
-  ] = useGetApi(`${baseUrl}addresses`, {
-    headers: {
-      token: localStorage.getItem("token"),
-    },
-  });
+ 
+  const dispatch = useDispatch();
+  const {addresses , isLoaded:isAddressesLoaded , error:addressesError} = useSelector((state) => state.addresses)
+  console.log(addresses);
+  useEffect(() => {
+    const promise= dispatch(actGetAddresses());
+    return()=>{
+      promise.abort();
+    }
+  }, [dispatch]);
 
-  function setUpdate(updatedAddresses) {
-    setAddresses(updatedAddresses);
-  }
 
-  //   const [addresses, setAddresses] = useState(null);
-  //   const [isAddressesLoaded, setIsAddressesLoaded] = useState(false);
-  //   async function getAddresses() {
-  //     try {
-  //       let { data } = await axios.get(`${baseUrl}addresses`, {
-  //         headers: {
-  //           token: localStorage.getItem("token"),
-  //         },
-  //       });
-  //       console.log(data);
-  //       setIsAddressesLoaded(true);
-  //       setAddresses(data);
-  //     } catch (error) {
-  //       console.log(error);
-  //       setIsAddressesLoaded(true);
-  //     }
-  //   }
-  //   useEffect(() => {
-  //     getAddresses();
-  //   }, []);
 
   return (
     <>
@@ -73,19 +52,23 @@ function Addresses() {
                 <div className="addresses-boxes">
                   <div className="boxes-wrapper">
                     <div className="row row-cols-xl-2 gy-4">
-                      {!isAddressesLoaded && <LoadingBox text="addresses"/>}
-                      {addressesError && <div className="alert alert-danger w-100">{addressesError}</div>}
-                      {addresses &&
+                      {!isAddressesLoaded && <LoadingBox text="addresses" />}
+                      {addressesError && (
+                        <div className="alert alert-danger w-100">
+                          {addressesError}
+                        </div>
+                      )}
+                      {addresses && isAddressesLoaded &&
                         (addresses.data.length ? (
                           addresses.data.map((item) => (
                             <AddressBox
                               key={item._id}
                               address={item}
-                              setUpdate={setUpdate}
+                              
                             />
                           ))
                         ) : (
-                          <EmptyAddresses imgWidth={150} imgHeight={150}/>
+                          <EmptyAddresses imgWidth={150} imgHeight={150} />
                         ))}
                     </div>
                   </div>
