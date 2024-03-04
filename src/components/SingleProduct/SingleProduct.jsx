@@ -30,71 +30,77 @@ import { checkProductFav } from "../../store/wishlist/wishlistSlice";
 import actAddToWishlist from "../../store/wishlist/act/actAddToWishlist";
 import actRemoveFromWishlist from "../../store/wishlist/act/actRemoveFromWishlist";
 import actGetProducts from "../../store/products/act/actGetProducts";
+import { useAddToCartMutation } from "../../store/api/cartApi";
+import {
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
+} from "../../store/api/wishlistApi";
+import { useGetProductsQuery } from "../../store/api/apiSlice";
 // import ReactImageMagnify from "react-image-magnify";
 
-
-
 function SingleProduct() {
-  const { addToCart } = useContext(CartContext);
-  const { addToWishlist, removeFromWishlist } = useContext(wishlistContext);
-  const [cartBtnLoading, setCartBtnLoading] = useState(false);
-  const [wishlistBtnLoading, setWishlistBtnLoading] = useState(false);
+  
   const { response, errorContent } = useLoaderData();
   const { id, productName } = useParams();
   const product = response?.data?.data;
   const [mainSwiper, setMainSwiper] = useState(null);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
-
   const dispatch = useDispatch();
-  const {wishlistProductsID , isLoaded:isFavLoaded} = useSelector((state=>state.wishlist));
-  const {products , isLoaded , error} =useSelector((state=>state.products));
-  const {userToken} = useSelector((state=>state.auth))
-
+  const { wishlistProductsID} = useSelector(
+    (state) => state.wishlist
+  );
+  const { userToken } = useSelector((state) => state.auth);
+  const [addToCart, { isLoading: cartBtnLoading }] = useAddToCartMutation();
+  const [addToWishlist, { isLoading: wishlistBtnLoading }] = useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading }] = useRemoveFromWishlistMutation();
+  const { isLoading: isFavLoading , refetch } = useGetWishlistQuery("getWishlist");
+  const {
+    data: relatedProducts,
+    isLoading: relatedProductsLoading,
+    error: relatedProductsError,
+  } = useGetProductsQuery({
+    limit: "20",
+    category: `${product.category._id}`,
+  });
 
   async function addProductToCart(productId) {
-    setCartBtnLoading(true);
-    dispatch(actAddToCart(productId))
-    .unwrap()
-    .then((data)=>{
-      setCartBtnLoading(false);
-      toast.success(data.message);
-    }).catch(data=>{
-      setCartBtnLoading(false);
-      toast.error(data);
-    })
+      addToCart(productId)
+      .unwrap()
+      .then((data) => {
+        toast.success(data.message);
+      })
+      .catch((data) => {
+        toast.error(data.data.message);
+      });
+
+
 
   }
 
   async function addProductToWishlist(productId) {
-    setWishlistBtnLoading(true);
-    dispatch(actAddToWishlist(productId)).unwrap()
-    .then(data=>{
-      setWishlistBtnLoading(false);
-      toast.success(data.message);
-    })
-    .catch(data=>{
-      setWishlistBtnLoading(false);
-      toast.error(data);
-      
-    })
-
+    addToWishlist(productId)
+      .unwrap()
+      .then((data) => {
+        toast.success(data.message);
+      })
+      .catch((data) => {
+        toast.error(data.data.message);
+      });
   }
-
   async function removeProductFromWishlist(productId) {
-    setWishlistBtnLoading(true);
-    dispatch(actRemoveFromWishlist(productId)).unwrap()
-    .then(data=>{
-      setWishlistBtnLoading(false);
-      toast.success(data.message);
-    })
-    .catch(data=>{
-      setWishlistBtnLoading(false);
-      toast.error(data);
-      
-    })
+    removeFromWishlist(productId)
+      .unwrap()
+      .then((data) => {
+        toast.success(data.message);
+      })
+      .catch((data) => {
+        console.log(data.data.message);
+      });
   }
- 
+
+
   function resetSwiper() {
     if (mainSwiper && thumbsSwiper) {
       mainSwiper.slideTo(0);
@@ -102,16 +108,10 @@ function SingleProduct() {
     }
   }
 
+  useEffect(()=> {
+    resetSwiper();
+  },[id]);
 
-
- useEffect(()=>{
-  const relatedProductsPromise = dispatch(actGetProducts({title : "relatedProducts" , params:{limit : "20" , category : `${product.category._id}`}}));
-
-  return()=>{
-    relatedProductsPromise.abort();
-  }
-
- },[dispatch]);
 
 
   return (
@@ -119,8 +119,6 @@ function SingleProduct() {
       <Helmet>
         <title>FreshCart | {productName.split("+").join(" ")}</title>
       </Helmet>
-
-
 
       {errorContent && (
         <div className="container alert alert-danger">{errorContent}</div>
@@ -242,10 +240,6 @@ function SingleProduct() {
                             }}
                           />
                         </div> */}
-
-
-
-
                       </div>
                     </div>
                   </div>
@@ -296,17 +290,21 @@ function SingleProduct() {
                       <button
                         type="button"
                         className={`btn fav-btn  ${
-                          wishlistBtnLoading || (!isFavLoaded && userToken)
+                          (wishlistBtnLoading || isLoading) || ((isFavLoading) && userToken)
                             ? "loading-overlay"
                             : ""
-                        } ${checkProductFav(product._id , wishlistProductsID) && !wishlistBtnLoading ? "active" : ""}`}
+                        } ${
+                          checkProductFav(product._id, wishlistProductsID) && !isFavLoading && !isLoading
+                            ? "active"
+                            : ""
+                        }`}
                         onClick={() =>
-                          checkProductFav(product._id , wishlistProductsID)
+                          checkProductFav(product._id, wishlistProductsID)
                             ? removeProductFromWishlist(product._id)
                             : addProductToWishlist(product._id)
                         }
                       >
-                        {checkProductFav(product._id , wishlistProductsID) ? (
+                        {checkProductFav(product._id, wishlistProductsID) ? (
                           <i className="fa-solid fa-heart"></i>
                         ) : (
                           <i className="far fa-heart"></i>
@@ -325,7 +323,11 @@ function SingleProduct() {
                 {/* <ProductsSlider
                   items={{limit : "20" , category : `${product.category._id}`}}
                 /> */}
-                <ProductsSlider isLoaded={isLoaded.relatedProducts} error={error.relatedProducts} products={products?.relatedProducts?.data} />
+                <ProductsSlider
+                  isLoaded={relatedProductsLoading}
+                  error={relatedProductsError?.data?.message}
+                  products={relatedProducts?.data}
+                />
               </div>
             </div>
           </section>

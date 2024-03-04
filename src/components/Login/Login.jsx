@@ -11,12 +11,13 @@ import PasswordInput from "./PasswordInput";
 import { useDispatch, useSelector } from "react-redux";
 import actLogin from "../../store/auth/act/actLogin";
 import { removeAsyncStates } from "../../store/auth/authSlice";
+import { useLoginMutation } from "../../store/api/authApi";
 
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {isLoading , error } = useSelector((state => state.auth));
+  const [login , {isLoading , isError , error}] = useLoginMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -24,12 +25,12 @@ function Login() {
       password: "",
     },
     onSubmit: (values)=>{
-      dispatch(actLogin(values)).
+      login(values).
       unwrap()
       .then(_ =>{
         navigate("/");
-      }).catch(data =>{
-        console.log(data);
+      }).catch(error =>{
+        console.log(error);
       })
     },
   });
@@ -53,8 +54,8 @@ function Login() {
           >
             <h2 className="form-title">Login</h2>
 
-            {error ? (
-              <div className="alert alert-danger mb-4">{error}</div>
+            {isError ? (
+              <div className="alert alert-danger mb-4">{error.data.message}</div>
             ) : null}
 
             <div className="form-group ">

@@ -10,22 +10,17 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import { baseUrl } from "../../utilities/baseUrl";
+import { useGetBrandsQuery } from "../../store/api/apiSlice";
 
 function BrandsSlider() {
   
-  const dispatch = useDispatch();
-  const {data:{brands:data} , isLoaded:{brands:isLoaded} , error:{brands:error}}= useSelector((state=>state.general));
-  const brands = data?.data;
-  useEffect(()=>{
-    const promise=  dispatch(actGetData({title:"brands" , url: `${baseUrl}brands` , options: null , withAuth: null}));
-    return()=>{
-      promise.abort();
-    }
-  },[dispatch]);
+  const {data , isLoading , error , isError} = useGetBrandsQuery("getBrands");
+  const brands =  data?.data;
+
 
   return (
     <>
-      {error && <div className="alert alert-danger w-100">{error}</div>}
+      {isError && <div className="alert alert-danger w-100">{error?.data?.message}</div>}
 
       <Swiper
         slidesPerView={2}
@@ -56,7 +51,7 @@ function BrandsSlider() {
         modules={[Pagination, Navigation, FreeMode, Autoplay]}
         className="brands-slider"
       >
-        {!isLoaded
+        {isLoading
           ? [...Array(8)].map((_, index) => (
               <SwiperSlide key={index}>
                 <BrandCardLoading />

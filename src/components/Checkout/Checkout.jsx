@@ -17,13 +17,24 @@ import AddressBox from "../Addresses/AddressBox";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../../store/cart/cartSlice";
 import actGetAddresses from "../../store/addresses/act/actGetAddresses";
+import { useGetAddressesQuery } from "../../store/api/apiSlice";
+import { cartApi, useGetCartQuery } from "../../store/api/cartApi";
 
 function Checkout() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {cartId , cartData , cartProducts , isLoaded:isCartLoaded} = useSelector((state=>state.cart));
-  const {addresses , isLoaded:isAddressesLoaded , error:addressesError} = useSelector((state) => state.addresses)
+  
+  const { data:cartRes, isLoading} = useGetCartQuery("getCart-checkout");
+  const cartId = cartRes?.data?._id;
+  const cartProducts = cartRes?.data?.products;
+  const cartData = {
+    ...cartRes?.data,
+    products: cartRes?.data?.products?.length,
+  };
+  const isCartLoaded = !isLoading;  
+  const {data:addresses , isLoading:addressesLoading, error:addressesError} = useGetAddressesQuery("getAddresses");
+
   const [loading, setLoading] = useState(false);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [activeAddress, setActiveAddress] = useState(null);
@@ -64,6 +75,7 @@ function Checkout() {
         console.log(data);
         // setCartItems(0);
         dispatch(clearCart());
+        dispatch(cartApi.util.resetApiState());
         setLoading(false);
         if (paymentMethod === "cash-payment") {
           navigate("/allorders");
@@ -84,25 +96,6 @@ function Checkout() {
     setShippingAddress(item);
     
   }
-
-  // const [cartData, isCartLoaded] = useGetApi(
-  //   `${baseUrl}cart`,
-  //   {
-  //     headers: {
-  //       token: localStorage.getItem("token"),
-  //     },
-  //   }
-  // );
-
-  useEffect(() => {
-    const getAddressesPromise= dispatch(actGetAddresses());
-    return()=>{
-      getAddressesPromise.abort();
-    }
-  }, [dispatch]);
-
-
-  console.log(cartData);
   
 
   return (
@@ -127,11 +120,11 @@ function Checkout() {
                   </div>
                   <div className="boxes-wrapper">
                     <div className="row row-cols-xl-2">
-                      {!isAddressesLoaded &&
+                      {addressesLoading &&
                         [...Array(2)].map((_, index) => (
                           <AddressBoxLoading key={index}  selectAddress={true} />
                         ))}
-                      {addresses && isAddressesLoaded &&
+                      {addresses && !addressesLoading &&
                         (addresses.data.length ? (
                           addresses.data.map((item) => (
                             <AddressBox key={item._id} address={item} activeAddress={activeAddress} selectAddress={selectAddress}/>

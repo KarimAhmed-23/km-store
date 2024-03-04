@@ -11,24 +11,18 @@ import { wishlistContext } from "../../context/wishlistContext/WishlistContext";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
+import { useGetWishlistQuery, wishlistApi } from "../../store/api/wishlistApi";
 
 function Wishlist() {
   
   const dispatch = useDispatch();
-  const {wishlistCounter , wishlistProducts , isLoaded , error} = useSelector((state=>state.wishlist));
-  const [update,setUpdate]=useState(false);
+  const {data , isLoading , error } = useGetWishlistQuery("getWishlist");
+  const wishlistCounter = data?.count;
+  const wishlistProducts = data?.data;
+  const isLoaded = !isLoading;
 
-  function updateData() {
-    setUpdate(!update);
-  }
 
-  useEffect(() => {
-    const promise =  dispatch(actGetWishlist());
-    return () => {
-      promise.abort()
-    }
-  }, [dispatch,update]);
-
+ 
 
   return (
     <>
@@ -59,7 +53,7 @@ function Wishlist() {
                               key={item._id}
                               withFav={true}
                               isFav={true}
-                              updateData={updateData}
+                              updateData={true}
                             />
                           ))
                         ) : (

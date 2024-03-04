@@ -11,23 +11,30 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import actResetPassword from "../../store/auth/act/actResetPassword";
 import { removeAsyncStates } from "../../store/auth/authSlice";
+import { useResetPasswordMutation } from "../../store/api/authApi";
 
 function RestPassword() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {isLoading,error} = useSelector((state => state.auth));
+
+  const [resetPassword , {isLoading , isError , error}] =  useResetPasswordMutation();
+
   const formik = useFormik({
     initialValues: {
       email: "",
       newPassword: "",
     },
     onSubmit: (values)=>{
-      dispatch(actResetPassword(values)).then((act)=>{
-        if(!act.error){
-          toast.success("password change successfully");
-          navigate("/login");
-        }
+      resetPassword(values)
+      .unwrap()
+      .then(data=>{
+        console.log(data);
+        toast.success("password change successfully");
+        navigate("/login");
+      })
+      .catch(error=>{
+        console.log(error)
       })
     },
   });
@@ -52,8 +59,8 @@ function RestPassword() {
               <p className="mb-0">enter your email and new password</p>
             </div>
 
-            {error ? (
-              <div className="alert alert-danger mb-4">{error}</div>
+            {isError ? (
+              <div className="alert alert-danger mb-4">{error.data.message}</div>
             ) : null}
 
             <div className="form-group">

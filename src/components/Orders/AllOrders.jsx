@@ -10,17 +10,21 @@ import CatchImage from "../CatchImage";
 import LoadingBox from "../LoadingBox";
 import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
+import { useGetOrdersQuery } from "../../store/api/apiSlice";
 
 function AllOrders() {
-  const {userId} = useSelector((state=>state.auth));
-  const dispatch = useDispatch();
-  const {data:{orders:data} , isLoaded:{orders:isLoaded} , error:{orders:error}}= useSelector((state=>state.general));
-  useEffect(()=>{
-    const promise=  dispatch(actGetData({title:"orders" , url: `${baseUrl}orders/user/${localStorage.getItem("userId")}` , options: null}));
-    return()=>{
-      promise.abort();
-    }
-  },[dispatch]);
+  // const {userId} = useSelector((state=>state.auth));
+  // const dispatch = useDispatch();
+  // const {data:{orders:data} , isLoaded:{orders:isLoaded} , error:{orders:error}}= useSelector((state=>state.general));
+  // useEffect(()=>{
+  //   const promise=  dispatch(actGetData({title:"orders" , url: `${baseUrl}orders/user/${localStorage.getItem("userId")}` , options: null}));
+  //   return()=>{
+  //     promise.abort();
+  //   }
+  // },[dispatch]);
+
+
+  const {data , isLoading , error} = useGetOrdersQuery();
 
 
   return (
@@ -41,11 +45,11 @@ function AllOrders() {
                 </div>
                 <div className="orders-boxes">
                   <div className="boxes-wrapper">
-                    {(!isLoaded) && (
+                    {(isLoading) && (
                       <LoadingBox text="orders"/>
                     )}
                     {error  && <div className="alert alert-danger">{error}</div>}
-                    {data && isLoaded &&
+                    {data && !isLoading &&
                       (data.length
                         ? [...data].reverse().map((order) => (
                             <div className="order-item" key={order._id}>

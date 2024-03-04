@@ -1,4 +1,4 @@
-import React, { useState , Suspense ,lazy } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import { Helmet } from "react-helmet";
 import "./Home.css";
 import ProductsList from "../Products/ProductsList";
@@ -9,30 +9,31 @@ import ProductsSlider from "../Products/ProductsSlider";
 import { Link } from "react-router-dom";
 import BrandsSlider from "../Brands/BrandsSlider";
 import HeroSlider from "./HeroSlider";
-import styled from 'styled-components';
+import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import actGetProducts from "../../store/products/act/actGetProducts";
-
-
-
+import { useGetProductsQuery } from "../../store/api/apiSlice";
 
 function Home() {
 
-  const dispatch = useDispatch();
-  const {products , isLoaded , error} =useSelector((state=>state.products));
-  useEffect(()=>{
-    const featuredProductsPromise = dispatch(actGetProducts({title : "featuredProducts" , params:{limit : "15" , category : "6439d5b90049ad0b52b90048"}}));
-    const newProductsPromise = dispatch(actGetProducts({title : "newProducts" , params:{limit : "20" , category : "6439d2d167d9aa4ca970649f"}}));
-    
-    return()=>{
-      featuredProductsPromise.abort();
-      newProductsPromise.abort();
-    }
+  const {
+    data: featuredProducts,
+    isLoading: featuredProductsLoading,
+    error: featuredProductsError,
+  } = useGetProductsQuery({
+    limit: "15",
+    category: "6439d5b90049ad0b52b90048",
+  });
 
-  },[dispatch]);
-
-
+  const {
+    data: newProducts,
+    isLoading: newProductsLoading,
+    error: newProductsError,
+  } = useGetProductsQuery({
+    limit: "20",
+    category: "6439d2d167d9aa4ca970649f",
+  });
 
   return (
     <>
@@ -40,10 +41,9 @@ function Home() {
         <title>FreshCart | Home</title>
       </Helmet>
 
-
       <section className="section-style hero-section">
         <div className="container">
-            <HeroSlider />
+          <HeroSlider />
         </div>
       </section>
 
@@ -59,21 +59,19 @@ function Home() {
         <div className="container">
           <h1 className="main-title">featured products</h1>
           <div className="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2">
-
-            { !isLoaded.featuredProducts  && (
+            {featuredProductsLoading &&
               [...Array(10)].map((_, index) => (
                 <ProductCardLoading key={index} />
-              ))
+              ))}
+            {featuredProductsError && (
+              <div className="alert alert-danger w-100">{featuredProductsError?.data?.message}</div>
             )}
-            {error.featuredProducts &&  <div className="alert alert-danger w-100">{error}</div>}
-            {products?.featuredProducts && (
-              products?.featuredProducts?.data?.length ? (
-                <ProductsList products={products?.featuredProducts?.data} />
+            {featuredProducts &&
+              (featuredProducts?.data?.length ? (
+                <ProductsList products={featuredProducts?.data} />
               ) : (
                 <div className="alert alert-danger w-100">no data found</div>
-              )
-            )}
-           
+              ))}
           </div>
         </div>
       </section>
@@ -94,7 +92,11 @@ function Home() {
         <div className="container">
           <h1 className="main-title">New Products</h1>
           <div className="slider-container products-slider-container">
-            <ProductsSlider isLoaded={isLoaded.newProducts} error={error.newProducts} products={products?.newProducts?.data} />
+            <ProductsSlider
+              isLoaded={newProductsLoading}
+              error={newProductsError?.data?.message}
+              products={newProducts?.data}
+            />
           </div>
         </div>
       </section>

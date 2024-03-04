@@ -9,23 +9,22 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import actAddAddresses from "../../store/addresses/act/actAddAddresses";
 import { useDispatch } from "react-redux";
+import { useAddAddressMutation } from "../../store/api/apiSlice";
 
 function AddAddress() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  const [addNewAddress , {isLoading}] = useAddAddressMutation();
   
   async function addAddress(values) {
-    setLoading(true);
-    dispatch(actAddAddresses(values)).unwrap()
+    addNewAddress(values)
+    .unwrap()
     .then((data)=>{
-      setLoading(false);
       toast.success(data.message);
       navigate("/addresses");
     })
     .catch(data=>{
-      setLoading(false);
-      toast.error(data);
+      toast.error(data.data.message);
     });
   }
 
@@ -147,7 +146,7 @@ function AddAddress() {
                   <button
                     type="submit"
                     className={`btn bg-main text-white px-4 loading-btn ${
-                      loading ? "loading-overlay" : ""
+                      isLoading ? "loading-overlay" : ""
                     }`}
                   >
                     Confirm

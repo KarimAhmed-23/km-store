@@ -4,53 +4,74 @@ import QtyCounter from "../QtyCounter";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import actUpdateCartItemQty from "../../store/cart/act/actUpdateCartItemQty";
+import { useDeleteFromCartMutation, useGetCartQuery, useUpdateCartQtyMutation } from "../../store/api/cartApi";
+import { toast } from "react-toastify";
 
-function CartBox({ product, removeCartItem, updateItemQty, cartOrder }) {
-
-  
-  const [loading, setLoading] = useState(false);
-  const [itemCount , setItemCount]=useState(product.count);
-  const [countDebounce , setCountDebounce] = useState(null);
+function CartBox({ product,cartOrder }) {
 
 
-  function handleCounter(action, productId, count) {
-    clearTimeout(countDebounce)
+  const [itemCount, setItemCount] = useState(product.count);
+  const [countDebounce, setCountDebounce] = useState(null);
 
-    if (action === "increase"){
-      setItemCount(prev => prev + 1);
-    }
-    if (action === "decrease"){
-      setItemCount(prev => (prev <= 1 ? 1 : prev - 1));
-    }
-    const counterDebounce = setTimeout( async ()=>{
-      setLoading(true);
-      const updatedItemCount = action === "increase" ? itemCount + 1 : itemCount - 1;
-      if (action === "increase") {
-        updateItemQty(productId, updatedItemCount).finally(() => {
-          setLoading(false);
-        });
-      }
-      if (action === "decrease") {
-        if (updatedItemCount <= 1) {
-          removeCartItem(productId).finally(() => {
-            setLoading(false);
-          });
-        } else {
-          updateItemQty(productId, updatedItemCount).finally(() => {
-            setLoading(false);
-          });
-        }
-      }
-    },500);
-    setCountDebounce(counterDebounce);
 
+  const [deleteFormCart, { isLoading: loading }] = useDeleteFromCartMutation();
+  const [updateCartQty , { isLoading , error}] =  useUpdateCartQtyMutation();
+  const { refetch } =  useGetCartQuery("getCart");
+
+
+  async function updateItemQty(productId, count) {
+    updateCartQty({productId , count})
+    .unwrap()
+    .then(_=>{
+      toast.info("Item updated successfully");
+    })
+    .catch(error=>{
+      toast.error("Oops! Something went wrong. Please try again.");
+    })
   }
 
-  function handleDelete(productId){
-    setLoading(true);
-    removeCartItem(productId).finally(() => {
-      setLoading(false);
-    });
+  async function handleDelete(productId) {
+    deleteFormCart(productId)
+      .unwrap()
+      .then((_) => {
+        refetch();
+        toast.warning("Item deleted successfully");
+      })
+      .catch((error) => {
+        toast.error("Oops! Something went wrong. Please try again.");
+        console.log(error);
+      });
+  }
+
+  function handleCounter(action, productId, count) {
+    clearTimeout(countDebounce);
+
+    if (action === "increase") {
+      setItemCount((prev) => prev + 1);
+    }
+    if (action === "decrease") {
+      setItemCount((prev) => (prev <= 1 ? 1 : prev - 1));
+    }
+    const time =  itemCount <=1 ? 0  : 500; 
+    const counterDebounce = setTimeout(async () => {
+
+      
+      if (action === "increase") {
+        updateItemQty(productId, itemCount + 1);
+      }
+      if (action === "decrease") {
+        if ((itemCount) <= 1) {
+          handleDelete(productId);
+        } else {
+          updateItemQty(productId, itemCount - 1);
+        }
+      }
+    }, time);
+
+    setCountDebounce(counterDebounce);
+
+    
+
   }
 
 
@@ -101,7 +122,9 @@ function CartBox({ product, removeCartItem, updateItemQty, cartOrder }) {
               remove
             </button>
           ) : (
-            <p className="item-price item-text">Quantity : {product.quantity}</p>
+            <p className="item-price item-text">
+              Quantity : {product.quantity}
+            </p>
           )}
         </div>
         {!cartOrder ? (
@@ -167,7 +190,7 @@ function CartBox({ product, removeCartItem, updateItemQty, cartOrder }) {
           </div>
         ) : null}
       </div>
-      {loading && (
+      {(loading || isLoading) && (
         <div className="item-overlay">
           <i className="fa-solid fa-spinner fa-spin"></i>
         </div>

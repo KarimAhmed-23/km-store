@@ -10,22 +10,16 @@ import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import { baseUrl } from "../../utilities/baseUrl";
 import { useEffect } from "react";
+import { useGetCategoriesQuery } from "../../store/api/apiSlice";
 
 function CategoriesSlider() {
  
-  const dispatch = useDispatch();
-  const {data:{categories:data} , isLoaded:{categories:isLoaded} , error:{categories:error}}= useSelector((state=>state.general));
-  const categories = data?.data;
-  useEffect(()=>{
-    const promise=  dispatch(actGetData({title:"categories" , url: `${baseUrl}categories` , options: null , withAuth: null}));
-    return()=>{
-      promise.abort();
-    }
-  },[dispatch]);
+  const {data , isLoading , error , isError} = useGetCategoriesQuery("getCategories");
+  const categories =  data?.data;
 
   return (
     <>
-      {error && <div className="alert alert-danger w-100">{error}</div>}
+      {isError && <div className="alert alert-danger w-100">{error?.data?.message}</div>}
 
       
         <Swiper
@@ -63,7 +57,7 @@ function CategoriesSlider() {
           modules={[Pagination, Navigation, FreeMode]}
           className="categories-slider"
         >
-          {!isLoaded
+          {isLoading
             ? [...Array(8)].map((_, index) => (
                 <SwiperSlide key={index}>
                   <CategoryCardLoading />

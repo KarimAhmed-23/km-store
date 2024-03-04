@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -9,19 +9,18 @@ import PasswordInput from "../Login/PasswordInput";
 import { useDispatch, useSelector } from "react-redux";
 import actRegister from "../../store/auth/act/actRegister";
 import { removeAsyncStates } from "../../store/auth/authSlice";
+import { useRegisterMutation } from "../../store/api/authApi";
 
 function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {isLoading , error , inputsError} = useSelector((state => state.auth));
+  const { inputsError } = useSelector((state) => state.auth);
+  const [register, { isLoading, isError, error , reset }] = useRegisterMutation();
 
   const validationSchema = Yup.object({
     name: Yup.string().min(3, "name at least 3 least").required(),
     email: Yup.string().email("Invalid email").required(),
-    phone: Yup.string()
-      .required()
-      .matches(/^(002)?01[0125][0-9]{8}$/, "Invalid phone")
-      .required(),
+    phone: Yup.string().required(),
     password: Yup.string().min(6, "password at least 6 characters").required(),
     rePassword: Yup.string()
       .required()
@@ -38,20 +37,21 @@ function Register() {
       rePassword: "",
     },
     validationSchema,
-    onSubmit: (values)=>{
-      dispatch(actRegister(values)).then((act)=>{
-        if(!act.error){
+    onSubmit: (values) => {
+      register(values)
+        .unwrap()
+        .then((_) => {
           navigate("/login");
-        }
-      });
+        })
+        .catch((data) => {
+          console.log(data);
+        });
     },
   });
 
-
-  useEffect(()=> {
+  useEffect(() => {
     dispatch(removeAsyncStates());
-  },[dispatch]);
-
+  }, [dispatch]);
 
   return (
     <>
@@ -66,7 +66,7 @@ function Register() {
           >
             <h3 className="form-title">Register Now</h3>
 
-            {error ? <div className="alert alert-danger ">{error}</div> : null}
+            {error &&!error.data.errors  ? <div className="alert alert-danger ">{error?.data?.message}</div> : null}
 
             <div className="form-group ">
               <label className="form-label" htmlFor="name">
@@ -103,7 +103,6 @@ function Register() {
                 onChange={formik.handleChange}
                 value={formik.values.email}
                 onBlur={formik.handleBlur}
-                
               />
 
               {!inputsError.email &&

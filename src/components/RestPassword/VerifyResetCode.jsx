@@ -8,12 +8,14 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import actVerifyRestCode from "../../store/auth/act/actVerifyRestCode";
 import { removeAsyncStates } from "../../store/auth/authSlice";
+import { useVerifyResetCodeMutation } from "../../store/api/authApi";
 
 function VerifyResetCode() {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-  const {isLoading , error} = useSelector((state => state.auth))
+
+  const [verifyRestCode , {isLoading , isError , error}] =  useVerifyResetCodeMutation();
 
   const validationSchema = Yup.object({
     code1: Yup.number().required(),
@@ -36,11 +38,14 @@ function VerifyResetCode() {
     validationSchema,
     onSubmit: (values)=>{
       const verificationCode = `${values.code1}${values.code2}${values.code3}${values.code4}${values.code5}${values.code6}`;
-      dispatch(actVerifyRestCode(verificationCode)).then((act)=>{
-        if(!act.error){
-          navigate("/rest-password");
-        }
-      });
+      verifyRestCode(verificationCode)
+      .unwrap()
+      .then(_=>{
+        navigate("/rest-password");
+      })
+      .catch(error=>{
+        console.log(error);
+      })
     },
   });
 
@@ -157,7 +162,7 @@ function VerifyResetCode() {
                 />
               </div>
 
-              {error ? <div className="text-danger pt-2">{error}</div> : null}
+              {isError ? <div className="text-danger pt-2">{error.data.message}</div> : null}
             </div>
 
             <div className="btns-container">

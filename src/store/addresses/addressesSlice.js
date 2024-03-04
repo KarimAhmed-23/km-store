@@ -42,7 +42,6 @@ const addressSlice = createSlice({
        });
 
        // addAddress
-
        builder.addCase(actAddAddresses.pending , (state , action)=>{
         state.loading = true;
         state.error = null;

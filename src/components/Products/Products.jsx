@@ -1,30 +1,60 @@
-import React, { useEffect, useState , Suspense , lazy } from "react";
+import React, { useEffect, useState, Suspense, lazy, useRef } from "react";
 import { Helmet } from "react-helmet";
 import useGetApi from "../../customHooks/UseGetApi";
 import ProductCardLoading from "./ProductCardLoading";
 import ProductsList from "./ProductsList";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useHistory,
+  useSearchParams,
+} from "react-router-dom";
 import { baseUrl } from "../../utilities/baseUrl";
 import handleUrlName from "../../utilities/handleUrlName";
 import queryString from "query-string";
 import emptyList from "../../assets/images/empty-cart.svg";
 import "./Products.css";
-
+import {
+  useGetBrandsQuery,
+  useGetCategoriesQuery,
+  useGetProductsQuery,
+  useGetSubCategoriesQuery,
+} from "../../store/api/apiSlice";
 
 function Products() {
   const { pathname, search } = useLocation();
   const { id: categoryId, categoryName } = useParams();
-  const x = useParams();
   const navigate = useNavigate();
+  const bottomBoundaryRef = useRef(null);
+
+  // const searchParams = new URLSearchParams(search);
+  // const defaultQueryParams = {};
+  // for (const [key, val] of searchParams.entries()) {
+  //   if (!val) {
+  //     searchParams.delete(key);
+  //   } else if (val.includes(",")) {
+  //     const arrayItems = val.split(",");
+  //     searchParams.delete(key);
+  //     arrayItems.forEach((el) => {
+  //       searchParams.append(key, el);
+  //     });
+  //   }
+  // }
+  // searchParams.forEach((value, key) => {
+  //   defaultQueryParams[key] = value;
+  // });
+
 
   const queryParamsFromUrl = queryString.parse(search, {
     arrayFormat: "comma",
-    parseBooleans: true,
     decode: true,
+    parseBooleans: true,
   });
+
   const [queryParams, setQueryParams] = useState({
-    limit: queryParamsFromUrl.limit || 12,
-    page: queryParamsFromUrl.page || "1",
+    limit: 12,
+    page: 1,
     category: categoryId,
     ...queryParamsFromUrl,
   });
@@ -35,50 +65,79 @@ function Products() {
     submitted: false,
   });
 
-  const [products, productsLoaded, productsError, productsRefetch] = useGetApi(
-    `${baseUrl}products`,
-    {
-      params: queryParams,
-    }
-  );
-
   function applyFilters(filters) {
     setQueryParams({ ...queryParams, ...filters });
   }
 
-  console.log(queryParams);
+  const handleScroll = () => {
+    if (
+      bottomBoundaryRef.current &&
+      bottomBoundaryRef.current.getBoundingClientRect().top <= window.innerHeight
+    ) {
+      if(products?.metadata?.nextPage){
+        applyFilters({
+          page: products.metadata.nextPage
+        });
+      }
+    }
+  };
 
-  const [
-    subcategories,
-    subcategoriesLoaded,
-    subcategoriesError,
-    subcategoriesRefetch,
-  ] = useGetApi(`${baseUrl}categories/${categoryId}/subcategories`);
+  const {
+    data: products,
+    isLoading: productsLoading,
+    isFetching: productsFetching,
+    error: productsError,
+    refetch: productsRefetch,
+  } = useGetProductsQuery(queryParams, {
+    refetchOnMountOrArgChange: false,
+    refetchOnReconnect: false,
+    refetchOnFocus: false,
+  });
+  const productsLoaded = !productsLoading;
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    error: categoriesError,
+    refetch: categoriesRefetch,
+  } = useGetCategoriesQuery("getCategories");
+  const categoriesLoaded = !categoriesLoading;
 
-  const [categories, categoriesLoaded, categoriesError, categoriesRefetch] =
-    useGetApi(`${baseUrl}categories`);
+  const {
+    data: subcategories,
+    isLoading: subcategoriesLoading,
+    error: subcategoriesError,
+    refetch: subcategoriesRefetch,
+  } = useGetSubCategoriesQuery(categoryId, {
+    skip: !categoryId,
+  });
+  const subcategoriesLoaded = !subcategoriesLoading;
 
-  const [brands, brandsLoaded, brandsError, brandsRefetch] = useGetApi(
-    `${baseUrl}brands`
-  );
+  const {
+    data: brands,
+    isLoading: brandsLoading,
+    error: brandsError,
+    refetch: brandsRefetch,
+  } = useGetBrandsQuery("getBrands");
+  const brandsLoaded = !brandsLoading;
 
   useEffect(() => {
     if (products) {
       window.scroll(0, 0);
-      productsRefetch();
-      categoriesRefetch();
-      subcategoriesRefetch();
-      brandsRefetch();
     }
     const queryStringified = queryString.stringify(queryParams, {
       skipNull: true,
       skipEmptyString: true,
-      encode: false,
       arrayFormat: "comma",
+      encode: false,
     });
     navigate(`${pathname}?${queryStringified}`);
-    // console.log(queryStringified);
+
+    // window.addEventListener('scroll', handleScroll);
+
+    // return () => window.removeEventListener('scroll', handleScroll);
+    
   }, [pathname, queryParams]);
+
 
   return (
     <>
@@ -140,7 +199,7 @@ function Products() {
                                   });
                                   navigate(`/products`);
                                 }}
-                                disabled={!productsLoaded}
+                                disabled={!productsLoaded || productsFetching}
                               />
                               <label
                                 className="form-check-label"
@@ -160,7 +219,7 @@ function Products() {
                                   onClick={() => {
                                     applyFilters({
                                       category: [item._id],
-                                      page: "1",
+                                      page: 1,
                                     });
                                     navigate(
                                       `/products/${item._id}/${handleUrlName(
@@ -171,7 +230,7 @@ function Products() {
                                   defaultChecked={queryString
                                     .stringify(queryParams)
                                     .includes(item._id)}
-                                  disabled={!productsLoaded}
+                                  disabled={!productsLoaded || productsFetching}
                                 />
                                 <label
                                   className="form-check-label"
@@ -238,18 +297,20 @@ function Products() {
                                                 item._id,
                                               ]
                                             : [queryParams.category, item._id],
-                                          page: "1",
+                                          page: 1,
                                         });
                                       } else {
                                         applyFilters({
                                           category: queryParams.category.filter(
                                             (el) => el !== item._id
                                           ),
-                                          page: "1",
+                                          page: 1,
                                         });
                                       }
                                     }}
-                                    disabled={!productsLoaded}
+                                    disabled={
+                                      !productsLoaded || productsFetching
+                                    }
                                     defaultChecked={queryString
                                       .stringify(queryParams)
                                       .includes(item._id)}
@@ -313,6 +374,7 @@ function Products() {
                               from: e.target.min,
                             })
                           }
+                          disabled={!productsLoaded || productsFetching}
                         />
                         <span className="to">TO</span>
                         <input
@@ -336,6 +398,7 @@ function Products() {
                               to: e.target.min,
                             })
                           }
+                          disabled={!productsLoaded || productsFetching}
                         />
 
                         <div className="d-flex flex-column gap-1">
@@ -346,7 +409,7 @@ function Products() {
                               applyFilters({
                                 "price[gte]": priceRange.from,
                                 "price[lte]": priceRange.to,
-                                page: "1",
+                                page: 1,
                               });
                               setPriceRange({
                                 ...priceRange,
@@ -368,7 +431,7 @@ function Products() {
                                 applyFilters({
                                   "price[gte]": null,
                                   "price[lte]": null,
-                                  page: "1",
+                                  page: 1,
                                 });
                                 setPriceRange({
                                   from: 1,
@@ -425,38 +488,26 @@ function Products() {
                                   id={item._id}
                                   name="brands-checks"
                                   onChange={(e) => {
-                                    if (e.target.checked) {
-                                      applyFilters({
-                                        brand: Array.isArray(queryParams.brand)
-                                          ? [...queryParams.brand, item._id]
-                                          : queryParams.brand
-                                          ? [queryParams.brand, item._id]
-                                          : item._id,
-                                        page: "1",
-                                      });
+                                    const isChecked = e.target.checked;
+                                    let updatedBrands = null;
+                                    if (Array.isArray(queryParams.brand)) {
+                                        if (isChecked) {
+                                            updatedBrands = [...queryParams.brand, item._id];
+                                        } else {
+                                            updatedBrands = queryParams.brand.filter((el) => el !== item._id);
+                                        }
                                     } else {
-                                      if (
-                                        Array.isArray(queryParams.brand) &&
-                                        queryParams.brand.length > 1
-                                      ) {
-                                        applyFilters({
-                                          brand: queryParams.brand.filter(
-                                            (el) => el !== item._id
-                                          ),
-                                          page: "1",
-                                        });
-                                      } else {
-                                        applyFilters({
-                                          brand: null,
-                                          page: "1",
-                                        });
-                                      }
+                                        updatedBrands = isChecked ? [item._id] : null;
                                     }
+                                    applyFilters({
+                                        brand: updatedBrands,
+                                        page: 1,
+                                    });
                                   }}
                                   defaultChecked={queryString
                                     .stringify(queryParams)
                                     .includes(item._id)}
-                                  disabled={!productsLoaded}
+                                  disabled={!productsLoaded || productsFetching}
                                 />
                                 <label
                                   className="form-check-label"
@@ -503,7 +554,7 @@ function Products() {
                             e.target.value === "default"
                               ? null
                               : e.target.value,
-                          page: "1",
+                          page: 1,
                         });
                       }}
                       value={queryParams.sort || "default"}
@@ -529,7 +580,7 @@ function Products() {
                       onChange={(e) => {
                         applyFilters({
                           limit: e.target.value,
-                          page: "1",
+                          page: 1,
                         });
                       }}
                       value={queryParams.limit || "12"}
@@ -545,15 +596,13 @@ function Products() {
 
               <div className="products-wrapper">
                 <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-sm-2">
-
-
-                  {!productsLoaded ? (
+                  {!productsLoaded || productsFetching  ? (
                     [...Array(12)].map((_, index) => (
                       <ProductCardLoading key={index} />
                     ))
                   ) : productsError ? (
                     <div className="alert alert-danger w-100">
-                      {productsError}
+                      {productsError?.data?.message}
                     </div>
                   ) : (
                     products?.data &&
@@ -573,9 +622,9 @@ function Products() {
                       </div>
                     ))
                   )}
-
-
+                   
                 </div>
+                
 
                 {products && products?.data?.length ? (
                   <nav aria-label="Page navigation example">
@@ -649,6 +698,14 @@ function Products() {
                     </ul>
                   </nav>
                 ) : null}
+
+                {/* <div ref={bottomBoundaryRef} className="text-center">
+                    {!productsLoaded || productsFetching && (
+                        <i className="fa-solid fa-spinner fa-spin" style={{fontSize:"60px"}}></i>
+                      )}
+                </div> */}
+  
+
               </div>
             </div>
           </div>

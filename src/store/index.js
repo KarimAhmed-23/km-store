@@ -1,24 +1,48 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from '@reduxjs/toolkit/query'
 import authSlice from "./auth/authSlice";
 import cartSlice from "./cart/cartSlice";
 import wishlistSlice from "./wishlist/wishlistSlice";
 import productsSlice from "./products/productsSlice";
 import generalSlice from "./general/generalSlice";
 import addressesSlice from "./addresses/addressesSlice";
+import { authApi } from "./api/authApi";
+import { cartApi } from "./api/cartApi";
+import { wishlistApi } from "./api/wishlistApi";
+import { apiSlice } from "./api/apiSlice";
+
 
 const store = configureStore({
+  reducer: {
+    auth: authSlice,
+    [cartApi.reducerPath]: cartApi.reducer,
+    [wishlistApi.reducerPath]: wishlistApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    cart: cartSlice,
+    wishlist: wishlistSlice,
 
-    reducer:{
-        auth: authSlice,
-        cart: cartSlice,
-        wishlist: wishlistSlice,
-        products : productsSlice,
-        general : generalSlice,
-        addresses : addressesSlice,
-    },
+    products: productsSlice,
+    general: generalSlice,
+    addresses: addressesSlice,
+
+
+
+    
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      apiSlice.middleware,
+      authApi.middleware,
+      cartApi.middleware,
+      wishlistApi.middleware,
+    ),
+    
     
 
 
 });
+
+setupListeners(store.dispatch);
 
 export default store;

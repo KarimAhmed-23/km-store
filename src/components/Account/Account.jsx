@@ -13,11 +13,13 @@ import AccountTabs from "./AccountTabs";
 import { useDispatch, useSelector } from "react-redux";
 import actUpdateProfile from "../../store/auth/act/actUpdateProfile";
 import { removeAsyncStates } from "../../store/auth/authSlice";
+import { useUpdateProfileMutation } from "../../store/api/authApi";
 
 function Account() {
   
   const dispatch = useDispatch();
-  const {isLoading:updateLoading , userData} = useSelector((state=>state.auth))
+  const {userData} = useSelector((state=>state.auth));
+  const [ updateProfile , {isLoading:updateLoading}] = useUpdateProfileMutation();
 
 
   const formik = useFormik({
@@ -42,7 +44,7 @@ function Account() {
     },
     
     onSubmit: (values) => {
-      dispatch(actUpdateProfile(values)).
+      updateProfile(values).
       unwrap()
       .then(data =>{
         toast.success("profile updated successfully");

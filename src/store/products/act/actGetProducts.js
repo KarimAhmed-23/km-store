@@ -6,7 +6,6 @@ const actGetProducts = createAsyncThunk(
   "products/actGetProducts",
   async ({params}, thunkAPI) => {
     const { rejectWithValue ,signal} = thunkAPI;
-    console.log(params);
     try {
       let { data } = await axios.get(`${baseUrl}products`, {
         params: params,

@@ -5,6 +5,7 @@ import { baseUrl } from "../../utilities/baseUrl";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import actDeleteAddresses from "../../store/addresses/act/actDeleteAddresses";
+import { useDeleteAddressMutation } from "../../store/api/apiSlice";
 
 function AddressBox({
   address,
@@ -12,18 +13,17 @@ function AddressBox({
   selectAddress,
   setUpdate
 }) {
-  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
+  const [delete_address , {isLoading}]= useDeleteAddressMutation();
    async function deleteAddress(addressId) {
-    setLoading(true);
-    dispatch(actDeleteAddresses(addressId)).unwrap()
+    delete_address(addressId)
+    .unwrap()
     .then((data)=>{
-      setLoading(false);
       toast.success(data.message);
     })
     .catch(data=>{
-      setLoading(false);
-      toast.error(data);
+      toast.error(data.data.message);
     });
   }
 
@@ -68,7 +68,7 @@ function AddressBox({
             </Link>
             <button
               type="button"
-              className={`btn bg-danger text-white loading-btn ${loading ? "loading-overlay" : ""}`}
+              className={`btn bg-danger text-white loading-btn ${isLoading ? "loading-overlay" : ""}`}
               onClick={() => deleteAddress(address._id)}
             >
               <i className="fa-solid fa-trash me-1"></i>

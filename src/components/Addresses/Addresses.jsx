@@ -14,18 +14,22 @@ import LoadingBox from "../LoadingBox";
 import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import actGetAddresses from "../../store/addresses/act/actGetAddresses";
+import { useGetAddressesQuery } from "../../store/api/apiSlice";
 
 function Addresses() {
  
-  const dispatch = useDispatch();
-  const {addresses , isLoaded:isAddressesLoaded , error:addressesError} = useSelector((state) => state.addresses)
-  console.log(addresses);
-  useEffect(() => {
-    const promise= dispatch(actGetAddresses());
-    return()=>{
-      promise.abort();
-    }
-  }, [dispatch]);
+  // const dispatch = useDispatch();
+  // const {addresses , isLoaded:isAddressesLoaded , error:addressesError} = useSelector((state) => state.addresses)
+  // console.log(addresses);
+  // useEffect(() => {
+  //   const promise= dispatch(actGetAddresses());
+  //   return()=>{
+  //     promise.abort();
+  //   }
+  // }, [dispatch]);
+
+
+  const {data:addresses , isLoading:addressesLoading, error:addressesError , isError} = useGetAddressesQuery("getAddresses");
 
 
 
@@ -52,13 +56,13 @@ function Addresses() {
                 <div className="addresses-boxes">
                   <div className="boxes-wrapper">
                     <div className="row row-cols-xl-2 gy-4">
-                      {!isAddressesLoaded && <LoadingBox text="addresses" />}
-                      {addressesError && (
+                      {addressesLoading && <LoadingBox text="addresses" />}
+                      {isError && (
                         <div className="alert alert-danger w-100">
-                          {addressesError}
+                          {addressesError?.data?.message}
                         </div>
                       )}
-                      {addresses && isAddressesLoaded &&
+                      {addresses && !addressesLoading &&
                         (addresses.data.length ? (
                           addresses.data.map((item) => (
                             <AddressBox

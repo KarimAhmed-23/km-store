@@ -50,7 +50,7 @@ function ProductsSlider({ isLoaded , error , products  }) {
         modules={[Pagination, Navigation, FreeMode]}
         className="products-slider"
       >
-        {!isLoaded
+        {isLoaded
           ? [...Array(5)].map((_, index) => (
               <SwiperSlide key={index}>
                 <ProductCardLoading />

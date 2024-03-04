@@ -13,25 +13,34 @@ import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
 import { clearCart } from "../../store/cart/cartSlice";
 import { clearWishlist } from "../../store/wishlist/wishlistSlice";
 import { clearAddresses } from "../../store/addresses/addressesSlice";
+import { cartApi, useGetCartQuery } from "../../store/api/cartApi";
+import { useGetWishlistQuery, wishlistApi } from "../../store/api/wishlistApi";
+
+
 
 function Navbar() {
   
   const {userToken} = useSelector((state => state.auth));
-  const {cartItems} = useSelector((state => state.cart));
-  const {wishlistProducts} = useSelector((state => state.wishlist));
+  const {data:cartRes} = useGetCartQuery("getCart" , {
+    skip: !userToken,
+  });
+  const {data:wishlistRes} =  useGetWishlistQuery("getWishlist" , {
+    skip : !userToken
+  });
+  const  cartItems =  cartRes?.numOfCartItems;
+
   const dispatch = useDispatch();
   function handleLogout() {
+    dispatch(cartApi.util.resetApiState()); // remove the state values
+    dispatch(wishlistApi.util.resetApiState()); // remove the state values
+    // dispatch(cartApi.util.invalidateTags(['cart'])); // invalidateTags manually like reFetch
     dispatch(logout());
     dispatch(clearCart());
     dispatch(clearWishlist());
     dispatch(clearAddresses());
+    
   }
-  useEffect(() => {
-    if (userToken) {
-      dispatch(actGetCart());
-      dispatch(actGetWishlist());
-    }
-  }, [dispatch , userToken]);
+
 
   return (
     <>
