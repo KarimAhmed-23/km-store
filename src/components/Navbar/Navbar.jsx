@@ -13,27 +13,31 @@ import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
 import { clearCart } from "../../store/cart/cartSlice";
 import { clearWishlist } from "../../store/wishlist/wishlistSlice";
 import { clearAddresses } from "../../store/addresses/addressesSlice";
-import { cartApi, useGetCartQuery } from "../../store/api/cartApi";
-import { useGetWishlistQuery, wishlistApi } from "../../store/api/wishlistApi";
-
+import { cartApi, useGetCartQuery , getCart } from "../../store/api/cartApi";
+import { getWishlist, useGetWishlistQuery, wishlistApi } from "../../store/api/wishlistApi";
+import { useQuery, useQueryClient } from "react-query";
 
 
 function Navbar() {
-  
+  const queryClient = useQueryClient();
   const {userToken} = useSelector((state => state.auth));
-  const {data:cartRes} = useGetCartQuery("getCart" , {
-    skip: !userToken,
+  const {data:cartRes}= useQuery("getCart" , getCart , {
+    select : (data) => data?.data,
+    enabled :userToken ? true : false , 
+    retry:false,
+    retryOnMount:false,
   });
-  const {data:wishlistRes} =  useGetWishlistQuery("getWishlist" , {
-    skip : !userToken
+  const {data:wishlistRes} = useQuery("getWishlist" , getWishlist , {
+    enabled :userToken ? true : false , 
   });
   const  cartItems =  cartRes?.numOfCartItems;
 
   const dispatch = useDispatch();
   function handleLogout() {
-    dispatch(cartApi.util.resetApiState()); // remove the state values
-    dispatch(wishlistApi.util.resetApiState()); // remove the state values
-    // dispatch(cartApi.util.invalidateTags(['cart'])); // invalidateTags manually like reFetch
+    dispatch(cartApi.util.resetApiState());
+    dispatch(wishlistApi.util.resetApiState()); 
+    queryClient.removeQueries("getCart");
+    queryClient.removeQueries("getWishlist");
     dispatch(logout());
     dispatch(clearCart());
     dispatch(clearWishlist());

@@ -11,18 +11,19 @@ import { wishlistContext } from "../../context/wishlistContext/WishlistContext";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
-import { useGetWishlistQuery, wishlistApi } from "../../store/api/wishlistApi";
+import { getWishlist, useGetWishlistQuery, wishlistApi } from "../../store/api/wishlistApi";
+import { useQuery } from "react-query";
 
 function Wishlist() {
   
-  const dispatch = useDispatch();
-  const {data , isLoading , error } = useGetWishlistQuery("getWishlist");
+  const {data , isLoading , error} = useQuery("getWishlist" , getWishlist , {
+    select : (data)=> data?.data,
+  });
   const wishlistCounter = data?.count;
   const wishlistProducts = data?.data;
   const isLoaded = !isLoading;
 
 
- 
 
   return (
     <>

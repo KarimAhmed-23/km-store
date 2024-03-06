@@ -5,7 +5,8 @@ import { baseUrl } from "../../utilities/baseUrl";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import actDeleteAddresses from "../../store/addresses/act/actDeleteAddresses";
-import { useDeleteAddressMutation } from "../../store/api/apiSlice";
+import { deleteSelectedAddress, useDeleteAddressMutation } from "../../store/api/apiSlice";
+import { useMutation, useQueryClient } from "react-query";
 
 function AddressBox({
   address,
@@ -15,16 +16,20 @@ function AddressBox({
 }) {
 
   const dispatch = useDispatch();
-  const [delete_address , {isLoading}]= useDeleteAddressMutation();
-   async function deleteAddress(addressId) {
-    delete_address(addressId)
-    .unwrap()
-    .then((data)=>{
+  const queryClient = useQueryClient();
+
+  const {mutate:mutateDeleteAddress , isLoading} = useMutation(deleteSelectedAddress,{
+    onSuccess:({data})=>{
+      queryClient.invalidateQueries("getAddresses")
       toast.success(data.message);
-    })
-    .catch(data=>{
-      toast.error(data.data.message);
-    });
+    },
+    onError:(error)=>{
+      toast.error(error.response ? error.response.data.message : "error, try again" );
+    }
+  })
+
+   async function deleteAddress(addressId) {
+    mutateDeleteAddress(addressId);
   }
 
 

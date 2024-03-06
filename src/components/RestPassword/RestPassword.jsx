@@ -11,32 +11,31 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import actResetPassword from "../../store/auth/act/actResetPassword";
 import { removeAsyncStates } from "../../store/auth/authSlice";
-import { useResetPasswordMutation } from "../../store/api/authApi";
+import { resetPassword, useResetPasswordMutation } from "../../store/api/authApi";
+import { useMutation } from "react-query";
 
 function RestPassword() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [resetPassword , {isLoading , isError , error}] =  useResetPasswordMutation();
+
+  const {mutate:mutateResetPassword , isLoading, isError , error } = useMutation( resetPassword ,{
+    onSuccess:({data})=>{
+      toast.success("password change successfully");
+      navigate("/login");
+    },
+    onError:(error)=>{
+      console.log(error);
+    }
+  });
 
   const formik = useFormik({
     initialValues: {
       email: "",
       newPassword: "",
     },
-    onSubmit: (values)=>{
-      resetPassword(values)
-      .unwrap()
-      .then(data=>{
-        console.log(data);
-        toast.success("password change successfully");
-        navigate("/login");
-      })
-      .catch(error=>{
-        console.log(error)
-      })
-    },
+    onSubmit: (values)=> mutateResetPassword(values)
   });
 
   useEffect(()=> {
@@ -60,7 +59,7 @@ function RestPassword() {
             </div>
 
             {isError ? (
-              <div className="alert alert-danger mb-4">{error.data.message}</div>
+              <div className="alert alert-danger mb-4">{error.response.data.message}</div>
             ) : null}
 
             <div className="form-group">

@@ -9,23 +9,27 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import actAddAddresses from "../../store/addresses/act/actAddAddresses";
 import { useDispatch } from "react-redux";
-import { useAddAddressMutation } from "../../store/api/apiSlice";
+import { addNewAddress, useAddAddressMutation } from "../../store/api/apiSlice";
+import { useMutation, useQueryClient } from "react-query";
 
 function AddAddress() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [addNewAddress , {isLoading}] = useAddAddressMutation();
-  
-  async function addAddress(values) {
-    addNewAddress(values)
-    .unwrap()
-    .then((data)=>{
+  const queryClient = useQueryClient()
+
+  const {mutate:mutateAddNewAddress , isLoading} = useMutation(addNewAddress , {
+    onSuccess :({data})=>{
+      queryClient.invalidateQueries("getAddresses");
       toast.success(data.message);
       navigate("/addresses");
-    })
-    .catch(data=>{
-      toast.error(data.data.message);
-    });
+    },
+    onError:(error)=>{
+      toast.error(error.response ? error.response.data.message : "error, try again" );
+    }
+  })
+  
+  async function addAddress(values) {
+    mutateAddNewAddress(values);
   }
 
   const validationSchema = Yup.object({

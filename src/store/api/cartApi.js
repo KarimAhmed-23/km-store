@@ -1,6 +1,6 @@
-import { createApi, fetchBaseQuery  } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "../../utilities/baseUrl";
-
+import axios from "axios";
 
 export const cartApi = createApi({
   reducerPath: "cartApi",
@@ -14,9 +14,9 @@ export const cartApi = createApi({
           token: localStorage.getItem("token"),
         },
       }),
-      transformErrorResponse : (res)=>{
-        if(res.data.message.includes(localStorage.getItem("userId"))){
-          return {products:[]}
+      transformErrorResponse: (res) => {
+        if (res.data.message.includes(localStorage.getItem("userId"))) {
+          return { products: [] };
         }
         return res;
       },
@@ -47,7 +47,7 @@ export const cartApi = createApi({
     }),
 
     updateCartQty: builder.mutation({
-      query: ({productId, count}) => ({
+      query: ({ productId, count }) => ({
         url: `cart/${productId}`,
         method: "PUT",
         body: { count },
@@ -62,7 +62,6 @@ export const cartApi = createApi({
   refetchOnFocus: true,
   refetchOnReconnect: true,
   keepUnusedDataFor: 300000,
-
 });
 
 export const {
@@ -71,3 +70,59 @@ export const {
   useDeleteFromCartMutation,
   useUpdateCartQtyMutation,
 } = cartApi;
+
+
+
+export const getCart = () => {
+
+  return axios.get(`${baseUrl}cart`, {
+    headers: {
+      token: localStorage.getItem("token"),
+    },
+  })
+
+}
+
+export const clearCart = () => {
+
+  return axios.delete(`${baseUrl}cart`, {
+    headers: {
+      token: localStorage.getItem("token"),
+    },
+  })
+  
+}
+
+export const addToCart = (productId) => {
+  return axios.post(
+    `${baseUrl}cart`,
+    {
+      productId,
+    },
+    {
+      headers: {
+        token: localStorage.getItem("token"),
+      },
+    }
+  )
+}
+
+export const deleteFromCart = (productId) => {
+  return axios.delete(`${baseUrl}cart/${productId}`, {
+    headers: {
+      token: localStorage.getItem("token"),
+    },
+  })
+}
+
+export const updateCartQty = ({productId , count}) => {
+  return axios.put(
+    `${baseUrl}cart/${productId}`,
+    { count },
+    {
+      headers: {
+        token: localStorage.getItem("token"),
+      },
+    }
+  )
+}

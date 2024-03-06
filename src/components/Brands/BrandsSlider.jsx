@@ -10,12 +10,23 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import { baseUrl } from "../../utilities/baseUrl";
-import { useGetBrandsQuery } from "../../store/api/apiSlice";
+import { getBrands, useGetBrandsQuery } from "../../store/api/apiSlice";
+import { useQuery } from "react-query";
 
 function BrandsSlider() {
   
-  const {data , isLoading , error , isError} = useGetBrandsQuery("getBrands");
-  const brands =  data?.data;
+  const {
+    data: brands,
+    isLoading,
+    error,
+    isError
+  } = useQuery(
+    ["getBrands"],
+    getBrands,
+    {
+      select: (data) => data.data.data,
+    }
+  );
 
 
   return (

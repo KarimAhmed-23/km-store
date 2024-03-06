@@ -8,14 +8,37 @@ import { Helmet } from "react-helmet";
 import PasswordInput from "../Login/PasswordInput";
 import { useDispatch, useSelector } from "react-redux";
 import actRegister from "../../store/auth/act/actRegister";
-import { removeAsyncStates } from "../../store/auth/authSlice";
-import { useRegisterMutation } from "../../store/api/authApi";
+import { removeAsyncStates, setInputsError } from "../../store/auth/authSlice";
+import { register, useRegisterMutation } from "../../store/api/authApi";
+import { useMutation } from "react-query";
 
 function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { inputsError } = useSelector((state) => state.auth);
-  const [register, { isLoading, isError, error , reset }] = useRegisterMutation();
+  // const [register, { isLoading, isError, error , reset }] = useRegisterMutation();
+
+  const {mutate:mutateRegister , isLoading , isError , error , reset  } = useMutation(register,{
+    onMutate:(values)=>{
+      dispatch(setInputsError({}));
+      
+    },
+    onSuccess :({data})=>{
+      navigate("/login");
+      dispatch(setInputsError({}));
+    },
+    onError:(error)=>{
+      console.log(error);
+      if (error.response.data.errors) {
+        let errors = {};
+        let { param, msg } = error.response.data.errors;
+        errors[param] = msg;
+        dispatch(setInputsError(errors));
+      }
+      
+    }
+
+  })
 
   const validationSchema = Yup.object({
     name: Yup.string().min(3, "name at least 3 least").required(),
@@ -37,16 +60,7 @@ function Register() {
       rePassword: "",
     },
     validationSchema,
-    onSubmit: (values) => {
-      register(values)
-        .unwrap()
-        .then((_) => {
-          navigate("/login");
-        })
-        .catch((data) => {
-          console.log(data);
-        });
-    },
+    onSubmit: (values) => mutateRegister(values),
   });
 
   useEffect(() => {
@@ -66,7 +80,7 @@ function Register() {
           >
             <h3 className="form-title">Register Now</h3>
 
-            {error &&!error.data.errors  ? <div className="alert alert-danger ">{error?.data?.message}</div> : null}
+            {error && !error?.response?.data?.errors  ? <div className="alert alert-danger ">{error?.response?.data?.message}</div> : null}
 
             <div className="form-group ">
               <label className="form-label" htmlFor="name">

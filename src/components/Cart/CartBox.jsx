@@ -4,43 +4,53 @@ import QtyCounter from "../QtyCounter";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import actUpdateCartItemQty from "../../store/cart/act/actUpdateCartItemQty";
-import { useDeleteFromCartMutation, useGetCartQuery, useUpdateCartQtyMutation } from "../../store/api/cartApi";
+import { deleteFromCart , updateCartQty } from "../../store/api/cartApi";
 import { toast } from "react-toastify";
+import { useMutation , useQueryClient } from "react-query";
+import { useCardCrud } from "../../customHooks/useCart";
 
 function CartBox({ product,cartOrder }) {
 
 
   const [itemCount, setItemCount] = useState(product.count);
   const [countDebounce, setCountDebounce] = useState(null);
+  const queryClient = useQueryClient();
+
+  
+  // const {mutate:mutateDeleteFormCart , isLoading:loading} = useMutation(deleteFromCart ,{
+  //   onSuccess : ({data})=>{
+  //     toast.warning("Item deleted successfully");
+  //     queryClient.invalidateQueries("getCart");
+  //   },
+  //   onError : (error)=>{
+  //     console.log(error);
+  //     toast.error("Oops! Something went wrong. Please try again.");
+  //   }
+
+  // });
+  // const {mutate:mutateUpdateCartQty , isLoading , error} = useMutation(updateCartQty , {
+  //   onSuccess : ({data})=>{
+  //     toast.info("Item updated successfully");
+  //     queryClient.invalidateQueries("getCart");
+  //   },
+  //   onError : (error)=>{
+  //     console.log(error);
+  //     toast.error("Oops! Something went wrong. Please try again.");
+  //   },
 
 
-  const [deleteFormCart, { isLoading: loading }] = useDeleteFromCartMutation();
-  const [updateCartQty , { isLoading , error}] =  useUpdateCartQtyMutation();
-  const { refetch } =  useGetCartQuery("getCart");
+  // })
+
+  const {mutate:mutateDeleteFormCart , isLoading:loading} = useCardCrud(deleteFromCart , "delete");
+  const {mutate:mutateUpdateCartQty , isLoading , error} = useCardCrud(updateCartQty , "update");
 
 
   async function updateItemQty(productId, count) {
-    updateCartQty({productId , count})
-    .unwrap()
-    .then(_=>{
-      toast.info("Item updated successfully");
-    })
-    .catch(error=>{
-      toast.error("Oops! Something went wrong. Please try again.");
-    })
+    mutateUpdateCartQty({productId , count});
   }
 
   async function handleDelete(productId) {
-    deleteFormCart(productId)
-      .unwrap()
-      .then((_) => {
-        refetch();
-        toast.warning("Item deleted successfully");
-      })
-      .catch((error) => {
-        toast.error("Oops! Something went wrong. Please try again.");
-        console.log(error);
-      });
+    mutateDeleteFormCart(productId);
   }
 
   function handleCounter(action, productId, count) {
@@ -123,7 +133,7 @@ function CartBox({ product,cartOrder }) {
             </button>
           ) : (
             <p className="item-price item-text">
-              Quantity : {product.quantity}
+              Quantity : {product.count}
             </p>
           )}
         </div>

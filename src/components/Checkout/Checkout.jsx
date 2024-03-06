@@ -17,15 +17,19 @@ import AddressBox from "../Addresses/AddressBox";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../../store/cart/cartSlice";
 import actGetAddresses from "../../store/addresses/act/actGetAddresses";
-import { useGetAddressesQuery } from "../../store/api/apiSlice";
-import { cartApi, useGetCartQuery } from "../../store/api/cartApi";
+import { getAddresses, useGetAddressesQuery } from "../../store/api/apiSlice";
+import { cartApi, getCart, useGetCartQuery } from "../../store/api/cartApi";
+import { useQuery, useQueryClient } from "react-query";
 
 function Checkout() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const queryClient =  useQueryClient();
   
-  const { data:cartRes, isLoading} = useGetCartQuery("getCart-checkout");
+  const {data:cartRes , isLoading , error}= useQuery("getCart-checkout" , getCart , {
+    select : (data) => data?.data,
+  });
   const cartId = cartRes?.data?._id;
   const cartProducts = cartRes?.data?.products;
   const cartData = {
@@ -33,7 +37,15 @@ function Checkout() {
     products: cartRes?.data?.products?.length,
   };
   const isCartLoaded = !isLoading;  
-  const {data:addresses , isLoading:addressesLoading, error:addressesError} = useGetAddressesQuery("getAddresses");
+  // const {data:addresses , isLoading:addressesLoading, error:addressesError} = useGetAddressesQuery("getAddresses");
+
+  const {
+    data: addresses,
+    isLoading: addressesLoading,
+    error: addressesError,
+  } = useQuery(["getAddresses-checkout"], getAddresses, {
+    select: (data) => data.data,
+  });
 
   const [loading, setLoading] = useState(false);
   const [shippingAddress, setShippingAddress] = useState(null);
@@ -73,9 +85,8 @@ function Checkout() {
       );
       if (data) {
         console.log(data);
-        // setCartItems(0);
-        dispatch(clearCart());
-        dispatch(cartApi.util.resetApiState());
+        // dispatch(cartApi.util.resetApiState());
+        queryClient.resetQueries("getCart");
         setLoading(false);
         if (paymentMethod === "cash-payment") {
           navigate("/allorders");

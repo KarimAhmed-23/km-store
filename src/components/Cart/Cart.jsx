@@ -12,15 +12,26 @@ import { useDispatch, useSelector } from "react-redux";
 import actUpdateCartItemQty from "../../store/cart/act/actUpdateCartItemQty";
 import actRemoveFromCart from "../../store/cart/act/actRemoveFromCart";
 import actGetCart from "../../store/cart/act/actGetCart";
-import { cartApi, useGetCartQuery } from "../../store/api/cartApi";
+import { cartApi, clearCart, getCart, useGetCartQuery } from "../../store/api/cartApi";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import CatchImage from "../CatchImage";
 
 
 function Cart() {
-  const dispatch = useDispatch();
 
-
-  const { data, isLoading, error} = useGetCartQuery("getCart");
-
+  const { userToken } = useSelector((state) => state.auth);
+  const queryClient = useQueryClient();
+  const {mutate:mutateClearCart , isLoading:clearCartLoading} = useMutation(clearCart,{
+    onSuccess:({data})=>{
+      queryClient.resetQueries("getCart");
+    }
+  });
+  const {data , isLoading , error}= useQuery("getCart" , getCart , {
+    select : (data) => data?.data,
+    enabled :userToken ? true : false , 
+    retry:false,
+    retryOnMount:false,
+  });
   const cartProducts = data?.data?.products;
   const cartData = {
     ...data?.data,
@@ -42,13 +53,15 @@ function Cart() {
         <div className="container">
           {!isLoading  && !cartItems? (
             <div className="empty-box d-flex align-items-center justify-content-center flex-column text-center gap-4">
-              <img
-                src={emptyCart}
-                alt="empty-box"
-                width={150}
-                height={150}
-                loading="lazy"
-              />
+              <CatchImage>
+                <img
+                  src={emptyCart}
+                  alt="empty-box"
+                  width={150}
+                  height={150}
+                  loading="lazy"
+                />
+              </CatchImage>
               <h2 className="mb-0 fw-bold">
                 Your shopping cart is empty <br /> go and check out some
                 products
@@ -85,7 +98,13 @@ function Cart() {
                   !error && (
                     <div className="summary-box">
                       <div className="box-wrap box-head">
-                        <h6 className="head-title">Order Summary</h6>
+                        <div className="d-flex align-items-center justify-content-between g-3 mb-4">
+                            <h6 className="head-title mb-0">Order Summary</h6>
+                            <button type="button" className="btn btn-light" onClick={mutateClearCart}>
+                              Clear Cart
+                              {clearCartLoading ? <i className="fa-solid fa-spinner fa-spin ms-1"></i> : null}
+                            </button>
+                        </div>
                         <div className="coupon-input input-group">
                           <input
                             type="text"

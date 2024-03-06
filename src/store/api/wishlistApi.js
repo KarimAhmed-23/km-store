@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "../../utilities/baseUrl";
+import axios from "axios";
 
 export const wishlistApi = createApi({
   reducerPath: "wishlistApi",
@@ -10,7 +11,7 @@ export const wishlistApi = createApi({
       query: () => ({
         url: "wishlist",
         headers: {
-            token: localStorage.getItem("token"),
+          token: localStorage.getItem("token"),
         },
       }),
       providesTags: ["wishlist"],
@@ -25,7 +26,7 @@ export const wishlistApi = createApi({
           token: localStorage.getItem("token"),
         },
       }),
-    //   invalidatesTags: ["wishlist"],
+      //   invalidatesTags: ["wishlist"],
     }),
 
     removeFromWishlist: builder.mutation({
@@ -36,7 +37,7 @@ export const wishlistApi = createApi({
           token: localStorage.getItem("token"),
         },
       }),
-    //   invalidatesTags: ["wishlist"],
+      //   invalidatesTags: ["wishlist"],
     }),
   }),
 
@@ -53,3 +54,31 @@ export const {
 } = wishlistApi;
 
 
+
+export const getWishlist = () => {
+  return axios.get(`${baseUrl}wishlist`, {
+    headers: {
+      token: localStorage.getItem("token"),
+    },
+  });
+};
+export const addToWishlist = (productId) => {
+  return axios.post(
+    `${baseUrl}wishlist`,
+    {
+      productId,
+    },
+    {
+      headers: {
+        token: localStorage.getItem("token"),
+      },
+    }
+  );
+};
+export const removeFromWishlist = (productId) => {
+  return axios.delete(`${baseUrl}wishlist/${productId}`, {
+    headers: {
+      token: localStorage.getItem("token"),
+    },
+  });
+};

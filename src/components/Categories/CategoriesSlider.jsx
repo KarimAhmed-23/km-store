@@ -10,12 +10,24 @@ import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import { baseUrl } from "../../utilities/baseUrl";
 import { useEffect } from "react";
-import { useGetCategoriesQuery } from "../../store/api/apiSlice";
+import { getCategories, useGetCategoriesQuery } from "../../store/api/apiSlice";
+import { useQuery } from "react-query";
 
 function CategoriesSlider() {
  
-  const {data , isLoading , error , isError} = useGetCategoriesQuery("getCategories");
-  const categories =  data?.data;
+
+  const {
+    data: categories,
+    isLoading,
+    error,
+    isError
+  } = useQuery(
+    ["getCategories"],
+    getCategories,
+    {
+      select: (data) => data.data.data,
+    }
+  );
 
   return (
     <>

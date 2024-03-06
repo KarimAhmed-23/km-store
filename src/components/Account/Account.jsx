@@ -12,14 +12,26 @@ import AddressBox from "../Addresses/AddressBox";
 import AccountTabs from "./AccountTabs";
 import { useDispatch, useSelector } from "react-redux";
 import actUpdateProfile from "../../store/auth/act/actUpdateProfile";
-import { removeAsyncStates } from "../../store/auth/authSlice";
-import { useUpdateProfileMutation } from "../../store/api/authApi";
+import { removeAsyncStates, setUserData } from "../../store/auth/authSlice";
+import { updateProfile, useUpdateProfileMutation } from "../../store/api/authApi";
+import { useMutation } from "react-query";
 
 function Account() {
   
   const dispatch = useDispatch();
   const {userData} = useSelector((state=>state.auth));
-  const [ updateProfile , {isLoading:updateLoading}] = useUpdateProfileMutation();
+  // const [ updateProfile , {isLoading:updateLoading}] = useUpdateProfileMutation();
+
+  const {mutate:mutateUpdateProfile , isLoading:updateLoading} = useMutation(updateProfile,{
+    onSuccess:({data})=>{
+      dispatch(setUserData(data));
+      toast.success("profile updated successfully");
+    },
+    onError:(error)=>{
+      console.log(error);
+      toast.error("oops !! , something went wrong please try again");
+    }
+  })
 
 
   const formik = useFormik({
@@ -43,17 +55,7 @@ function Account() {
       return errors;
     },
     
-    onSubmit: (values) => {
-      updateProfile(values).
-      unwrap()
-      .then(data =>{
-        toast.success("profile updated successfully");
-      })
-      .catch(data =>{
-        toast.error("oops !! , something went wrong please try again");
-      })
-
-    },
+    onSubmit: (values) => mutateUpdateProfile(values),
   });
 
   useEffect(()=>{

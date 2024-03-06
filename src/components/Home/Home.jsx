@@ -13,27 +13,64 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import actGetProducts from "../../store/products/act/actGetProducts";
-import { useGetProductsQuery } from "../../store/api/apiSlice";
+import { getProducts, useGetProductsQuery } from "../../store/api/apiSlice";
+import { useQueries, useQuery } from "react-query";
 
 function Home() {
+  // const {
+  //   data: featuredProducts,
+  //   isLoading: featuredProductsLoading,
+  //   error: featuredProductsError,
+  // } = useGetProductsQuery({
+  //   limit: "15",
+  //   category: "6439d5b90049ad0b52b90048",
+  // });
+
+  // const {
+  //   data: newProducts,
+  //   isLoading: newProductsLoading,
+  //   error: newProductsError,
+  // } = useGetProductsQuery({
+  //   limit: "20",
+  //   category: "6439d2d167d9aa4ca970649f",
+  // });
 
   const {
     data: featuredProducts,
     isLoading: featuredProductsLoading,
     error: featuredProductsError,
-  } = useGetProductsQuery({
-    limit: "15",
-    category: "6439d5b90049ad0b52b90048",
-  });
+  } = useQuery(
+    ["getProducts-featuredProducts"],
+    () => getProducts({ limit: "15", category: "6439d5b90049ad0b52b90048" }),
+    {
+      select: (data) => data.data,
+    }
+  );
 
   const {
     data: newProducts,
     isLoading: newProductsLoading,
     error: newProductsError,
-  } = useGetProductsQuery({
-    limit: "20",
-    category: "6439d2d167d9aa4ca970649f",
-  });
+  } = useQuery(
+    ["getProducts-newProducts"],
+    () => getProducts({ limit: "20", category: "6439d2d167d9aa4ca970649f" }),
+    {
+      select: (data) => data.data,
+    }
+  );
+
+  // const results = useQueries([
+  //   {
+  //     queryKey: ["getProducts-newProducts"],
+  //     queryFn: () => getProducts({ limit: "20", category: "6439d2d167d9aa4ca970649f" }),
+  //     select: (data) => data.data,
+  //   },
+  //   {
+  //     queryKey: ["getProducts-featuredProducts"],
+  //     queryFn: () => getProducts({ limit: "15", category: "6439d5b90049ad0b52b90048" }),
+  //     select: (data) => data.data,
+  //   },
+  // ]);
 
   return (
     <>
@@ -64,7 +101,9 @@ function Home() {
                 <ProductCardLoading key={index} />
               ))}
             {featuredProductsError && (
-              <div className="alert alert-danger w-100">{featuredProductsError?.data?.message}</div>
+              <div className="alert alert-danger w-100">
+                {featuredProductsError?.data?.message}
+              </div>
             )}
             {featuredProducts &&
               (featuredProducts?.data?.length ? (

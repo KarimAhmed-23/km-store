@@ -36,10 +36,11 @@ function Layout() {
         }, 1000);
       } else {
         setProgress(100);
-        // clearInterval(progressInterval);
-        return () => {
-          clearInterval(progressInterval);
-        }
+        clearInterval(progressInterval);
+        
+      }
+      return () => {
+        clearInterval(progressInterval);
       }
       
     }    

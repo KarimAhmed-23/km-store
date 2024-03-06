@@ -14,24 +14,18 @@ import LoadingBox from "../LoadingBox";
 import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import actGetAddresses from "../../store/addresses/act/actGetAddresses";
-import { useGetAddressesQuery } from "../../store/api/apiSlice";
+import { getAddresses, useGetAddressesQuery } from "../../store/api/apiSlice";
+import { useQuery } from "react-query";
 
 function Addresses() {
- 
-  // const dispatch = useDispatch();
-  // const {addresses , isLoaded:isAddressesLoaded , error:addressesError} = useSelector((state) => state.addresses)
-  // console.log(addresses);
-  // useEffect(() => {
-  //   const promise= dispatch(actGetAddresses());
-  //   return()=>{
-  //     promise.abort();
-  //   }
-  // }, [dispatch]);
-
-
-  const {data:addresses , isLoading:addressesLoading, error:addressesError , isError} = useGetAddressesQuery("getAddresses");
-
-
+  const {
+    data: addresses,
+    isLoading: addressesLoading,
+    error: addressesError,
+    isError,
+  } = useQuery(["getAddresses"], getAddresses, {
+    select: (data) => data.data,
+  });
 
   return (
     <>
@@ -62,14 +56,11 @@ function Addresses() {
                           {addressesError?.data?.message}
                         </div>
                       )}
-                      {addresses && !addressesLoading &&
+                      {addresses &&
+                        !addressesLoading &&
                         (addresses.data.length ? (
                           addresses.data.map((item) => (
-                            <AddressBox
-                              key={item._id}
-                              address={item}
-                              
-                            />
+                            <AddressBox key={item._id} address={item} />
                           ))
                         ) : (
                           <EmptyAddresses imgWidth={150} imgHeight={150} />

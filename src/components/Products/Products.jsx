@@ -16,13 +16,24 @@ import queryString from "query-string";
 import emptyList from "../../assets/images/empty-cart.svg";
 import "./Products.css";
 import {
+  getBrands,
+  getCategories,
+  getProducts,
+  getSubCategories,
   useGetBrandsQuery,
   useGetCategoriesQuery,
   useGetProductsQuery,
   useGetSubCategoriesQuery,
 } from "../../store/api/apiSlice";
+import { useInfiniteQuery, useQuery } from "react-query";
+import { ThreeDots } from "react-loader-spinner";
+import Cookies from "js-cookie";
 
 function Products() {
+
+  const test = Cookies.get("domain");
+  console.log(test)
+
   const { pathname, search } = useLocation();
   const { id: categoryId, categoryName } = useParams();
   const navigate = useNavigate();
@@ -45,16 +56,18 @@ function Products() {
   //   defaultQueryParams[key] = value;
   // });
 
-
   const queryParamsFromUrl = queryString.parse(search, {
+    skipNull: true,
+    skipEmptyString: true,
     arrayFormat: "comma",
     decode: true,
     parseBooleans: true,
+    parseNumbers: true,
   });
 
   const [queryParams, setQueryParams] = useState({
-    limit: 12,
-    page: 1,
+    limit: "12",
+    // page: 1,
     category: categoryId,
     ...queryParamsFromUrl,
   });
@@ -69,37 +82,32 @@ function Products() {
     setQueryParams({ ...queryParams, ...filters });
   }
 
-  const handleScroll = () => {
-    if (
-      bottomBoundaryRef.current &&
-      bottomBoundaryRef.current.getBoundingClientRect().top <= window.innerHeight
-    ) {
-      if(products?.metadata?.nextPage){
-        applyFilters({
-          page: products.metadata.nextPage
-        });
-      }
-    }
-  };
+  // const {
+  //   data: products,
+  //   isLoading: productsLoading,
+  //   isFetched: productsFetched,
+  //   error: productsError,
+  //   refetch: productsRefetch,
+  // } = useQuery(["products", queryParams], () => getProducts(queryParams), {
+  //   select: (data) => data.data,
+  //   refetchOnMount:false,
+  //   refetchOnWindowFocus:false,
+  //   retryOnMount:false,
+  //   retry:false,
+  //   keepPreviousData:true,
+  // });
+  // const productsLoaded = !productsLoading;
+  // const productsFetching = !productsFetched;
+  // const productsFetching = !productsFetched;
 
-  const {
-    data: products,
-    isLoading: productsLoading,
-    isFetching: productsFetching,
-    error: productsError,
-    refetch: productsRefetch,
-  } = useGetProductsQuery(queryParams, {
-    refetchOnMountOrArgChange: false,
-    refetchOnReconnect: false,
-    refetchOnFocus: false,
-  });
-  const productsLoaded = !productsLoading;
   const {
     data: categories,
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: categoriesRefetch,
-  } = useGetCategoriesQuery("getCategories");
+  } = useQuery("getCategories", getCategories, {
+    select: (data) => data.data,
+  });
   const categoriesLoaded = !categoriesLoading;
 
   const {
@@ -107,9 +115,14 @@ function Products() {
     isLoading: subcategoriesLoading,
     error: subcategoriesError,
     refetch: subcategoriesRefetch,
-  } = useGetSubCategoriesQuery(categoryId, {
-    skip: !categoryId,
-  });
+  } = useQuery(
+    ["getSubCategories", categoryId],
+    () => getSubCategories(categoryId),
+    {
+      select: (data) => data.data,
+      enabled: categoryId ? true : false,
+    }
+  );
   const subcategoriesLoaded = !subcategoriesLoading;
 
   const {
@@ -117,13 +130,72 @@ function Products() {
     isLoading: brandsLoading,
     error: brandsError,
     refetch: brandsRefetch,
-  } = useGetBrandsQuery("getBrands");
+  } = useQuery("getBrands", getBrands, {
+    select: (data) => data.data,
+  });
   const brandsLoaded = !brandsLoading;
 
-  useEffect(() => {
-    if (products) {
-      window.scroll(0, 0);
+  const {
+    data: products,
+    isLoading: productsLoading,
+    isFetching: productsFetching,
+    fetchNextPage,
+    hasNextPage,
+    error: productsError,
+  } = useInfiniteQuery(
+    ["products", queryParams],
+    ({ pageParam = 1 }) => getProducts({ ...queryParams, page: pageParam }),
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      retryOnMount: false,
+      retry: false,
+      getNextPageParam: (lastPage) => {
+        return lastPage.data.metadata.nextPage;
+      },
+      select: (data) => {
+        // console.log(data.pages);
+        // If you want a flat array of items, use flatMap; if you want an array of arrays, use map.
+        // flatMap will concatenate all response arrays into a single array of items
+        return data.pages.flatMap((page) => page.data);
+      },
     }
+  );
+  const productsLoaded = !productsLoading;
+
+
+  const handleScroll = () => {
+    let timeoutId;
+    return () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        if (bottomBoundaryRef.current) {
+          if (
+            bottomBoundaryRef.current.getBoundingClientRect().top <=
+            window.innerHeight
+          ) {
+            if (hasNextPage) {
+              fetchNextPage();
+            }
+          }
+        }
+      }, 200);
+    };
+  };
+
+  const debouncedHandleScroll = handleScroll();
+
+  // function debounce(func, delay) {
+  //   let timeoutId;
+  //   return function(...args) {
+  //     clearTimeout(timeoutId);
+  //     timeoutId = setTimeout(() => {
+  //       func.apply(this, args);
+  //     }, delay);
+  //   };
+  // }
+
+  useEffect(() => {
     const queryStringified = queryString.stringify(queryParams, {
       skipNull: true,
       skipEmptyString: true,
@@ -132,12 +204,14 @@ function Products() {
     });
     navigate(`${pathname}?${queryStringified}`);
 
-    // window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", debouncedHandleScroll);
 
-    // return () => window.removeEventListener('scroll', handleScroll);
-    
+    return () => window.removeEventListener("scroll", debouncedHandleScroll);
+  }, [pathname, queryParams, hasNextPage]);
+
+  useEffect(() => {
+    window.scroll(0, 0);
   }, [pathname, queryParams]);
-
 
   return (
     <>
@@ -491,17 +565,25 @@ function Products() {
                                     const isChecked = e.target.checked;
                                     let updatedBrands = null;
                                     if (Array.isArray(queryParams.brand)) {
-                                        if (isChecked) {
-                                            updatedBrands = [...queryParams.brand, item._id];
-                                        } else {
-                                            updatedBrands = queryParams.brand.filter((el) => el !== item._id);
-                                        }
+                                      if (isChecked) {
+                                        updatedBrands = [
+                                          ...queryParams.brand,
+                                          item._id,
+                                        ];
+                                      } else {
+                                        updatedBrands =
+                                          queryParams.brand.filter(
+                                            (el) => el !== item._id
+                                          );
+                                      }
                                     } else {
-                                        updatedBrands = isChecked ? [item._id] : null;
+                                      updatedBrands = isChecked
+                                        ? [item._id]
+                                        : null;
                                     }
                                     applyFilters({
-                                        brand: updatedBrands,
-                                        page: 1,
+                                      brand: updatedBrands,
+                                      page: 1,
                                     });
                                   }}
                                   defaultChecked={queryString
@@ -532,7 +614,7 @@ function Products() {
               >
                 <h3 className="products-title fw-bold mb-0">
                   {categoryName?.split("+").join(" ") || "Featured Products"}{" "}
-                  {products && productsLoaded ? `(${products.results})` : ""}
+                  {products && productsLoaded ? `(${products[0].results})` : ""}
                 </h3>
 
                 <div className="d-flex align-items-center gap-4">
@@ -579,7 +661,7 @@ function Products() {
                       id="displaySelect"
                       onChange={(e) => {
                         applyFilters({
-                          limit: e.target.value,
+                          limit: parseInt(e.target.value),
                           page: 1,
                         });
                       }}
@@ -596,37 +678,39 @@ function Products() {
 
               <div className="products-wrapper">
                 <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-sm-2">
-                  {!productsLoaded || productsFetching  ? (
+                  {!productsLoaded &&
                     [...Array(12)].map((_, index) => (
                       <ProductCardLoading key={index} />
-                    ))
-                  ) : productsError ? (
+                    ))}
+                  {productsError && (
                     <div className="alert alert-danger w-100">
-                      {productsError?.data?.message}
+                      {productsError?.response.data?.message}
                     </div>
-                  ) : (
-                    products?.data &&
-                    (products?.data.length ? (
-                      <ProductsList products={products.data} />
-                    ) : (
-                      <div className="pt-4 d-flex flex-column gap-3 align-items-center text-center w-100">
-                        <img
-                          src={emptyList}
-                          alt="empty"
-                          width={200}
-                          height={200}
-                        />
-                        <h2 className="mb-0 fw-bold text-main">
-                          No Products Found
-                        </h2>
-                      </div>
-                    ))
                   )}
-                   
+                  {products?.length &&
+                    products.map((el, index) =>
+                      el.data.length ? (
+                        <ProductsList products={el.data} key={index} />
+                      ) : (
+                        <div
+                          className="pt-4 d-flex flex-column gap-3 align-items-center text-center w-100"
+                          key={index}
+                        >
+                          <img
+                            src={emptyList}
+                            alt="empty"
+                            width={200}
+                            height={200}
+                          />
+                          <h2 className="mb-0 fw-bold text-main">
+                            No Products Found
+                          </h2>
+                        </div>
+                      )
+                    )}
                 </div>
-                
 
-                {products && products?.data?.length ? (
+                {/* {products && products?.data?.length ? (
                   <nav aria-label="Page navigation example">
                     <ul
                       className="pagination mb-0 mt-5 "
@@ -643,7 +727,7 @@ function Products() {
                           onClick={() => {
                             if (products.metadata.prevPage) {
                               applyFilters({
-                                page: products.metadata.prevPage,
+                                page: parseInt(products.metadata.prevPage),
                               });
                             }
                           }}
@@ -687,7 +771,7 @@ function Products() {
                           onClick={() => {
                             if (products.metadata.nextPage) {
                               applyFilters({
-                                page: products.metadata.nextPage,
+                                page:parseInt(products.metadata.nextPage),
                               });
                             }
                           }}
@@ -697,15 +781,40 @@ function Products() {
                       </li>
                     </ul>
                   </nav>
-                ) : null}
+                ) : null} */}
 
-                {/* <div ref={bottomBoundaryRef} className="text-center">
-                    {!productsLoaded || productsFetching && (
-                        <i className="fa-solid fa-spinner fa-spin" style={{fontSize:"60px"}}></i>
+                <div ref={bottomBoundaryRef} className="text-center"></div>
+                {!productsLoaded ||
+                  (productsFetching && (
+                    <div className="d-flex justify-content-center">
+                      <ThreeDots
+                        visible={true}
+                        height="80"
+                        width="80"
+                        color="#4fa94d"
+                        radius="9"
+                        ariaLabel="three-dots-loading"
+                        wrapperStyle={{}}
+                        wrapperClass=""
+                      />
+                    </div>
+                  ))}
+                {/* {productsLoaded && hasNextPage && (
+                    <button
+                      type="button"
+                      className="text-center mx-auto mt-5 btn bg-main text-white d-flex align-content-center justify-content-center"
+                      style={{ width: "250px" }}
+                      onClick={fetchNextPage}
+                    >
+                      Show More
+                      {productsFetching && (
+                        <i
+                          className="fa-solid fa-spinner fa-spin ms-2"
+                          style={{ fontSize: "20px" }}
+                        ></i>
                       )}
-                </div> */}
-  
-
+                    </button>
+                  )} */}
               </div>
             </div>
           </div>

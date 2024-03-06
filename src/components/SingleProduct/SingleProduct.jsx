@@ -26,80 +26,129 @@ import { useDispatch, useSelector } from "react-redux";
 import actAddToCart from "../../store/cart/act/actAddToCart";
 import actGetCart from "../../store/cart/act/actGetCart";
 import actGetWishlist from "../../store/wishlist/act/actGetWishlist";
-import { checkProductFav } from "../../store/wishlist/wishlistSlice";
+import {
+  checkProductFav,
+  setWishlistProductsID,
+} from "../../store/wishlist/wishlistSlice";
 import actAddToWishlist from "../../store/wishlist/act/actAddToWishlist";
 import actRemoveFromWishlist from "../../store/wishlist/act/actRemoveFromWishlist";
 import actGetProducts from "../../store/products/act/actGetProducts";
-import { useAddToCartMutation } from "../../store/api/cartApi";
+import { addToCart, useAddToCartMutation } from "../../store/api/cartApi";
 import {
+  addToWishlist,
+  getWishlist,
+  removeFromWishlist,
   useAddToWishlistMutation,
   useGetWishlistQuery,
   useRemoveFromWishlistMutation,
 } from "../../store/api/wishlistApi";
-import { useGetProductsQuery } from "../../store/api/apiSlice";
+import { getProducts, useGetProductsQuery } from "../../store/api/apiSlice";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  useAddToCart,
+  useAddToWishlist,
+  useFetch,
+  useGetCart,
+  useGetWishlist,
+  useRemoveFromWishlist,
+} from "../../customHooks/useCart";
 // import ReactImageMagnify from "react-image-magnify";
 
 function SingleProduct() {
-  
   const { response, errorContent } = useLoaderData();
   const { id, productName } = useParams();
   const product = response?.data?.data;
   const [mainSwiper, setMainSwiper] = useState(null);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
+  const queryClient = useQueryClient();
   const dispatch = useDispatch();
-  const { wishlistProductsID} = useSelector(
-    (state) => state.wishlist
-  );
+  const { wishlistProductsID } = useSelector((state) => state.wishlist);
   const { userToken } = useSelector((state) => state.auth);
-  const [addToCart, { isLoading: cartBtnLoading }] = useAddToCartMutation();
-  const [addToWishlist, { isLoading: wishlistBtnLoading }] = useAddToWishlistMutation();
-  const [removeFromWishlist, { isLoading }] = useRemoveFromWishlistMutation();
-  const { isLoading: isFavLoading , refetch } = useGetWishlistQuery("getWishlist");
+
+  // const {
+  //   data: relatedProducts,
+  //   isLoading: relatedProductsLoading,
+  //   error: relatedProductsError,
+  // } = useQuery(
+  //   ["getProducts-relatedProducts" , product.category._id],
+  //   () => getProducts({ limit: "20", category: `${product.category._id}` }),
+  //   {
+  //     select: (data) => data.data,
+  //   }
+  // );
+
+  // const {mutate:mutateAddToCart , isLoading:cartBtnLoading} =useMutation(addToCart ,{
+  //   onSuccess : ({data})=>{
+  //     queryClient.invalidateQueries("getCart");
+  //     toast.success(data.message);
+  //   },
+  //   onError : (error) =>{
+  //     toast.error(error?.response ? error.response.data.message : error.message);
+  //   },
+  // });
+
+  // const {isLoading: isFavLoading} = useQuery("getWishlist" , getWishlist , {
+  //   onSuccess : ({data})=>{
+  //     const IDS = data.data.map((el) => el._id);
+  //     dispatch(setWishlistProductsID(IDS));
+  //   },
+  //   enabled :userToken ? true : false ,
+  // });
+
+  // const {mutate:mutateAddToWishlist , isLoading:wishlistBtnLoading} = useMutation(addToWishlist , {
+
+  //   onSuccess : ({data})=>{
+  //     toast.success(data.message);
+  //     dispatch(setWishlistProductsID(data.data));
+  //   },
+  //   onError :(error)=>{
+  //     toast.error(error.response ? error.response.data.message : "oops !! , something went wrong please try again");
+  //   }
+
+  // });
+
+  // const {mutate:mutateRemoveFromWishlist , isLoading} = useMutation( removeFromWishlist , {
+
+  //   onSuccess : ({data})=>{
+  //     toast.success(data.message);
+  //     dispatch(setWishlistProductsID(data.data));
+  //   },
+  //   onError :(error)=>{
+  //     toast.error(error.response ? error.response.data.message : "oops !! , something went wrong please try again");
+  //   }
+
+  // });
+
   const {
     data: relatedProducts,
     isLoading: relatedProductsLoading,
     error: relatedProductsError,
-  } = useGetProductsQuery({
-    limit: "20",
-    category: `${product.category._id}`,
-  });
+  } = useFetch(
+    ["getProducts-relatedProducts", product.category._id],
+    () => getProducts({ limit: "20", category: `${product.category._id}` }),
+    {
+      select: (data) => data.data,
+    }
+  );
+  const { mutate: mutateAddToCart, isLoading: cartBtnLoading } = useAddToCart();
+  const { isLoading: isFavLoading } = useGetWishlist();
+  const { mutate: mutateAddToWishlist, isLoading: wishlistBtnLoading } =
+    useAddToWishlist();
+  const { mutate: mutateRemoveFromWishlist, isLoading } =
+    useRemoveFromWishlist();
 
   async function addProductToCart(productId) {
-      addToCart(productId)
-      .unwrap()
-      .then((data) => {
-        toast.success(data.message);
-      })
-      .catch((data) => {
-        toast.error(data.data.message);
-      });
-
-
-
+    mutateAddToCart(productId);
   }
 
   async function addProductToWishlist(productId) {
-    addToWishlist(productId)
-      .unwrap()
-      .then((data) => {
-        toast.success(data.message);
-      })
-      .catch((data) => {
-        toast.error(data.data.message);
-      });
-  }
-  async function removeProductFromWishlist(productId) {
-    removeFromWishlist(productId)
-      .unwrap()
-      .then((data) => {
-        toast.success(data.message);
-      })
-      .catch((data) => {
-        console.log(data.data.message);
-      });
+    mutateAddToWishlist(productId);
   }
 
+  async function removeProductFromWishlist(productId) {
+    mutateRemoveFromWishlist(productId);
+  }
 
   function resetSwiper() {
     if (mainSwiper && thumbsSwiper) {
@@ -108,11 +157,9 @@ function SingleProduct() {
     }
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     resetSwiper();
-  },[id]);
-
-
+  }, [id]);
 
   return (
     <>
@@ -290,11 +337,15 @@ function SingleProduct() {
                       <button
                         type="button"
                         className={`btn fav-btn  ${
-                          (wishlistBtnLoading || isLoading) || ((isFavLoading) && userToken)
+                          wishlistBtnLoading ||
+                          isLoading ||
+                          (isFavLoading && userToken)
                             ? "loading-overlay"
                             : ""
                         } ${
-                          checkProductFav(product._id, wishlistProductsID) && !isFavLoading && !isLoading
+                          checkProductFav(product._id, wishlistProductsID) &&
+                          !isFavLoading &&
+                          !isLoading
                             ? "active"
                             : ""
                         }`}

@@ -24,6 +24,9 @@ const wishlistSlice = createSlice({
       state.isLoaded= false;
       state.loading= false;
       state.error= null;
+    },
+    setWishlistProductsID : (state , action)=>{
+      state.wishlistProductsID = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -111,7 +114,7 @@ export const checkProductFav = (productId, wishlistProductsID) => {
   return result;
 };
 
-export const {clearWishlist} = wishlistSlice.actions;
+export const {clearWishlist , setWishlistProductsID} = wishlistSlice.actions;
 export default wishlistSlice.reducer;
 
 // In Redux Toolkit and Redux in general, reducers should always return a new state object. However, in your checkProductFav reducer, you're returning either true or false, which is not a valid state object. Instead, you should update a specific property in the state based on the action payload and return the entire state object.

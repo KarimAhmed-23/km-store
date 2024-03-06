@@ -112,6 +112,8 @@ function App() {
         
       </AuthContextProvider>
 
+      <ReactQueryDevtools initialIsOpen="false" position="bottom-right" />
+
     </QueryClientProvider>
 
     <ToastContainer theme='colored' autoClose={2500} closeOnClick={true} icon={false} position="bottom-right"/>

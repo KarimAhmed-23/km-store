@@ -10,29 +10,34 @@ import { CartContext } from "../../context/cartContext/CartContext";
 import PasswordInput from "./PasswordInput";
 import { useDispatch, useSelector } from "react-redux";
 import actLogin from "../../store/auth/act/actLogin";
-import { removeAsyncStates } from "../../store/auth/authSlice";
-import { useLoginMutation } from "../../store/api/authApi";
+import { removeAsyncStates, setUserData, setUserId, setUserToken } from "../../store/auth/authSlice";
+import { login, useLoginMutation } from "../../store/api/authApi";
+import { useMutation } from "react-query";
 
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [login , {isLoading , isError , error}] = useLoginMutation();
+
+  const {mutate:mutateLogin , isLoading, isError , error } = useMutation(login,{
+    onSuccess:({data})=>{
+      dispatch(setUserToken(data));
+      dispatch(setUserData(data));
+      dispatch(setUserId(data));
+      navigate("/");
+    },
+    onError:(error)=>{
+      console.log(error);
+    }
+  });
+
 
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
-    onSubmit: (values)=>{
-      login(values).
-      unwrap()
-      .then(_ =>{
-        navigate("/");
-      }).catch(error =>{
-        console.log(error);
-      })
-    },
+    onSubmit: (values)=> mutateLogin(values) ,
   });
 
 
@@ -55,7 +60,7 @@ function Login() {
             <h2 className="form-title">Login</h2>
 
             {isError ? (
-              <div className="alert alert-danger mb-4">{error.data.message}</div>
+              <div className="alert alert-danger mb-4">{error.response.data.message}</div>
             ) : null}
 
             <div className="form-group ">

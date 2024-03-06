@@ -8,29 +8,28 @@ import { useDispatch, useSelector } from "react-redux";
 import actForgetPassword from "../../store/auth/act/actForgetPassword";
 import { useEffect } from "react";
 import { removeAsyncStates } from "../../store/auth/authSlice";
-import { useForgotPasswordMutation } from "../../store/api/authApi";
+import { forgotPassword, useForgotPasswordMutation } from "../../store/api/authApi";
+import { useMutation } from "react-query";
 
 function ForgetPassword() {
 
   const navigate= useNavigate();
   const dispatch =useDispatch();
 
-  const [forgetPassword , {isLoading , isError , error}] =  useForgotPasswordMutation();
+  const {mutate:mutateForgotPassword , isLoading, isError , error } = useMutation( forgotPassword ,{
+    onSuccess:({data})=>{
+      navigate("/verify-code")
+    },
+    onError:(error)=>{
+      console.log(error);
+    }
+  });
 
   const formik = useFormik({
     initialValues :{
         email : ""
     },
-    onSubmit:(values)=>{
-      forgetPassword(values)
-      .unwrap()
-      .then(_=>{
-        navigate("/verify-code")
-      })
-      .catch(error=>{
-        console.log(error);
-      })
-    },
+    onSubmit:(values)=> mutateForgotPassword(values) ,
    }) ;
   
 
@@ -68,7 +67,7 @@ function ForgetPassword() {
                
               />
               {isError ? (
-                <div className="text-danger pt-2">{error.data.message}</div>
+                <div className="text-danger pt-2">{error.response.data.message}</div>
               ) : null}
 
               

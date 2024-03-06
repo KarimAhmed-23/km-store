@@ -10,22 +10,13 @@ import CatchImage from "../CatchImage";
 import LoadingBox from "../LoadingBox";
 import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
-import { useGetOrdersQuery } from "../../store/api/apiSlice";
+import { getOrders, useGetOrdersQuery } from "../../store/api/apiSlice";
+import { useQuery } from "react-query";
 
 function AllOrders() {
-  // const {userId} = useSelector((state=>state.auth));
-  // const dispatch = useDispatch();
-  // const {data:{orders:data} , isLoaded:{orders:isLoaded} , error:{orders:error}}= useSelector((state=>state.general));
-  // useEffect(()=>{
-  //   const promise=  dispatch(actGetData({title:"orders" , url: `${baseUrl}orders/user/${localStorage.getItem("userId")}` , options: null}));
-  //   return()=>{
-  //     promise.abort();
-  //   }
-  // },[dispatch]);
-
-
-  const {data , isLoading , error} = useGetOrdersQuery();
-
+  const { data, isLoading, error } = useQuery(["getOrders"], getOrders, {
+    select: (data) => data.data,
+  });
 
   return (
     <>
@@ -45,11 +36,10 @@ function AllOrders() {
                 </div>
                 <div className="orders-boxes">
                   <div className="boxes-wrapper">
-                    {(isLoading) && (
-                      <LoadingBox text="orders"/>
-                    )}
-                    {error  && <div className="alert alert-danger">{error}</div>}
-                    {data && !isLoading &&
+                    {isLoading && <LoadingBox text="orders" />}
+                    {error && <div className="alert alert-danger">{error}</div>}
+                    {data &&
+                      !isLoading &&
                       (data.length
                         ? [...data].reverse().map((order) => (
                             <div className="order-item" key={order._id}>
@@ -122,7 +112,10 @@ function AllOrders() {
                                           .replace(/\s+/g, "+")}`}
                                       >
                                         <CatchImage
-                                        notFoundStyle={<h2>image not found</h2>}>
+                                          notFoundStyle={
+                                            <h2>image not found</h2>
+                                          }
+                                        >
                                           <img
                                             className="img-fluid w-100 loading-img"
                                             src={
@@ -159,8 +152,6 @@ function AllOrders() {
                             </div>
                           ))
                         : "as")}
-
-                                            
                   </div>
                 </div>
               </div>

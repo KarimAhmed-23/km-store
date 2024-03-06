@@ -8,63 +8,90 @@ import useGetApi from "../../customHooks/UseGetApi";
 import { baseUrl } from "../../utilities/baseUrl";
 import { useDispatch, useSelector } from "react-redux";
 import actAddToCart from "../../store/cart/act/actAddToCart";
-import { checkProductFav } from "../../store/wishlist/wishlistSlice";
+import { checkProductFav, setWishlistProductsID } from "../../store/wishlist/wishlistSlice";
 import actAddToWishlist from "../../store/wishlist/act/actAddToWishlist";
 import actRemoveFromWishlist from "../../store/wishlist/act/actRemoveFromWishlist";
-import { useAddToCartMutation } from "../../store/api/cartApi";
+import { addToCart } from "../../store/api/cartApi";
 import {
+  addToWishlist,
+  getWishlist,
+  removeFromWishlist,
   useAddToWishlistMutation,
   useGetWishlistQuery,
   useRemoveFromWishlistMutation,
   wishlistApi,
 } from "../../store/api/wishlistApi";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useAddToCart, useAddToWishlist, useGetCart, useGetWishlist, useRemoveFromWishlist } from "../../customHooks/useCart";
 
 export default function ProductCard({ product, updateData, withFav, isFav}) {
 
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { wishlistProductsID } = useSelector((state) => state.wishlist);
   const { userToken } = useSelector((state) => state.auth);
-  const [, setWishlistBtnLoading] = useState(false);
+  
+  // const {mutate:mutateAddToCart , isLoading:cartBtnLoading} =useMutation(addToCart ,{
+  //   onSuccess : ({data})=>{
+  //     toast.success(data.message);
+  //     queryClient.invalidateQueries("getCart");
+  //   },
+  //   onError : (error) =>{
+  //     toast.error(error?.response ? error.response.data.message : error.message);
+  //   },
+  // });
 
-  const [addToCart, { isLoading: cartBtnLoading }] = useAddToCartMutation();
-  const [addToWishlist, { isLoading: wishlistBtnLoading }] =
-    useAddToWishlistMutation();
-  const [removeFromWishlist, { isLoading }] = useRemoveFromWishlistMutation();
-  const { isLoading: isFavLoading , refetch } = useGetWishlistQuery("getWishlist");
+  // const {isLoading: isFavLoading} = useQuery("getWishlist" , getWishlist , {
+  //   onSuccess : ({data})=>{
+  //     const IDS = data.data.map((el) => el._id);
+  //     dispatch(setWishlistProductsID(IDS));
+  //   },
+  //   enabled :userToken ? true : false , 
+  // });
+    
+  // const {mutate:mutateAddToWishlist , isLoading:wishlistBtnLoading} = useMutation(addToWishlist , {
+
+  //   onSuccess : ({data})=>{
+  //     toast.success(data.message);
+  //     dispatch(setWishlistProductsID(data.data));
+  //   },
+  //   onError :(error)=>{
+  //     toast.error(error.response ? error.response.data.message : "oops !! , something went wrong please try again");
+  //   }
+
+  // });
+
+  // const {mutate:mutateRemoveFromWishlist , isLoading} = useMutation( removeFromWishlist , {
+
+  //   onSuccess : ({data})=>{
+  //     toast.success(data.message);
+  //     dispatch(setWishlistProductsID(data.data));
+  //     if (updateData) {
+  //       queryClient.invalidateQueries("getWishlist");
+  //     }
+  //   },
+  //   onError :(error)=>{
+  //     toast.error(error.response ? error.response.data.message : "oops !! , something went wrong please try again");
+  //   }
+
+  // });
+
+  const {mutate:mutateAddToCart , isLoading:cartBtnLoading} = useAddToCart(); 
+  const {isLoading: isFavLoading} = useGetWishlist();
+  const {mutate:mutateAddToWishlist , isLoading:wishlistBtnLoading} = useAddToWishlist();
+  const {mutate:mutateRemoveFromWishlist , isLoading} = useRemoveFromWishlist();
+
 
   async function addProductToCart(productId) {
-    addToCart(productId)
-      .unwrap()
-      .then((data) => {
-        toast.success(data.message);
-      })
-      .catch((data) => {
-        toast.error(data.data.message);
-      });
+    mutateAddToCart(productId);
   }
 
   async function addProductToWishlist(productId) {
-    addToWishlist(productId)
-      .unwrap()
-      .then((data) => {
-        toast.success(data.message);
-      })
-      .catch((data) => {
-        toast.error(data.data.message);
-      });
+    mutateAddToWishlist(productId);
   }
+
   async function removeProductFromWishlist(productId) {
-    removeFromWishlist(productId)
-      .unwrap()
-      .then((data) => {
-        if (updateData) {
-          dispatch(wishlistApi.util.invalidateTags(["wishlist"]));
-        }
-        toast.success(data.message);
-      })
-      .catch((data) => {
-        console.log(data.data.message);
-      });
+    mutateRemoveFromWishlist(productId);
   }
 
   return (
