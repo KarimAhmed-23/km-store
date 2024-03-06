@@ -31,9 +31,6 @@ import Cookies from "js-cookie";
 
 function Products() {
 
-  const test = Cookies.get("domain");
-  console.log(test)
-
   const { pathname, search } = useLocation();
   const { id: categoryId, categoryName } = useParams();
   const navigate = useNavigate();

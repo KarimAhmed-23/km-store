@@ -79,7 +79,7 @@ export default function ProductCard({ product, updateData, withFav, isFav}) {
   const {mutate:mutateAddToCart , isLoading:cartBtnLoading} = useAddToCart(); 
   const {isLoading: isFavLoading} = useGetWishlist();
   const {mutate:mutateAddToWishlist , isLoading:wishlistBtnLoading} = useAddToWishlist();
-  const {mutate:mutateRemoveFromWishlist , isLoading} = useRemoveFromWishlist();
+  const {mutate:mutateRemoveFromWishlist , isLoading} = useRemoveFromWishlist(updateData);
 
 
   async function addProductToCart(productId) {
