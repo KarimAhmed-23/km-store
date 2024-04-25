@@ -1,5 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from '@reduxjs/toolkit/query'
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import authSlice from "./auth/authSlice";
 import cartSlice from "./cart/cartSlice";
 import wishlistSlice from "./wishlist/wishlistSlice";
@@ -10,7 +20,6 @@ import { authApi } from "./api/authApi";
 import { cartApi } from "./api/cartApi";
 import { wishlistApi } from "./api/wishlistApi";
 import { apiSlice } from "./api/apiSlice";
-
 
 const store = configureStore({
   reducer: {
@@ -25,22 +34,20 @@ const store = configureStore({
     products: productsSlice,
     general: generalSlice,
     addresses: addressesSlice,
-
-
-
-    
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       apiSlice.middleware,
       authApi.middleware,
       cartApi.middleware,
-      wishlistApi.middleware,
+      wishlistApi.middleware
     ),
-    
-    
-
-
+  // middleware: (getDefaultMiddleware) =>
+  //   getDefaultMiddleware({
+  //     serializableCheck: {
+  //       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+  //     },
+  //   }),
 });
 
 setupListeners(store.dispatch);

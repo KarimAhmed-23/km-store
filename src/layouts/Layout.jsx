@@ -7,16 +7,23 @@ import SwitchSpinner from "../components/SwitchSpinner";
 import { ThreeDots } from "react-loader-spinner";
 import LoadingBar from "react-top-loading-bar";
 import useGetPrevState from "../customHooks/UseGetPrevState";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { changeLocale } from "../store/general/generalSlice";
 
 function Layout() {
+  const dispatch = useDispatch();
   const { state } = useNavigation();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
   const prevState = useGetPrevState(state);
+  const {i18n} = useTranslation();
+  const locale = i18n.language;
 
   useLayoutEffect(() => {
     setLoading(false);
+    
   }, []);
 
   useEffect(() => {
@@ -46,6 +53,12 @@ function Layout() {
     }    
   }, [state, setProgress]);
 
+  
+  // useEffect(()=>{
+  //   document.documentElement.dir =i18n.dir();
+  //   document.documentElement.lang = locale;
+  //   dispatch(changeLocale(locale));
+  // },[locale]);
 
   return (
     <>

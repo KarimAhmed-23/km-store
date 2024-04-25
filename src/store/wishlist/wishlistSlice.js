@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import actGetWishlist from "./act/actGetWishlist";
 import actAddToWishlist from "./act/actAddToWishlist";
 import actRemoveFromWishlist from "./act/actRemoveFromWishlist";
@@ -113,6 +113,9 @@ export const checkProductFav = (productId, wishlistProductsID) => {
   const result = wishlistProductsID?.some((el) => el === productId);
   return result;
 };
+
+
+
 
 export const {clearWishlist , setWishlistProductsID} = wishlistSlice.actions;
 export default wishlistSlice.reducer;

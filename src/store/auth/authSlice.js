@@ -27,9 +27,20 @@ const authSlice = createSlice({
   reducers: {
     checkAuth: (state) => {
       if (localStorage.getItem("token")) {
-        state.userToken = localStorage.getItem("token");
-        state.userData = localStorage.getItem("userData");
-        state.userId = localStorage.getItem("userId");
+
+        try {
+          
+          jwtDecode(localStorage.getItem("token"));
+          state.userToken = localStorage.getItem("token");
+          state.userData = localStorage.getItem("userData");
+          state.userId = localStorage.getItem("userId");
+          
+        } catch (error) {
+            console.log("invalid token")
+            localStorage.removeItem("token");
+        }
+
+        
       }
     },
     logout: (state) => {

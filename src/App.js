@@ -31,6 +31,8 @@ import ProductsApi from './components/Products/ProductsApi'
 import { Provider, useDispatch } from 'react-redux';
 import store from './store';
 import { checkAuth } from './store/auth/authSlice';
+import InverseProtectedRote from './components/ProtectedRoute/InverseProtectedRote';
+import { I18nextProvider } from 'react-i18next';
 
 
 
@@ -53,11 +55,11 @@ function App() {
       [
 
         {index:true , element: <Home/> },
-        {path:"/login" , element: <Login/> },
-        {path:"/forget-password" , element: <ForgetPassword/> },
-        {path:"/verify-code" , element: <VerifyResetCode/> },
-        {path:"/rest-password" , element: <RestPassword/> },
-        {path:"/register" , element: <Register/> },
+        {path:"/login" , element: <InverseProtectedRote><Login/></InverseProtectedRote> },
+        {path:"/forget-password" , element: <InverseProtectedRote> <ForgetPassword/> </InverseProtectedRote> },
+        {path:"/verify-code" , element: <InverseProtectedRote> <VerifyResetCode/> </InverseProtectedRote>},
+        {path:"/rest-password" , element: <InverseProtectedRote> <RestPassword/> </InverseProtectedRote> },
+        {path:"/register" , element: <InverseProtectedRote> <Register/> </InverseProtectedRote>  },
         {path:"/products" , element: <Products/>},
         {path:"/products/:id/:categoryName/*" , element: <Products/> },
 

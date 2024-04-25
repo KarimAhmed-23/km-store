@@ -15,8 +15,11 @@ import { useEffect } from "react";
 import actGetProducts from "../../store/products/act/actGetProducts";
 import { getProducts, useGetProductsQuery } from "../../store/api/apiSlice";
 import { useQueries, useQuery } from "react-query";
+import { useTranslation } from "react-i18next";
 
 function Home() {
+  const { t } = useTranslation(['translation' , 'about']);
+
   // const {
   //   data: featuredProducts,
   //   isLoading: featuredProductsLoading,
@@ -74,6 +77,13 @@ function Home() {
 
   return (
     <>
+      <div className="p-5 d-none">
+        <h1 className="main-title">{t("common.title")}</h1>
+        <h1 className="main-title">{t("description.part1")}</h1>
+        <h1 className="main-title">{t("description.part2")}</h1>
+        <h1 className="main-title">{t("description.part3")}</h1>
+        
+      </div>
       <Helmet>
         <title>FreshCart | Home</title>
       </Helmet>
@@ -95,6 +105,7 @@ function Home() {
       <section className="section-style products-section">
         <div className="container">
           <h1 className="main-title">featured products</h1>
+
           <div className="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2">
             {featuredProductsLoading &&
               [...Array(10)].map((_, index) => (

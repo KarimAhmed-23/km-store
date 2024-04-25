@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useTransition } from "react";
 import useGetApi from "../../customHooks/UseGetApi";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, FreeMode } from "swiper/modules";
@@ -11,16 +11,28 @@ import { baseUrl } from "../../utilities/baseUrl";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import actGetProducts from "../../store/products/act/actGetProducts";
+import { useTranslation } from "react-i18next";
 
 function ProductsSlider({ isLoaded , error , products  }) {
+  const {i18n}   = useTranslation();
+  const locale = i18n.language;
+  const checkDir = locale === "ar" ? "rtl" : "ltr";
+  const [swiper, setSwiper] = useState(null);
+  useEffect(() => {
+    if (swiper) {
+      swiper.slideTo(0);
+      swiper.changeLanguageDirection(checkDir)
+      swiper.update();
+    }
+  }, [locale , swiper]);
 
- 
 
   return (
     <>
       {error && <div className="alert alert-danger w-100">{error}</div>}
 
       <Swiper
+        onSwiper={setSwiper}
         slidesPerView={1}
         slidesPerGroup={1}
         spaceBetween={15}

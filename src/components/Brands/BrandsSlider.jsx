@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import useGetApi from "../../customHooks/UseGetApi";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, FreeMode, Autoplay } from "swiper/modules";
@@ -12,28 +12,37 @@ import actGetData from "../../store/general/act/actGetData";
 import { baseUrl } from "../../utilities/baseUrl";
 import { getBrands, useGetBrandsQuery } from "../../store/api/apiSlice";
 import { useQuery } from "react-query";
+import { useTranslation } from "react-i18next";
 
 function BrandsSlider() {
-  
   const {
     data: brands,
     isLoading,
     error,
-    isError
-  } = useQuery(
-    ["getBrands"],
-    getBrands,
-    {
-      select: (data) => data.data.data,
+    isError,
+  } = useQuery(["getBrands"], getBrands, {
+    select: (data) => data.data.data,
+  });
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+  const checkDir = locale === "ar" ? "rtl" : "ltr";
+  const [swiper, setSwiper] = useState(null);
+  useEffect(() => {
+    if (swiper) {
+      swiper.slideTo(0);
+      swiper.changeLanguageDirection(checkDir);
+      swiper.update();
     }
-  );
-
+  }, [locale, swiper]);
 
   return (
     <>
-      {isError && <div className="alert alert-danger w-100">{error?.data?.message}</div>}
+      {isError && (
+        <div className="alert alert-danger w-100">{error?.data?.message}</div>
+      )}
 
       <Swiper
+        onSwiper={setSwiper}
         slidesPerView={2}
         spaceBetween={15}
         grabCursor={true}

@@ -24,7 +24,7 @@ function Login() {
       dispatch(setUserToken(data));
       dispatch(setUserData(data));
       dispatch(setUserId(data));
-      navigate("/");
+      navigate("/" , {replace:true});
     },
     onError:(error)=>{
       console.log(error);

@@ -1,5 +1,8 @@
 import React from "react";
-import { Pagination , Autoplay } from 'swiper/modules';
+import { useEffect } from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Pagination, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 function HeroSlider() {
@@ -17,15 +20,29 @@ function HeroSlider() {
       name: "slide3",
     },
   ];
+
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
+  const checkDir = locale === "ar" ? "rtl" : "ltr";
+  const [swiper, setSwiper] = useState(null);
+  useEffect(() => {
+    if (swiper) {
+      swiper.slideTo(0);
+      swiper.changeLanguageDirection(checkDir);
+      swiper.update();
+    }
+  }, [locale, swiper]);
+
   return (
     <Swiper
+      onSwiper={setSwiper}
       pagination={true}
       grabCursor={true}
       autoplay={{
         delay: 2500,
         disableOnInteraction: false,
-      }}   
-      modules={[Pagination , Autoplay]}
+      }}
+      modules={[Pagination, Autoplay]}
       className="hero-slider"
     >
       {images.map((img, index) => (
