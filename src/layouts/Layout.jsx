@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { changeLocale } from "../store/general/generalSlice";
 import ToolBar from "../components/ToolBar/ToolBar";
 import Header from "../components/Navbar/Header";
+import { Helmet } from "react-helmet";
 
 function Layout() {
   const dispatch = useDispatch();
@@ -20,12 +21,11 @@ function Layout() {
   const [progress, setProgress] = useState(0);
 
   const prevState = useGetPrevState(state);
-  const {i18n} = useTranslation();
+  const { i18n } = useTranslation();
   const locale = i18n.language;
 
   useLayoutEffect(() => {
     setLoading(false);
-    
   }, []);
 
   useEffect(() => {
@@ -46,16 +46,13 @@ function Layout() {
       } else {
         setProgress(100);
         clearInterval(progressInterval);
-        
       }
       return () => {
         clearInterval(progressInterval);
-      }
-      
-    }    
+      };
+    }
   }, [state, setProgress]);
 
-  
   // useEffect(()=>{
   //   document.documentElement.dir =i18n.dir();
   //   document.documentElement.lang = locale;
@@ -64,6 +61,10 @@ function Layout() {
 
   return (
     <>
+      <Helmet>
+
+      <link rel="icon" href="../assets/images/logo.svg" />
+      </Helmet>
       <main className={`${loading ? "overflow-hidden" : ""}`}>
         {/* {state === "loading" && (
           <>
@@ -80,11 +81,11 @@ function Layout() {
         />
 
         <Navbar />
-        <Header/>
-        
+        <Header />
+
         <Outlet />
         <Footer />
-        <ToolBar/>
+        <ToolBar />
         <ScrollToTop />
         {loading && (
           <div
@@ -110,15 +111,9 @@ function Layout() {
 
 export default Layout;
 
-
-
-
-
 // Direct Value Update:
 // setProgress(progress + 5);
 // In this approach, you directly update the state of progress by adding 5 to its current value. However, this method might cause issues if there are multiple state updates queued up simultaneously. React's state updates are asynchronous and may be batched together. When you rely on the current state's value directly, you might inadvertently use a stale state.
-
-
 
 // Functional Update:
 // setProgress(progress => progress + 5);

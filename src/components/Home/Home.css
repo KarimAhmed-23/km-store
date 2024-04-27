@@ -11,6 +11,7 @@
 }
 .hero-slider .hero-slide  .img-feedback{
   font-size: var(--title-0);
+  min-height: 300px;
 }
 .hero-slider .hero-slide img {
   mix-blend-mode: multiply;
@@ -20,6 +21,10 @@
 @media(max-width:767.98px){
   .hero-slider .hero-slide{
     border-radius: 12px;
+  }
+
+  .hero-slider .hero-slide  .img-feedback{
+    min-height: 150px;
   }
   
 }
