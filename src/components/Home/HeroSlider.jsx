@@ -67,6 +67,11 @@ function HeroSlider() {
       {images.map((img, index) => (
         <SwiperSlide key={index}>
           <div className={`hero-slide ${!isVisible ? "loading" : null}`}>
+            <i
+              className={`fa-solid fa-spinner fa-spin ${
+                !isVisible ? "d-block" : "d-none"
+              }`}
+            ></i>
             <img
               className={`img-fluid w-100 loading-img ${
                 isVisible ? "opacity-100" : "opacity-0"
@@ -75,7 +80,6 @@ function HeroSlider() {
               alt={img.name}
               onLoad={() => setIsVisible(true)}
             />
-            
           </div>
         </SwiperSlide>
       ))}

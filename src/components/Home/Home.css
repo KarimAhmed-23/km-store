@@ -10,7 +10,7 @@
 }
 .hero-slider .hero-slide {
   height: 100%;
-  
+  position: relative;
   
 }
 .hero-slider .hero-slide img {
@@ -22,7 +22,13 @@
   font-size: var(--title-0);
   height: 300px !important;
 }
-
+.hero-slider .hero-slide.loading i{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50% , -50%);
+  z-index: 10;
+}
 
 @media(max-width:767.98px){
   .hero-slider .hero-slide{
