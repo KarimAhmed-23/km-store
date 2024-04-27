@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import actGetData from "../../store/general/act/actGetData";
 import { getOrders, useGetOrdersQuery } from "../../store/api/apiSlice";
 import { useQuery } from "react-query";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
+import emptyList from "../../assets/images/empty-cart.svg";
 
 function AllOrders() {
   const { data, isLoading, error } = useQuery(["getOrders"], getOrders, {
@@ -23,6 +25,16 @@ function AllOrders() {
       <Helmet>
         <title>FreshCart | Orders</title>
       </Helmet>
+
+      <Breadcrumb
+        data={[
+          {
+            name: "orders",
+            link: null,
+          },
+        ]}
+      />
+
       <section className="section-style account-section">
         <div className="container">
           <div className="row gx-lg-5">
@@ -40,118 +52,131 @@ function AllOrders() {
                     {error && <div className="alert alert-danger">{error}</div>}
                     {data &&
                       !isLoading &&
-                      (data.length
-                        ? [...data].reverse().map((order) => (
-                            <div className="order-item" key={order._id}>
-                              <div className="order-head">
-                                <h3 className="order-id">S{order.id}</h3>
-                                <div className="info-flex">
-                                  <p className="info-text mb-0">
-                                    {new Intl.DateTimeFormat("en", {
-                                      weekday: "long",
-                                    }).format(new Date(order.createdAt))}{" "}
-                                    , {""}
-                                    {
-                                      new Date(order.createdAt)
-                                        .toISOString()
-                                        .split("T")[0]
-                                    }{" "}
-                                    -
-                                    {
-                                      new Date(order.createdAt)
-                                        .toTimeString()
-                                        .split(" ")[0]
-                                    }
-                                  </p>
-                                  <div className="order-status">
-                                    <div
-                                      className={`order-paid status-item ${
-                                        order.isPaid ? "success" : "inProcess"
-                                      }`}
-                                    >
-                                      {order.isPaid ? "Paid" : "not Paid"}
-                                    </div>
-                                    <div
-                                      className={`order-delivered status-item ${
-                                        order.isDelivered.isPaid
-                                          ? "success"
-                                          : "inProcess"
-                                      }`}
-                                    >
-                                      {order.isDelivered
-                                        ? "Delivered"
-                                        : "not Delivered"}
-                                    </div>
+                      (data.length ? (
+                        [...data].reverse().map((order) => (
+                          <div className="order-item" key={order._id}>
+                            <div className="order-head">
+                              <h3 className="order-id">S{order.id}</h3>
+                              <div className="info-flex">
+                                <p className="info-text mb-0">
+                                  {new Intl.DateTimeFormat("en", {
+                                    weekday: "long",
+                                  }).format(new Date(order.createdAt))}{" "}
+                                  , {""}
+                                  {
+                                    new Date(order.createdAt)
+                                      .toISOString()
+                                      .split("T")[0]
+                                  }{" "}
+                                  -
+                                  {
+                                    new Date(order.createdAt)
+                                      .toTimeString()
+                                      .split(" ")[0]
+                                  }
+                                </p>
+                                <div className="order-status">
+                                  <div
+                                    className={`order-paid status-item ${
+                                      order.isPaid ? "success" : "inProcess"
+                                    }`}
+                                  >
+                                    {order.isPaid ? "Paid" : "not Paid"}
+                                  </div>
+                                  <div
+                                    className={`order-delivered status-item ${
+                                      order.isDelivered.isPaid
+                                        ? "success"
+                                        : "inProcess"
+                                    }`}
+                                  >
+                                    {order.isDelivered
+                                      ? "Delivered"
+                                      : "not Delivered"}
                                   </div>
                                 </div>
-                                <p className="info-text">
-                                  <span>Quantity : </span>
-                                  {order.cartItems.length}
-                                </p>
-                                <p className="info-text">
-                                  <span>Total (VAT included) : </span>
-                                  {order.totalOrderPrice} EGP
-                                </p>
-                                <p className="info-text">
-                                  <span>Payment Method : </span>
-                                  {order.paymentMethodType}
-                                  Payment
-                                </p>
                               </div>
+                              <p className="info-text">
+                                <span>Quantity : </span>
+                                {order.cartItems.length}
+                              </p>
+                              <p className="info-text">
+                                <span>Total (VAT included) : </span>
+                                {order.totalOrderPrice} EGP
+                              </p>
+                              <p className="info-text">
+                                <span>Payment Method : </span>
+                                {order.paymentMethodType}
+                                Payment
+                              </p>
+                            </div>
 
-                              <div className="order-items">
-                                {order.cartItems.map((item) => (
-                                  <div className="item-card" key={item._id}>
-                                    <div className="item-img position-relative">
+                            <div className="order-items">
+                              {order.cartItems.map((item) => (
+                                <div className="item-card" key={item._id}>
+                                  <div className="item-img position-relative">
+                                    <Link
+                                      className="d-block h-100"
+                                      to={`/product/${
+                                        item.product._id
+                                      }/${item.product.title
+                                        .replace(/[^\w\s\-]/gi, "")
+                                        .replace(/\s+/g, "+")}`}
+                                    >
+                                      <CatchImage
+                                        notFoundStyle={<h2>image not found</h2>}
+                                      >
+                                        <img
+                                          className="img-fluid w-100 loading-img"
+                                          src={
+                                            item.product.imageCover ||
+                                            require("../../assets/images/test-img.jpg")
+                                          }
+                                          alt={item.product.title}
+                                        />
+                                      </CatchImage>
+                                    </Link>
+                                  </div>
+                                  <div className="item-details">
+                                    <h4 className="item-title">
                                       <Link
-                                        className="d-block h-100"
                                         to={`/product/${
                                           item.product._id
                                         }/${item.product.title
                                           .replace(/[^\w\s\-]/gi, "")
                                           .replace(/\s+/g, "+")}`}
                                       >
-                                        <CatchImage
-                                          notFoundStyle={
-                                            <h2>image not found</h2>
-                                          }
-                                        >
-                                          <img
-                                            className="img-fluid w-100 loading-img"
-                                            src={
-                                              item.product.imageCover ||
-                                              require("../../assets/images/test-img.jpg")
-                                            }
-                                            alt={item.product.title}
-                                          />
-                                        </CatchImage>
+                                        {item.product.title}
                                       </Link>
-                                    </div>
-                                    <div className="item-details">
-                                      <h4 className="item-title">
-                                        <Link
-                                          to={`/product/${
-                                            item.product._id
-                                          }/${item.product.title
-                                            .replace(/[^\w\s\-]/gi, "")
-                                            .replace(/\s+/g, "+")}`}
-                                        >
-                                          {item.product.title}
-                                        </Link>
-                                      </h4>
-                                      <p className="item-text">
-                                        price : {item.price} EGP
-                                      </p>
-                                      <p className="item-text">
-                                        Quantity : {item.count}
-                                      </p>
-                                    </div>
+                                    </h4>
+                                    <p className="item-text">
+                                      price : {item.price} EGP
+                                    </p>
+                                    <p className="item-text">
+                                      Quantity : {item.count}
+                                    </p>
                                   </div>
-                                ))}
-                              </div>
+                                </div>
+                              ))}
                             </div>
-                          ))
-                        : "as")}
+                          </div>
+                        ))
+                      ) : (
+                        <>
+                          <div className="order-empty addresses-empty  d-flex flex-column gap-3 align-items-center text-center w-100 mx-auto w-100">
+                            <img
+                              src={emptyList}
+                              alt="empty"
+                              width={200}
+                              height={200}
+                            />
+                            <h2 className="empty-text">
+                              You haven't placed any order yet !!
+                              , <Link to="/products"> shop now</Link>
+                            </h2>
+                          </div>
+                        </>
+                      ))}
                   </div>
                 </div>
               </div>

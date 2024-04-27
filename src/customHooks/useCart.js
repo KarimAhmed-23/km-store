@@ -81,10 +81,12 @@ export function useGetWishlist(key, options) {
 
 export function useAddToWishlist() {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   return useMutation(addToWishlist, {
     onSuccess: ({ data }) => {
       toast.success(data.message);
       dispatch(setWishlistProductsID(data.data));
+      queryClient.invalidateQueries("getWishlist");
     },
     onError: (error) => {
       toast.error(

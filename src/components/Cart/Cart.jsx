@@ -15,6 +15,7 @@ import actGetCart from "../../store/cart/act/actGetCart";
 import { cartApi, clearCart, getCart, useGetCartQuery } from "../../store/api/cartApi";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import CatchImage from "../CatchImage";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 
 function Cart() {
@@ -47,7 +48,14 @@ function Cart() {
         <title>FreshCart | Cart</title>
       </Helmet>
 
-
+      <Breadcrumb
+        data={[
+          {
+            name: "cart",
+            link: "/cart",
+          }
+        ]}
+      />
 
       <section className="section-style cart-section">
         <div className="container">
@@ -72,7 +80,7 @@ function Cart() {
             </div>
           ) : (
             <div className="row">
-              <h1 className="main-title col-12">shop cart</h1>
+              {/* <h1 className="main-title col-12">shop cart</h1> */}
               <div className="col-lg-8">
                 <div className="cart-items-area">
                   {isLoading && (!error || !error?.product?.length) &&

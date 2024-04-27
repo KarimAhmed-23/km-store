@@ -28,30 +28,16 @@ import {
 import { useInfiniteQuery, useQuery } from "react-query";
 import { ThreeDots } from "react-loader-spinner";
 import Cookies from "js-cookie";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function Products() {
-
   const { pathname, search } = useLocation();
   const { id: categoryId, categoryName } = useParams();
   const navigate = useNavigate();
   const bottomBoundaryRef = useRef(null);
+  const [togglePanel, setTogglePanel] = useState(false);
 
-  // const searchParams = new URLSearchParams(search);
-  // const defaultQueryParams = {};
-  // for (const [key, val] of searchParams.entries()) {
-  //   if (!val) {
-  //     searchParams.delete(key);
-  //   } else if (val.includes(",")) {
-  //     const arrayItems = val.split(",");
-  //     searchParams.delete(key);
-  //     arrayItems.forEach((el) => {
-  //       searchParams.append(key, el);
-  //     });
-  //   }
-  // }
-  // searchParams.forEach((value, key) => {
-  //   defaultQueryParams[key] = value;
-  // });
+ 
 
   const queryParamsFromUrl = queryString.parse(search, {
     skipNull: true,
@@ -64,7 +50,6 @@ function Products() {
 
   const [queryParams, setQueryParams] = useState({
     limit: "12",
-    // page: 1,
     category: categoryId,
     ...queryParamsFromUrl,
   });
@@ -79,23 +64,7 @@ function Products() {
     setQueryParams({ ...queryParams, ...filters });
   }
 
-  // const {
-  //   data: products,
-  //   isLoading: productsLoading,
-  //   isFetched: productsFetched,
-  //   error: productsError,
-  //   refetch: productsRefetch,
-  // } = useQuery(["products", queryParams], () => getProducts(queryParams), {
-  //   select: (data) => data.data,
-  //   refetchOnMount:false,
-  //   refetchOnWindowFocus:false,
-  //   retryOnMount:false,
-  //   retry:false,
-  //   keepPreviousData:true,
-  // });
-  // const productsLoaded = !productsLoading;
-  // const productsFetching = !productsFetched;
-  // const productsFetching = !productsFetched;
+ 
 
   const {
     data: categories,
@@ -159,7 +128,10 @@ function Products() {
     }
   );
   const productsLoaded = !productsLoading;
-
+  const rowGrid =
+    products?.reduce((sum, el) => sum + el.data.length, 0) % 2
+      ? "row-grid"
+      : "";
 
   const handleScroll = () => {
     let timeoutId;
@@ -199,6 +171,7 @@ function Products() {
       arrayFormat: "comma",
       encode: false,
     });
+
     navigate(`${pathname}?${queryStringified}`);
 
     window.addEventListener("scroll", debouncedHandleScroll);
@@ -208,7 +181,15 @@ function Products() {
 
   useEffect(() => {
     window.scroll(0, 0);
+    setTogglePanel(false);
   }, [pathname, queryParams]);
+
+  useEffect(() => {
+    setQueryParams({
+      ...queryParams,
+      category: queryParamsFromUrl.category || categoryId || null,
+    });
+  }, [pathname]);
 
   return (
     <>
@@ -218,14 +199,35 @@ function Products() {
         </title>
       </Helmet>
 
+      <Breadcrumb
+        data={[
+          {
+            name: "products",
+            link: "/products",
+          },
+          {
+            name: categoryName?.split("+").join(" "),
+            link: null,
+          },
+        ]}
+      />
+
       <section className="section-style shop-section">
         <div className="container">
           <div className="row">
             <div className="col-xl-3 col-lg-4 mt-1">
               <div
-                className="accordion filters-accordion"
+                className={`accordion filters-accordion ${
+                  togglePanel && "active"
+                }`}
                 id="accordionExample"
               >
+                <span
+                  className="sidebar-close d-lg-none d-block"
+                  onClick={() => setTogglePanel(false)}
+                >
+                  <i className="fas fa-times"></i>
+                </span>
                 <div className="accordion-item">
                   <h2 className="accordion-header" id="headingFour">
                     <button
@@ -237,6 +239,7 @@ function Products() {
                       aria-controls="collapseFour"
                     >
                       categories
+                      <span></span>
                     </button>
                   </h2>
                   <div
@@ -263,14 +266,14 @@ function Products() {
                                 value="All"
                                 id="allCategories"
                                 name="categories-checks"
-                                defaultChecked={!queryParams.category}
+                                checked={!queryParams.category}
                                 onChange={() => {
                                   applyFilters({
                                     category: null,
                                   });
                                   navigate(`/products`);
                                 }}
-                                disabled={!productsLoaded || productsFetching}
+                                disabled={!productsLoaded}
                               />
                               <label
                                 className="form-check-label"
@@ -287,21 +290,22 @@ function Products() {
                                   value={item.name}
                                   id={item._id}
                                   name="categories-checks"
-                                  onClick={() => {
-                                    applyFilters({
-                                      category: [item._id],
-                                      page: 1,
-                                    });
+                                  onChange={() => {
+                                    // applyFilters({
+                                    //   category: [item._id],
+                                    //   // page: 1,
+                                    // });
                                     navigate(
                                       `/products/${item._id}/${handleUrlName(
                                         item.name
                                       )}`
                                     );
                                   }}
-                                  defaultChecked={queryString
+                                  
+                                  checked={queryString
                                     .stringify(queryParams)
                                     .includes(item._id)}
-                                  disabled={!productsLoaded || productsFetching}
+                                  disabled={!productsLoaded}
                                 />
                                 <label
                                   className="form-check-label"
@@ -331,6 +335,7 @@ function Products() {
                         aria-controls="collapseOne"
                       >
                         sub categories
+                        <span></span>
                       </button>
                     </h2>
                     <div
@@ -368,20 +373,18 @@ function Products() {
                                                 item._id,
                                               ]
                                             : [queryParams.category, item._id],
-                                          page: 1,
+                                          // page: 1,
                                         });
                                       } else {
                                         applyFilters({
                                           category: queryParams.category.filter(
                                             (el) => el !== item._id
                                           ),
-                                          page: 1,
+                                          // page: 1,
                                         });
                                       }
                                     }}
-                                    disabled={
-                                      !productsLoaded || productsFetching
-                                    }
+                                    disabled={!productsLoaded}
                                     defaultChecked={queryString
                                       .stringify(queryParams)
                                       .includes(item._id)}
@@ -413,8 +416,9 @@ function Products() {
                       aria-controls="collapseTwo"
                     >
                       <p className="d-flex align-items-center gap-1 mb-0">
-                        <span>Price (EGP)</span>
+                        Price (EGP)
                       </p>
+                      <span></span>
                     </button>
                   </h2>
                   <div
@@ -445,7 +449,7 @@ function Products() {
                               from: e.target.min,
                             })
                           }
-                          disabled={!productsLoaded || productsFetching}
+                          disabled={!productsLoaded}
                         />
                         <span className="to">TO</span>
                         <input
@@ -469,7 +473,7 @@ function Products() {
                               to: e.target.min,
                             })
                           }
-                          disabled={!productsLoaded || productsFetching}
+                          disabled={!productsLoaded}
                         />
 
                         <div className="d-flex flex-column gap-1">
@@ -480,7 +484,7 @@ function Products() {
                               applyFilters({
                                 "price[gte]": priceRange.from,
                                 "price[lte]": priceRange.to,
-                                page: 1,
+                                // page: 1,
                               });
                               setPriceRange({
                                 ...priceRange,
@@ -502,7 +506,7 @@ function Products() {
                                 applyFilters({
                                   "price[gte]": null,
                                   "price[lte]": null,
-                                  page: 1,
+                                  // page: 1,
                                 });
                                 setPriceRange({
                                   from: 1,
@@ -530,7 +534,7 @@ function Products() {
                       aria-expanded="true"
                       aria-controls="collapseThree"
                     >
-                      brands
+                      brands<span></span>
                     </button>
                   </h2>
                   <div
@@ -569,9 +573,11 @@ function Products() {
                                         ];
                                       } else {
                                         updatedBrands =
-                                          queryParams.brand.filter(
-                                            (el) => el !== item._id
-                                          );
+                                          queryParams.brand.length > 1
+                                            ? queryParams.brand.filter(
+                                                (el) => el !== item._id
+                                              )
+                                            : null;
                                       }
                                     } else {
                                       updatedBrands = isChecked
@@ -580,13 +586,13 @@ function Products() {
                                     }
                                     applyFilters({
                                       brand: updatedBrands,
-                                      page: 1,
+                                      // page: 1,
                                     });
                                   }}
                                   defaultChecked={queryString
                                     .stringify(queryParams)
                                     .includes(item._id)}
-                                  disabled={!productsLoaded || productsFetching}
+                                  disabled={!productsLoaded}
                                 />
                                 <label
                                   className="form-check-label"
@@ -603,18 +609,49 @@ function Products() {
                   </div>
                 </div>
               </div>
+              <div
+                className="aside-overlay"
+                onClick={() => setTogglePanel(false)}
+              ></div>
             </div>
             <div className="col-xl-9 col-lg-8">
               <div
-                className="d-flex  align-items-center gap-4 flex-wrap  mb-5"
+                className="products-head d-flex  align-items-center gap-4 flex-wrap  mb-5"
                 style={{ justifyContent: "space-between" }}
               >
                 <h3 className="products-title fw-bold mb-0">
-                  {categoryName?.split("+").join(" ") || "Featured Products"}{" "}
+                  {categoryName?.split("+").join(" ") || "Products"}{" "}
                   {products && productsLoaded ? `(${products[0].results})` : ""}
+                  {Object.values(queryParams).filter(
+                    (el) => el && el && el !== 12
+                  ).length ? (
+                    <span
+                      className="d-block fs-6 text-main d-lg-none mt-2"
+                      onClick={() => setTogglePanel(true)}
+                    >
+                      {
+                        Object.values(queryParams).filter(
+                          (el) => el && el && el !== 12
+                        ).length
+                      }{" "}
+                      Applied Filters
+                    </span>
+                  ) : null}
                 </h3>
 
-                <div className="d-flex align-items-center gap-4">
+                <div className="products-head-f d-flex align-items-sm-center gap-4">
+                  <div className="form-group d-lg-none d-flex align-items-center gap-2">
+                    <button
+                      className="filters-panel-btn"
+                      onClick={() => setTogglePanel(true)}
+                    >
+                      <span>
+                        <i className="fa-solid fa-filter"></i>
+                      </span>
+                      Filters
+                    </button>
+                  </div>
+
                   <div className="form-group d-flex align-items-center gap-2">
                     <label
                       className="form-label flex-shrink-0 mb-0 fw-bold"
@@ -633,7 +670,7 @@ function Products() {
                             e.target.value === "default"
                               ? null
                               : e.target.value,
-                          page: 1,
+                          // page: 1,
                         });
                       }}
                       value={queryParams.sort || "default"}
@@ -659,7 +696,7 @@ function Products() {
                       onChange={(e) => {
                         applyFilters({
                           limit: parseInt(e.target.value),
-                          page: 1,
+                          // page: 1,
                         });
                       }}
                       value={queryParams.limit || "12"}
@@ -674,8 +711,10 @@ function Products() {
               </div>
 
               <div className="products-wrapper">
-                <div className="row row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-sm-2">
-                  {!productsLoaded &&
+                <div
+                  className={`row row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 ${rowGrid}`}
+                >
+                  {!productsLoaded && true &&
                     [...Array(12)].map((_, index) => (
                       <ProductCardLoading key={index} />
                     ))}
@@ -690,7 +729,7 @@ function Products() {
                         <ProductsList products={el.data} key={index} />
                       ) : (
                         <div
-                          className="pt-4 d-flex flex-column gap-3 align-items-center text-center w-100"
+                          className="products-empty py-4 px-3 d-flex flex-column gap-3 align-items-center text-center w-100 mx-auto w-100"
                           key={index}
                         >
                           <img
@@ -781,8 +820,9 @@ function Products() {
                 ) : null} */}
 
                 <div ref={bottomBoundaryRef} className="text-center"></div>
-                {!productsLoaded ||
-                  (productsFetching && (
+                {products &&
+                  products[0]?.data?.length > 0 &&
+                  productsFetching && (
                     <div className="d-flex justify-content-center">
                       <ThreeDots
                         visible={true}
@@ -795,7 +835,7 @@ function Products() {
                         wrapperClass=""
                       />
                     </div>
-                  ))}
+                  )}
                 {/* {productsLoaded && hasNextPage && (
                     <button
                       type="button"

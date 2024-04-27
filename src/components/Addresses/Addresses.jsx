@@ -16,6 +16,7 @@ import actGetData from "../../store/general/act/actGetData";
 import actGetAddresses from "../../store/addresses/act/actGetAddresses";
 import { getAddresses, useGetAddressesQuery } from "../../store/api/apiSlice";
 import { useQuery } from "react-query";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function Addresses() {
   const {
@@ -32,6 +33,16 @@ function Addresses() {
       <Helmet>
         <title>FreshCart | Addresses</title>
       </Helmet>
+
+      <Breadcrumb
+        data={[
+          {
+            name: "addresses",
+            link: null,
+          }
+        ]}
+      />
+
       <section className="section-style account-section">
         <div className="container">
           <div className="row gx-lg-5">
@@ -63,7 +74,7 @@ function Addresses() {
                             <AddressBox key={item._id} address={item} />
                           ))
                         ) : (
-                          <EmptyAddresses imgWidth={150} imgHeight={150} />
+                          <div className="w-100"><EmptyAddresses imgWidth={150} imgHeight={150} /></div>
                         ))}
                     </div>
                   </div>

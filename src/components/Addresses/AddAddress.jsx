@@ -11,6 +11,7 @@ import actAddAddresses from "../../store/addresses/act/actAddAddresses";
 import { useDispatch } from "react-redux";
 import { addNewAddress, useAddAddressMutation } from "../../store/api/apiSlice";
 import { useMutation, useQueryClient } from "react-query";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function AddAddress() {
   const navigate = useNavigate();
@@ -57,6 +58,20 @@ function AddAddress() {
       <Helmet>
         <title>FreshCart | Addresses</title>
       </Helmet>
+
+      <Breadcrumb
+        data={[
+          {
+            name: "addresses",
+            link: "/addresses",
+          },
+          {
+            name: "add address",
+            link: null,
+          }
+        ]}
+      />
+
       <section className="section-style account-section">
         <div className="container">
           <div className="row gx-lg-5">

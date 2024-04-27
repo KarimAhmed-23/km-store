@@ -52,6 +52,8 @@ import {
   useGetWishlist,
   useRemoveFromWishlist,
 } from "../../customHooks/useCart";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
+import handleUrlName from "../../utilities/handleUrlName";
 // import ReactImageMagnify from "react-image-magnify";
 
 function SingleProduct() {
@@ -167,6 +169,24 @@ function SingleProduct() {
         <title>FreshCart | {productName.split("+").join(" ")}</title>
       </Helmet>
 
+
+      <Breadcrumb
+        data={[
+          {
+            name: "products",
+            link: "/products",
+          },
+          {
+            name: product?.category.name,
+            link: `/products/${product?.category._id}/${handleUrlName(product?.category.name)}`,
+          },
+          {
+            name: product?.title,
+            link: null,
+          },
+        ]}
+      />
+
       {errorContent && (
         <div className="container alert alert-danger">{errorContent}</div>
       )}
@@ -188,8 +208,8 @@ function SingleProduct() {
                             nextEl: ".thumbs-slider-container .arrow-bottom",
                             prevEl: ".thumbs-slider-container .arrow-top",
                           }}
-                          mousewheel={true}
-                          allowTouchMove={false}
+                          mousewheel={window.innerWidth >= 992 ? true : false}
+                          allowTouchMove={window.innerWidth >= 992 ? false : true}
                           direction={"vertical"}
                           modules={[FreeMode, Mousewheel, Navigation, Thumbs]}
                           className="thumbs-slider"

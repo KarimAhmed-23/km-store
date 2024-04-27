@@ -94,7 +94,7 @@
 
 .order-item .order-items .item-card .item-title{
     font-weight: bold;
-    font-size: 16px;
+    font-size: var(--title-16-14);
     transition: all .3s ease;
 }
 .order-item .order-items .item-card .item-title a{
@@ -106,7 +106,7 @@
 }
 
 .order-item .order-items .item-card .item-text{
-    font-size: 16px;
+    font-size: var(--title-16-14);
     font-weight: 500;
 }
 

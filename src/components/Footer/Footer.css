@@ -1,1 +1,219 @@
-.Footer {}
+footer {
+  background-color: #fff;
+  padding: 3rem 0;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.footer-menu {
+  margin-bottom: 1.5rem;
+}
+.footer-menu .footer-menu-title {
+  font-weight: 700;
+  color: var(--main-color);
+  margin-bottom: 1rem;
+  text-transform: capitalize;
+}
+
+.footer-menu .footer-menu-ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.footer-menu .footer-menu-ul .footer-menu-item {
+  padding-right: 25px;
+}
+.footer-menu .footer-menu-ul .footer-menu-item .footer-menu-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.footer-menu .footer-menu-ul .footer-menu-item:last-of-type .footer-menu-link {
+  margin-bottom: 0;
+}
+
+.footer-menu .footer-menu-ul .footer-menu-item .footer-menu-link:hover {
+  color: var(--main-color);
+}
+
+.footer-menu .footer-menu-ul .footer-menu-item .footer-menu-link span {
+  display: block;
+  padding-right: 5px;
+}
+.footer-menu .footer-about {
+  position: relative;
+}
+
+.footer-menu .footer-about .footer-about-logo {
+  /* margin-top: 1rem;
+      margin-bottom: 1rem;*/
+}
+.footer-menu .footer-about .footer-about-logo img {
+  display: block;
+  min-width: 250px;
+  margin: auto;
+}
+
+.footer-menu .footer-about .social-media-icons {
+  display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  width: 100%;
+}
+
+.footer-menu .footer-about .social-media-icons a {
+  display: block;
+  font-size: 22px;
+  color: #333;
+  margin-right: 25px;
+  transition: all 0.3s ease;
+}
+.footer-menu .footer-about .social-media-icons a:last-of-type {
+  margin-right: 0;
+}
+.footer-menu .footer-about .social-media-icons a:hover {
+  color: var(--main-color);
+  transform: scale(1.1);
+}
+
+footer .copy-rights-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ccc;
+}
+
+footer .copy-rights-area .copy-rights-text {
+  font-size: 16px;
+  color: var(--main-color);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 700;
+}
+.payment-ways {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+
+.payment-ways .payment-way svg {
+  cursor: pointer;
+  filter: grayscale(100%);
+  transition: all 0.3s ease;
+  max-height: 30px;
+  min-width: 30px;
+  display: block;
+}
+.payment-ways .payment-way svg:hover {
+  filter: grayscale(0);
+}
+
+/*------------- #responsive --------------*/
+
+@media (max-width: 991.98px) {
+  footer {
+    padding-bottom: calc(1.5rem + 65px) !important;
+  }
+  /*** fix img **/
+  footer {
+    padding-top: calc(1.5rem - 1.5rem);
+  }
+  .footer-menu .footer-about .social-media-icons {
+    margin-top: -20px;
+  }
+
+  /*** fix img **/
+}
+
+@media (max-width: 767.98px) {
+  .footer-menu .footer-menu-ul .footer-menu-item {
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  footer .copy-rights-area {
+    flex-direction: column;
+  }
+}
+
+/*------------- #contact-us-banner --------------*/
+
+.contact-us-banner {
+  padding: 1.5rem var(--box-px-xsm);
+  background-color: var(--light-color);
+}
+
+.contact-us-banner .contact-us-banner-text h3 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  text-transform: capitalize;
+}
+.contact-us-banner .contact-us-banner-text a {
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+.contact-us-banner .contact-us-banner-text a:hover {
+  color: var(--main-color);
+}
+
+.contact-us-banner .contact-us-banner-email {
+  display: flex;
+  justify-content: end;
+}
+.contact-us-banner .contact-us-banner-email a {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--main-color);
+  font-size: var(--title-6);
+  font-weight: 700;
+  transition: all 0.3s ease;
+  
+}
+.contact-us-banner .contact-us-banner-email a svg {
+  width: 45px;
+  height: 45px;
+  display: block;
+  flex-shrink: 0;
+}
+.contact-us-banner .contact-us-banner-email .tst--2 {
+  fill: var(--main-color);
+}
+
+.contact-us-banner .contact-us-banner-email a span {
+  transition: all 0.3s ease;
+}
+.contact-us-banner .contact-us-banner-email a:hover span {
+  color: var(--main-color-hvr);
+}
+@media (max-width: 767.98px) {
+  .contact-us-banner .contact-us-banner-email {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 575.98px) {
+    .contact-us-banner .contact-us-banner-email a{
+        font-size: 16px;
+    }
+  .contact-us-banner .contact-us-banner-email a svg {
+    width: 30px;
+    height: 30px;
+  }
+}

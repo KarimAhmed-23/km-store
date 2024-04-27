@@ -14,3 +14,9 @@
 .brand-card img:hover{
     filter: grayscale(100%) invert(100%) sepia(100%) saturate(0%) brightness(100%) contrast(100%) hue-rotate(110deg);
 }
+
+@media(max-width:575.98px){
+    .brands-slider-container .swiper{
+        overflow: visible;
+    }
+}

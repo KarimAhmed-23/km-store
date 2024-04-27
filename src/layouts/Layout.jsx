@@ -10,6 +10,8 @@ import useGetPrevState from "../customHooks/UseGetPrevState";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { changeLocale } from "../store/general/generalSlice";
+import ToolBar from "../components/ToolBar/ToolBar";
+import Header from "../components/Navbar/Header";
 
 function Layout() {
   const dispatch = useDispatch();
@@ -78,8 +80,11 @@ function Layout() {
         />
 
         <Navbar />
+        <Header/>
+        
         <Outlet />
         <Footer />
+        <ToolBar/>
         <ScrollToTop />
         {loading && (
           <div

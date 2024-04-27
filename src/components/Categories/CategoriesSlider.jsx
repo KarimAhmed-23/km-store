@@ -44,11 +44,11 @@ function CategoriesSlider() {
 
       <Swiper
         onSwiper={setSwiper}
-        slidesPerView={2}
+        slidesPerView="auto"
         slidesPerGroup={1}
-        spaceBetween={15}
+        spaceBetween={12}
         grabCursor={true}
-        freeMode={true}
+        freeMode={window.innerWidth <= 576 ? true : false }
         navigation={{
           nextEl: ".categories-slider-container .arrow-left",
           prevEl: ".categories-slider-container .arrow-right",

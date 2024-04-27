@@ -8,16 +8,20 @@ import { Swiper, SwiperSlide } from "swiper/react";
 function HeroSlider() {
   const images = [
     {
-      src: require("../../assets/images/banner-1.jpg"),
+      src: window.innerWidth >= 767 ? require("../../assets/images/banner-10.png") : require("../../assets/images/banner-21.png"),
       name: "slide1",
     },
     {
-      src: require("../../assets/images/banner-2.jpg"),
+      src: window.innerWidth >= 767 ? require("../../assets/images/banner-12.png") : require("../../assets/images/banner-23.png"),
       name: "slide2",
     },
     {
-      src: require("../../assets/images/banner-3.jpg"),
+      src: window.innerWidth >= 767 ? require("../../assets/images/banner-13.gif") : require("../../assets/images/banner-24.gif"),
       name: "slide3",
+    },
+    {
+      src: window.innerWidth >= 767 ? require("../../assets/images/banner-11.png") : require("../../assets/images/banner-22.png"),
+      name: "slide4",
     },
   ];
 
@@ -36,6 +40,7 @@ function HeroSlider() {
   return (
     <Swiper
       onSwiper={setSwiper}
+      spaceBetween={10}
       pagination={true}
       grabCursor={true}
       autoplay={{

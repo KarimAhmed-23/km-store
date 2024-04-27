@@ -1,5 +1,101 @@
-.hero-slider .swiper-pagination-bullet{
-    width: 20px;
-    border-radius: 4px;
-    background-color: var(--main-color);
+.hero-slider .swiper-pagination-bullet {
+  width: 15px;
+  height: 5px;
+  border-radius: 4px;
+  background-color: var(--main-color);
+}
+
+.hero-slider .hero-slide {
+  background-color: #fff;
+}
+.hero-slider .hero-slide img {
+  mix-blend-mode: multiply;
+}
+
+
+@media(min-width:992px){
+  .hero-section{
+    padding-top: 0 !important;
+  }
+  .hero-section .container{
+    padding: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+
+/*** banners-area ***/
+
+.ads-banner-item {
+  display: flex !important;
+  align-items: flex-end;
+  padding: 30px var(--box-px-xs);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 400px;
+  width: 100%;
+  border-radius: var(--border-r-2);
+  position: relative;
+  background-blend-mode: multiply;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff !important;
+}
+
+.ads-banner-item .banner-title {
+  font-weight: bold;
+  font-size: var(--title-4);
+  text-transform: capitalize;
+  margin-bottom: 10px;
+  
+}
+.ads-banner-item .banner-link {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  gap: 0.5rem;
+}
+.ads-banner-item:hover .banner-link {
+  color: var(--main-color);
+}
+
+@media (max-width: 575.98px) {
+  .ads-banner-item {
+    height: 300px;
+  }
+  .ads-banner-wrap{
+    --box-width:275px;
+  }
+  .ads-banners-area .scroll-grid {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0 calc(.75rem * -1) !important;
+    max-width: none !important;
+  }
+  .ads-banners-area .scroll-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ads-banners-area .scroll-grid .row {
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    transform: none !important;
+  }
+  .ads-banners-area .scroll-grid .row > * {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: var(--box-width) !important;
+    flex-shrink: 0 !important;
+    margin-inline-start: var(--bs-gutter-x) !important;
+  }
+  .ads-banners-area .scroll-grid .row > *:last-child {
+    padding-inline-end: var(--bs-gutter-x) !important;
+    max-width: calc(var(--box-width) + var(--bs-gutter-x)) !important;
+  }
 }

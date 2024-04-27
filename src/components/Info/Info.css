@@ -1,0 +1,73 @@
+/*------------- #info-page --------------*/
+
+.welcome-banner{
+    
+    position: relative;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+}
+
+.welcome-banner::before{
+    
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: rgba(0,0,0,.6);
+    
+}
+
+
+.welcome-banner .welcome-banner-text{
+    
+    position: relative;
+    z-index: 2;
+    background-color: var(--main-color);
+    border: 1px solid var(--main-color);
+    padding: .5rem 2rem;
+    border-radius: 25px;
+    color: #fff;
+    font-size: var(--title-5);
+    font-weight: 700;
+    transition: all .3s ease;
+    text-transform: uppercase;
+    
+}
+.welcome-banner .welcome-banner-text:hover{
+    
+    background-color: var(--main-color-hvr)
+}
+
+.description-area{
+    
+    position: relative;
+    padding: 3rem 0;
+}
+.description-area p{
+    
+    font-size: var(--title-7);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    
+}
+
+.description-area p:last-child{
+    margin-bottom: 0;
+}
+
+.description-area p a{
+    color: var(--main-color);
+    transition: all .3s ease;
+    display: inline-block;
+}
+.description-area p a:hover{
+    color:  var(--main-color-hvr);
+}

@@ -123,7 +123,7 @@ function CartBox({ product,cartOrder }) {
           {!cartOrder ? (
             <button
               type="button"
-              className="btn remove-btn"
+              className="btn remove-btn d-md-flex d-none"
               onClick={() => handleDelete(product.product._id)}
             >
               <span>
@@ -138,7 +138,7 @@ function CartBox({ product,cartOrder }) {
           )}
         </div>
         {!cartOrder ? (
-          <div className="item-actions">
+          <div className="item-actions d-flex justify-content-between align-items-center gap-3 ">
             <div className="item-qty">
               <div className="qty-container">
                 <div className="qty-wrap">
@@ -197,6 +197,17 @@ function CartBox({ product,cartOrder }) {
                 </div>
               </div>
             </div>
+            <button
+              type="button"
+              className="btn remove-btn d-md-none d-flex"
+              onClick={() => handleDelete(product.product._id)}
+            >
+              <span>
+                <i className="far fa-trash-alt me-1"></i>
+              </span>
+              remove
+            </button>
+
           </div>
         ) : null}
       </div>

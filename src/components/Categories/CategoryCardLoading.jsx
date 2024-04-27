@@ -5,7 +5,7 @@ function CategoryCardLoading() {
     <div className='category-card skeleton'>
         <div className='category-img skeleton-bar'>
         </div>
-        <div className='category-title skeleton-bar' style={{width:"100px"}}></div>
+        <div className='category-title skeleton-bar' style={{width:"80px"}}></div>
     </div>
   )
 }

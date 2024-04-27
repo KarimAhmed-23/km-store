@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 
 function Search({getSearchKeyword:setSearchKeyword}) {
 
-    console.log()
 
     const [searchVal , setSearchVal] = useState("");
 

@@ -16,27 +16,13 @@ import actGetProducts from "../../store/products/act/actGetProducts";
 import { getProducts, useGetProductsQuery } from "../../store/api/apiSlice";
 import { useQueries, useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
+import smBanner1 from "../../assets/images/s-b-1.svg";
+import smBanner2 from "../../assets/images/s-b-2.svg";
+import smBanner3 from "../../assets/images/s-b-3.svg";
+import smBanner4 from "../../assets/images/s-b-4.svg";
 
 function Home() {
-  const { t } = useTranslation(['translation' , 'about']);
-
-  // const {
-  //   data: featuredProducts,
-  //   isLoading: featuredProductsLoading,
-  //   error: featuredProductsError,
-  // } = useGetProductsQuery({
-  //   limit: "15",
-  //   category: "6439d5b90049ad0b52b90048",
-  // });
-
-  // const {
-  //   data: newProducts,
-  //   isLoading: newProductsLoading,
-  //   error: newProductsError,
-  // } = useGetProductsQuery({
-  //   limit: "20",
-  //   category: "6439d2d167d9aa4ca970649f",
-  // });
+  const { t } = useTranslation(["translation", "about"]);
 
   const {
     data: featuredProducts,
@@ -44,7 +30,12 @@ function Home() {
     error: featuredProductsError,
   } = useQuery(
     ["getProducts-featuredProducts"],
-    () => getProducts({ limit: "15", category: "6439d5b90049ad0b52b90048" }),
+    () =>
+      getProducts({
+        limit: "15",
+        category: "6439d2d167d9aa4ca970649f",
+        page: 2,
+      }),
     {
       select: (data) => data.data,
     }
@@ -56,7 +47,12 @@ function Home() {
     error: newProductsError,
   } = useQuery(
     ["getProducts-newProducts"],
-    () => getProducts({ limit: "20", category: "6439d2d167d9aa4ca970649f" }),
+    () =>
+      getProducts({
+        limit: "15",
+        category: "6439d2d167d9aa4ca970649f",
+        page: 1,
+      }),
     {
       select: (data) => data.data,
     }
@@ -77,18 +73,11 @@ function Home() {
 
   return (
     <>
-      <div className="p-5 d-none">
-        <h1 className="main-title">{t("common.title")}</h1>
-        <h1 className="main-title">{t("description.part1")}</h1>
-        <h1 className="main-title">{t("description.part2")}</h1>
-        <h1 className="main-title">{t("description.part3")}</h1>
-        
-      </div>
       <Helmet>
         <title>FreshCart | Home</title>
       </Helmet>
 
-      <section className="section-style hero-section">
+      <section className="section-style hero-section w-mr mt-lg-0 mb-0">
         <div className="container">
           <HeroSlider />
         </div>
@@ -96,13 +85,27 @@ function Home() {
 
       <section className="section-style categories-section">
         <div className="container">
+          {/* <h1 className="main-title">Popular Categories</h1> */}
           <div className="slider-container categories-slider-container">
             <CategoriesSlider />
           </div>
         </div>
       </section>
 
-      <section className="section-style products-section">
+      <section className="section-style products-slider-section">
+        <div className="container">
+        <h1 className="main-title">featured Products</h1>
+          <div className="slider-container products-slider-container">
+            <ProductsSlider
+              isLoaded={featuredProductsLoading}
+              error={featuredProductsError?.data?.message}
+              products={featuredProducts?.data}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* <section className="section-style products-section">
         <div className="container">
           <h1 className="main-title">featured products</h1>
 
@@ -124,17 +127,163 @@ function Home() {
               ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="section-style banner-section py-0">
-        <div className="container position-relative">
-          <Link to={"/products/6439d5b90049ad0b52b90048/Men's Fashion"}>
-            <img
-              className="w-100 img-fluid"
-              src={require("../../assets/images/banner-4.jpg")}
-              alt="banner"
-            />
-          </Link>
+      <section className="section-style banner-section ">
+        <div className="banner-area">
+          <div className="container">
+            <div className="ads-banners-area mb-md-5 mb-4">
+              <div className="scroll-grid">
+                <div className="row  row-cols-lg-4 row-cols-sm-2 row-cols-1 gx-lg-4 gx-3 gx-sm-75  gy-3">
+                  <div className="ads-banner-wrap">
+                    <Link
+                      to={"/products/6439d2d167d9aa4ca970649f/Electronics"}
+                      className="ads-banner-item hvr-icon-wobble-horizontal"
+                      style={{
+                        backgroundImage: `url(${require("../../assets/images/ads-1.png")})`,
+                      }}
+                    >
+                      <div className="banner-content">
+                        <div className="banner-title">Electronics</div>
+                        <span
+                          
+                          className="banner-link "
+                        >
+                          For more click here
+                          <span className="hvr-icon">
+                            <i className="fas fa-arrow-right" />
+                          </span>
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                  <div className="ads-banner-wrap">
+                    <Link
+                       to={"/products/6439d2d167d9aa4ca970649f/Electronics"}
+                       className="ads-banner-item hvr-icon-wobble-horizontal"
+                      style={{
+                        backgroundImage: `url(${require("../../assets/images/ads-2.png")})`,
+                      }}
+                    >
+                      <div className="banner-content">
+                        <div className="banner-title">tvs</div>
+                        <span
+                         
+                          className="banner-link"
+                        >
+                          For more click here
+                          <span className="hvr-icon">
+                            <i className="fas fa-arrow-right" />
+                          </span>
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+
+                  <div className="ads-banner-wrap">
+                    <Link
+                      to={
+                        "/products/6439d5b90049ad0b52b90048/Men's Fashion"
+                      }
+                      className="ads-banner-item hvr-icon-wobble-horizontal"
+                      style={{
+                        backgroundImage: `url(${require("../../assets/images/ads-3.jpeg")})`,
+                      }}
+                    >
+                      <div className="banner-content">
+                        <div className="banner-title">Men's Fashion</div>
+                        <span
+                          
+                          className="banner-link "
+                        >
+                          For more click here
+                          <span className="hvr-icon">
+                            <i className="fas fa-arrow-right" />
+                          </span>
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                  <div className="ads-banner-wrap">
+                    <Link
+                      to={
+                        "/products/6439d58a0049ad0b52b9003f/Women's Fashion"
+                      }
+                      className="ads-banner-item hvr-icon-wobble-horizontal"
+                      style={{
+                        backgroundImage: `url(${require("../../assets/images/ads-4.jpeg")})`,
+                      }}
+                    >
+                      <div className="banner-content">
+                        <div className="banner-title">Women's Fashion</div>
+                        <span
+                          
+                          className="banner-link"
+                        >
+                          For more click here
+                          <span className="hvr-icon">
+                            <i className="fas fa-arrow-right" />
+                          </span>
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="small-banners-area">
+              <div className="row row-cols-xl-4 row-cols-sm-2 row-cols-sm-2 gx-lg-4  gx-3 gx-sm-75 gy-3">
+                <div className="small-banner-wrap">
+                  <Link
+                    to={"/products/6439d2d167d9aa4ca970649f/Electronics"}
+                    className="d-block"
+                  >
+                    <img
+                      className="w-100 img-fluid"
+                      src={smBanner1}
+                      alt="banner"
+                    />
+                  </Link>
+                </div>
+                <div className="small-banner-wrap">
+                  <Link
+                    to={"/products/6439d2d167d9aa4ca970649f/Electronics"}
+                    className="d-block"
+                  >
+                    <img
+                      className="w-100 img-fluid"
+                      src={smBanner2}
+                      alt="banner"
+                    />
+                  </Link>
+                </div>
+                <div className="small-banner-wrap">
+                  <Link
+                    to={"/products/6439d2d167d9aa4ca970649f/Electronics"}
+                    className="d-block"
+                  >
+                    <img
+                      className="w-100 img-fluid"
+                      src={smBanner3}
+                      alt="banner"
+                    />
+                  </Link>
+                </div>
+                <div className="small-banner-wrap">
+                  <Link
+                    to={"/products/6439d2d167d9aa4ca970649f/Electronics"}
+                    className="d-block"
+                  >
+                    <img
+                      className="w-100 img-fluid"
+                      src={smBanner4}
+                      alt="banner"
+                    />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

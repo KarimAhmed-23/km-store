@@ -20,6 +20,7 @@ import actGetAddresses from "../../store/addresses/act/actGetAddresses";
 import { getAddresses, useGetAddressesQuery } from "../../store/api/apiSlice";
 import { cartApi, getCart, useGetCartQuery } from "../../store/api/cartApi";
 import { useQuery, useQueryClient } from "react-query";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function Checkout() {
 
@@ -109,11 +110,22 @@ function Checkout() {
   }
   
 
+
   return (
     <>
       <Helmet>
         <title>FreshCart | Checkout</title>
       </Helmet>
+
+      <Breadcrumb
+        data={[
+          {
+            name: "checkout",
+            link: "/checkout",
+          }
+        ]}
+      />
+
       <section className="section-style checkout-section">
         <div className="container">
           <div className="row">
@@ -121,7 +133,7 @@ function Checkout() {
               <div className="checkout-area">
                 <div className="addresses-boxes area-item">
                   <div className="area-head">
-                    <h2 className="area-title">Shipping Address</h2>
+                    <h2 className="area-title">Choose Address</h2>
                     <Link
                       to={"/addresses"}
                       className="btn bg-main text-white justify-content-between"
@@ -130,7 +142,7 @@ function Checkout() {
                     </Link>
                   </div>
                   <div className="boxes-wrapper">
-                    <div className="row row-cols-xl-2">
+                    <div className="row row-cols-xl-2 gy-4 gx-3">
                       {addressesLoading &&
                         [...Array(2)].map((_, index) => (
                           <AddressBoxLoading key={index}  selectAddress={true} />
@@ -141,7 +153,7 @@ function Checkout() {
                             <AddressBox key={item._id} address={item} activeAddress={activeAddress} selectAddress={selectAddress}/>
                           ))
                         ) : (
-                          <EmptyAddresses imgWidth={100} imgHeight={100} />
+                          <div className="w-100"><EmptyAddresses imgWidth={100} imgHeight={100} /></div>
                         ))}
                       {}
                     </div>

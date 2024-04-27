@@ -33,6 +33,13 @@ import store from './store';
 import { checkAuth } from './store/auth/authSlice';
 import InverseProtectedRote from './components/ProtectedRoute/InverseProtectedRote';
 import { I18nextProvider } from 'react-i18next';
+import PolicyPurchase from './components/Info/PurchasePolicy';
+import PurchasePolicy from './components/Info/PurchasePolicy';
+import ShippingPolicy from './components/Info/ShippingPolicy';
+import DataSecurity from './components/Info/DataSecurity';
+import AboutUs from './components/Info/AboutUs';
+import Contact from './components/Info/Contact';
+import GeneralSearch from './components/Search/GeneralSearch';
 
 
 
@@ -79,6 +86,15 @@ function App() {
         {path:"/add-address/" , element:<ProtectedRoute> <AddAddress/> </ProtectedRoute> },
         {path:"/edit-address/:id" , element:<ProtectedRoute> <EditAddress/> </ProtectedRoute> },
         {path:"/allorders" , element:<ProtectedRoute> <AllOrders/> </ProtectedRoute> },
+
+        {path:"purchase-policy" , element : <PurchasePolicy/> },
+        {path:"shipping-policy" , element : <ShippingPolicy/> },
+        {path:"data-security" , element : <DataSecurity/> },
+        {path:"about-us" , element : <AboutUs/> },
+        {path:"contact" , element : <Contact/> },
+        {path:"search" , element : <GeneralSearch/> },
+        
+
         {path:"test" , element : <ProductsApi/> },
         {path:"*" , element : <NotFound/> }
 
@@ -93,39 +109,29 @@ function App() {
 
   return (
     <>
+      <QueryClientProvider client={queryClient}>
+        <AuthContextProvider>
+          <CartContextProvider>
+            <WishlistContextProvider>
+              <RouterProvider router={routes} />
+            </WishlistContextProvider>
+          </CartContextProvider>
+        </AuthContextProvider>
 
+        {/* <ReactQueryDevtools initialIsOpen="false" position="bottom-right" /> */}
+      </QueryClientProvider>
 
-    <QueryClientProvider client={queryClient}>
+      <ToastContainer
+        theme="colored"
+        autoClose={2500}
+        closeOnClick={true}
+        icon={false}
+        position={window.innerWidth >= 576 ? "bottom-right" : "top-right"}
+      />
 
-      <AuthContextProvider>
-          
-        <CartContextProvider>
-
-        
-        <WishlistContextProvider>
-
-              <RouterProvider router={routes}/> 
-
-        </WishlistContextProvider>
-            
-
-        </CartContextProvider>
-      
-        
-      </AuthContextProvider>
-
-      <ReactQueryDevtools initialIsOpen="false" position="bottom-right" />
-
-    </QueryClientProvider>
-
-    <ToastContainer theme='colored' autoClose={2500} closeOnClick={true} icon={false} position="bottom-right"/>
-
-    <Offline>
-      <div className='offline'>
-        You Are Offline
-      </div>
-    </Offline>
-
+      <Offline>
+        <div className="offline">You Are Offline</div>
+      </Offline>
     </>
   );
 }

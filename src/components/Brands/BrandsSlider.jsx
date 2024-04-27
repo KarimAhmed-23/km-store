@@ -44,8 +44,9 @@ function BrandsSlider() {
       <Swiper
         onSwiper={setSwiper}
         slidesPerView={2}
-        spaceBetween={15}
+        spaceBetween={12}
         grabCursor={true}
+        freeMode={window.innerWidth <= 576 ? true : false }
         loop={true}
         autoplay={{
           delay: 2500,

@@ -6,7 +6,7 @@ import "./Brands.css";
 function BrandCard({ brand }) {
   return (
     <div className="brand-wrap">
-        <div className="brand-card ">
+        <Link className="brand-card " to={`/products?brand=${brand._id}`}>
             <CatchImage
                 notFoundStyle={<h2 className="fw-bold mb-0">Image Not Found</h2>}
             >
@@ -17,7 +17,7 @@ function BrandCard({ brand }) {
                 loading="lazy"
                 />
             </CatchImage>
-      </div>
+      </Link>
     </div>
   );
 }

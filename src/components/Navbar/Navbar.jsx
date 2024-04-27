@@ -54,7 +54,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-main-light">
+      <nav className="navbar navbar-expand-lg bg-main-light d-none">
         <div className="container">
           <Link className="navbar-brand" to="/">
             <img className="img-fluid" src={logo} alt="site logo" />

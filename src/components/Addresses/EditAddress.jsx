@@ -6,11 +6,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import useGetApi from "../../customHooks/UseGetApi";
 import { baseUrl } from "../../utilities/baseUrl";
+import { addNewAddress, deleteSelectedAddress } from "../../store/api/apiSlice";
+import { useMutation, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function EditAddress() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  const queryClient =useQueryClient();
 
   const [address, addressLoaded , , , setAddress] = useGetApi(`${baseUrl}addresses/${id}`, {
     headers: {
@@ -27,6 +33,33 @@ function EditAddress() {
     details: Yup.string().required("details is required"),
   });
 
+
+  const {mutate:mutateDeleteAddress , isLoading:isLoadingDelete} = useMutation(deleteSelectedAddress,{
+    onSuccess:({data})=>{
+      queryClient.invalidateQueries("getAddresses")
+    },
+    onError:(error)=>{
+      toast.error("error, try again" );
+    }
+  })
+  const {mutate:mutateAddNewAddress , isLoading} = useMutation(addNewAddress , {
+    onSuccess :({data})=>{
+      queryClient.invalidateQueries("getAddresses");
+      toast.success("address edited successfully");
+      navigate("/addresses");
+    },
+    onError:(error)=>{
+      toast.error("error, try again" );
+    }
+  })
+  
+  async function EditAddress(values){
+    await mutateDeleteAddress(address?.data._id);
+    await mutateAddNewAddress(values);
+
+  }
+
+
   const formik = useFormik({
     initialValues: {
         name: address?.data.name ? address.data.name : "loading...",
@@ -39,13 +72,8 @@ function EditAddress() {
     validateOnBlur:true,
     validateOnChange:true,
 
-    onSubmit: () => {
-      console.log(id);
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/addresses");
-      }, 1000);
+    onSubmit: (values) => {
+      EditAddress(values);
     },
   });
 
@@ -65,6 +93,22 @@ function EditAddress() {
       <Helmet>
         <title>FreshCart | Addresses</title>
       </Helmet>
+
+
+      <Breadcrumb
+        data={[
+          {
+            name: "addresses",
+            link: "/addresses",
+          },
+          {
+            name: "edit address",
+            link: null,
+          }
+        ]}
+      />
+
+
       <section className="section-style account-section">
         <div className="container">
           <div className="row gx-lg-5">
@@ -154,7 +198,7 @@ function EditAddress() {
                   <button
                     type="submit"
                     className={`btn bg-main text-white px-4 loading-btn ${
-                      loading ? "loading-overlay" : ""
+                      isLoading || isLoadingDelete ? "loading-overlay" : ""
                     }`}
                     disabled={!(formik.isValid && formik.dirty)}
                   >

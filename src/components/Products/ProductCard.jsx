@@ -8,7 +8,10 @@ import useGetApi from "../../customHooks/UseGetApi";
 import { baseUrl } from "../../utilities/baseUrl";
 import { useDispatch, useSelector } from "react-redux";
 import actAddToCart from "../../store/cart/act/actAddToCart";
-import { checkProductFav, setWishlistProductsID } from "../../store/wishlist/wishlistSlice";
+import {
+  checkProductFav,
+  setWishlistProductsID,
+} from "../../store/wishlist/wishlistSlice";
 import actAddToWishlist from "../../store/wishlist/act/actAddToWishlist";
 import actRemoveFromWishlist from "../../store/wishlist/act/actRemoveFromWishlist";
 import { addToCart } from "../../store/api/cartApi";
@@ -22,15 +25,20 @@ import {
   wishlistApi,
 } from "../../store/api/wishlistApi";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useAddToCart, useAddToWishlist, useGetCart, useGetWishlist, useRemoveFromWishlist } from "../../customHooks/useCart";
+import {
+  useAddToCart,
+  useAddToWishlist,
+  useGetCart,
+  useGetWishlist,
+  useRemoveFromWishlist,
+} from "../../customHooks/useCart";
 
-export default function ProductCard({ product, updateData, withFav, isFav}) {
-
+export default function ProductCard({ product, updateData, withFav, isFav }) {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const { wishlistProductsID } = useSelector((state) => state.wishlist);
   const { userToken } = useSelector((state) => state.auth);
-  
+
   // const {mutate:mutateAddToCart , isLoading:cartBtnLoading} =useMutation(addToCart ,{
   //   onSuccess : ({data})=>{
   //     toast.success(data.message);
@@ -46,9 +54,9 @@ export default function ProductCard({ product, updateData, withFav, isFav}) {
   //     const IDS = data.data.map((el) => el._id);
   //     dispatch(setWishlistProductsID(IDS));
   //   },
-  //   enabled :userToken ? true : false , 
+  //   enabled :userToken ? true : false ,
   // });
-    
+
   // const {mutate:mutateAddToWishlist , isLoading:wishlistBtnLoading} = useMutation(addToWishlist , {
 
   //   onSuccess : ({data})=>{
@@ -76,11 +84,12 @@ export default function ProductCard({ product, updateData, withFav, isFav}) {
 
   // });
 
-  const {mutate:mutateAddToCart , isLoading:cartBtnLoading} = useAddToCart(); 
-  const {isLoading: isFavLoading} = useGetWishlist();
-  const {mutate:mutateAddToWishlist , isLoading:wishlistBtnLoading} = useAddToWishlist();
-  const {mutate:mutateRemoveFromWishlist , isLoading} = useRemoveFromWishlist(updateData);
-
+  const { mutate: mutateAddToCart, isLoading: cartBtnLoading } = useAddToCart();
+  const { isLoading: isFavLoading } = useGetWishlist();
+  const { mutate: mutateAddToWishlist, isLoading: wishlistBtnLoading } =
+    useAddToWishlist();
+  const { mutate: mutateRemoveFromWishlist, isLoading } =
+    useRemoveFromWishlist(updateData);
 
   async function addProductToCart(productId) {
     mutateAddToCart(productId);
@@ -97,31 +106,6 @@ export default function ProductCard({ product, updateData, withFav, isFav}) {
   return (
     <div className="product-wrap">
       <div className="product product-card ">
-        {true && (
-          <button
-            type="button"
-            className={`fav-btn loading-btn ${
-              checkProductFav(product._id, wishlistProductsID) || isFav
-                ? "active"
-                : ""
-            } ${wishlistBtnLoading || isLoading ? "loading-overlay" : ""} ${
-              isFavLoading && userToken ? "loading-overlay opacity-50" : ""
-            } `}
-            role="add to wishlist"
-            onClick={(e) => {
-              checkProductFav(product._id, wishlistProductsID) || isFav
-                ? removeProductFromWishlist(product._id)
-                : addProductToWishlist(product._id);
-            }}
-          >
-            {checkProductFav(product._id, wishlistProductsID) || isFav ? (
-              <i className="fa-solid fa-heart"></i>
-            ) : (
-              <i className="far fa-heart"></i>
-            )}
-          </button>
-        )}
-
         <Link
           className="product-img"
           to={`/product/${product._id}/${product.title
@@ -163,17 +147,44 @@ export default function ProductCard({ product, updateData, withFav, isFav}) {
               <span>{product.ratingsAverage}</span>
             </div>
           </div>
-          <button
-            onClick={() => addProductToCart(product._id)}
-            type="button"
-            role="add to card"
-            className={`btn bg-main text-white text-center w-100 card-btn loading-btn ${
-              cartBtnLoading ? "loading-overlay" : ""
-            }`}
-            disabled={cartBtnLoading}
-          >
-            {cartBtnLoading ? "loading..." : "Add To Cart"}
-          </button>
+
+          <div className="product-actions">
+            {true && (
+              <button
+                type="button"
+                className={`fav-btn loading-btn ${
+                  checkProductFav(product._id, wishlistProductsID) || isFav
+                    ? "active"
+                    : ""
+                } ${wishlistBtnLoading || isLoading ? "loading-overlay" : ""} ${
+                  isFavLoading && userToken ? "loading-overlay opacity-50" : ""
+                } `}
+                role="add to wishlist"
+                onClick={(e) => {
+                  checkProductFav(product._id, wishlistProductsID) || isFav
+                    ? removeProductFromWishlist(product._id)
+                    : addProductToWishlist(product._id);
+                }}
+              >
+                {checkProductFav(product._id, wishlistProductsID) || isFav ? (
+                  <i className="fa-solid fa-heart"></i>
+                ) : (
+                  <i className="far fa-heart"></i>
+                )}
+              </button>
+            )}
+            <button
+              onClick={() => addProductToCart(product._id)}
+              type="button"
+              role="add to card"
+              className={`btn bg-main text-white text-center w-100 card-btn loading-btn ${
+                cartBtnLoading ? "loading-overlay" : ""
+              }`}
+              disabled={cartBtnLoading}
+            >
+              {cartBtnLoading ? "loading..." : "Add To Cart"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -7,6 +7,8 @@ const initialState = {
   isLoaded: {},
   error: {},
   locale: "en",
+  panelToggle : false,
+  searchKeyword : ""
 };
 
 const generalSlice = createSlice({
@@ -15,6 +17,14 @@ const generalSlice = createSlice({
   reducers: {
     changeLocale: (state, action) => {
       state.locale = action.payload;
+    },
+    setPanelToggle: (state , action) => {
+      
+      state.panelToggle = action.payload;
+    },
+    setSearchKeyword: (state , action) => {
+      
+      state.searchKeyword = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -38,5 +48,5 @@ const generalSlice = createSlice({
   },
 });
 
-export const {changeLocale} = generalSlice.actions;
+export const {changeLocale , setPanelToggle , setSearchKeyword} = generalSlice.actions;
 export default generalSlice.reducer;

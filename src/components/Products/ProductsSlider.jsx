@@ -33,10 +33,11 @@ function ProductsSlider({ isLoaded , error , products  }) {
 
       <Swiper
         onSwiper={setSwiper}
-        slidesPerView={1}
+        slidesPerView="auto"
         slidesPerGroup={1}
-        spaceBetween={15}
+        spaceBetween={0}
         grabCursor={true}
+        freeMode={window.innerWidth <= 576 ? true : false }
         navigation={{
           nextEl: ".products-slider-container .arrow-left",
           prevEl: ".products-slider-container .arrow-right",
@@ -45,18 +46,22 @@ function ProductsSlider({ isLoaded , error , products  }) {
           576: {
             slidesPerView: 2,
             slidesPerGroup: 2,
+            spaceBetween:16,
           },
           768: {
             slidesPerView: 3,
             slidesPerGroup: 3,
+            spaceBetween:16,
           },
           992: {
             slidesPerView: 4,
             slidesPerGroup: 4,
+            spaceBetween:24,
           },
           1200: {
             slidesPerView: 5,
             slidesPerGroup: 5,
+            spaceBetween:24,
           },
         }}
         modules={[Pagination, Navigation, FreeMode]}

@@ -15,6 +15,7 @@ import actUpdateProfile from "../../store/auth/act/actUpdateProfile";
 import { removeAsyncStates, setUserData } from "../../store/auth/authSlice";
 import { updateProfile, useUpdateProfileMutation } from "../../store/api/authApi";
 import { useMutation } from "react-query";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function Account() {
   
@@ -68,6 +69,16 @@ function Account() {
       <Helmet>
         <title>FreshCart | My Account</title>
       </Helmet>
+
+
+      <Breadcrumb
+        data={[
+          {
+            name: "account",
+            link: null,
+          }
+        ]}
+      />
 
       <section className="section-style account-section">
         <div className="container">
