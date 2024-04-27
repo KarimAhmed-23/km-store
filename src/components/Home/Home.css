@@ -11,14 +11,16 @@
 .hero-slider .hero-slide {
   height: 100%;
   
-}
-.hero-slider .hero-slide  .img-feedback{
-  background-color: #eee;
-  font-size: var(--title-0);
-  height: 300px !important;
+  
 }
 .hero-slider .hero-slide img {
   mix-blend-mode: multiply;
+}
+
+.hero-slider .hero-slide.loading{
+  background-color: #eee;
+  font-size: var(--title-0);
+  height: 300px !important;
 }
 
 
@@ -27,7 +29,7 @@
     border-radius: 12px;
   }
 
-  .hero-slider .hero-slide  .img-feedback{
+  .hero-slider .hero-slide.loading{
     height: 150px !important;
   }
   

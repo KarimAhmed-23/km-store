@@ -10,7 +10,7 @@ function CategoryCard({category}) {
             <CatchImage 
             notFoundStyle={<h2 className='fw-bold mb-0'>Image Not Found</h2>}>
 
-                <img className='img-fluid' src={category.image ||  require("../../assets/images/test-img.jpg") } alt={category.name}/>
+                <img className='img-fluid loading-img' src={category.image ||  require("../../assets/images/test-img.jpg") } alt={category.name}/>
             </CatchImage>
             
         </div>

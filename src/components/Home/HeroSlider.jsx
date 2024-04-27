@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import CatchImage from "../CatchImage";
 
 function HeroSlider() {
+  const [isVisible, setIsVisible] = useState(false);
   const images = [
     {
       src:
@@ -50,8 +51,6 @@ function HeroSlider() {
     }
   }, [locale, swiper]);
 
-
-
   return (
     <Swiper
       onSwiper={setSwiper}
@@ -67,8 +66,16 @@ function HeroSlider() {
     >
       {images.map((img, index) => (
         <SwiperSlide key={index}>
-          <div className="hero-slide">
-              <img className="img-fluid w-100" src={img.src} alt={img.name} height={400}/>
+          <div className={`hero-slide ${!isVisible ? "loading" : null}`}>
+            <img
+              className={`img-fluid w-100 loading-img ${
+                isVisible ? "opacity-100" : "opacity-0"
+              }`}
+              src={img.src}
+              alt={img.name}
+              onLoad={() => setIsVisible(true)}
+            />
+            
           </div>
         </SwiperSlide>
       ))}
