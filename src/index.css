@@ -710,3 +710,12 @@ footer {
 .accordion-button:not(.collapsed)::after{
   display: none;
 }
+
+
+/*** sign-section ***/
+
+@media(max-width:991.98px){
+  .sign-section{
+    margin-top: var(--section-padding);
+  }
+}
