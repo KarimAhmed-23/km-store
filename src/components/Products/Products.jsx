@@ -37,8 +37,6 @@ function Products() {
   const bottomBoundaryRef = useRef(null);
   const [togglePanel, setTogglePanel] = useState(false);
 
- 
-
   const queryParamsFromUrl = queryString.parse(search, {
     skipNull: true,
     skipEmptyString: true,
@@ -63,8 +61,6 @@ function Products() {
   function applyFilters(filters) {
     setQueryParams({ ...queryParams, ...filters });
   }
-
- 
 
   const {
     data: categories,
@@ -194,9 +190,7 @@ function Products() {
   return (
     <>
       <Helmet>
-        <title>
-          Biod | {categoryName?.split("+").join(" ") || "Products"}
-        </title>
+        <title>Biod | {categoryName?.split("+").join(" ") || "Products"}</title>
       </Helmet>
 
       <Breadcrumb
@@ -301,7 +295,6 @@ function Products() {
                                       )}`
                                     );
                                   }}
-                                  
                                   checked={queryString
                                     .stringify(queryParams)
                                     .includes(item._id)}
@@ -622,18 +615,14 @@ function Products() {
                 <h3 className="products-title fw-bold mb-0">
                   {categoryName?.split("+").join(" ") || "Products"}{" "}
                   {products && productsLoaded ? `(${products[0].results})` : ""}
-                  {Object.values(queryParams).filter(
-                    (el) => el && el && el !== 12
-                  ).length ? (
+                  {Object.values(queryParams).filter((el) => el && el).length -
+                  1 ? (
                     <span
                       className="d-block fs-6 text-main d-lg-none mt-2"
                       onClick={() => setTogglePanel(true)}
                     >
-                      {
-                        Object.values(queryParams).filter(
-                          (el) => el && el && el !== 12
-                        ).length
-                      }{" "}
+                      {Object.values(queryParams).filter((el) => el && el)
+                        .length - 1}{" "}
                       Applied Filters
                     </span>
                   ) : null}
@@ -714,7 +703,8 @@ function Products() {
                 <div
                   className={`row row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 ${rowGrid}`}
                 >
-                  {!productsLoaded && true &&
+                  {!productsLoaded &&
+                    true &&
                     [...Array(12)].map((_, index) => (
                       <ProductCardLoading key={index} />
                     ))}

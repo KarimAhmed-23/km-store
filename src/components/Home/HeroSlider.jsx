@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pagination, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import CatchImage from "../CatchImage"
+import CatchImage from "../CatchImage";
 
 function HeroSlider() {
   const images = [
@@ -50,6 +50,8 @@ function HeroSlider() {
     }
   }, [locale, swiper]);
 
+
+
   return (
     <Swiper
       onSwiper={setSwiper}
@@ -66,9 +68,7 @@ function HeroSlider() {
       {images.map((img, index) => (
         <SwiperSlide key={index}>
           <div className="hero-slide">
-            <CatchImage>
-              <img className="img-fluid w-100" src={img.src} alt={img.name} />
-            </CatchImage>
+              <img className="img-fluid w-100" src={img.src} alt={img.name} height={400}/>
           </div>
         </SwiperSlide>
       ))}

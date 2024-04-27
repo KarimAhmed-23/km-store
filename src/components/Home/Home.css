@@ -5,13 +5,17 @@
   background-color: var(--main-color);
 }
 
+.hero-slider .swiper-slide{
+  height: auto;
+}
 .hero-slider .hero-slide {
   background-color: #eee;
+  height: 100%;
   
 }
 .hero-slider .hero-slide  .img-feedback{
   font-size: var(--title-0);
-  min-height: 300px;
+  height: 300px !important;
 }
 .hero-slider .hero-slide img {
   mix-blend-mode: multiply;
@@ -24,7 +28,7 @@
   }
 
   .hero-slider .hero-slide  .img-feedback{
-    min-height: 150px;
+    height: 150px !important;
   }
   
 }
