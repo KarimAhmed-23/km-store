@@ -9,11 +9,11 @@
   height: auto;
 }
 .hero-slider .hero-slide {
-  background-color: #eee;
   height: 100%;
   
 }
 .hero-slider .hero-slide  .img-feedback{
+  background-color: #eee;
   font-size: var(--title-0);
   height: 300px !important;
 }
