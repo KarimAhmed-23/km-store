@@ -195,7 +195,7 @@ function Products() {
     <>
       <Helmet>
         <title>
-          FreshCart | {categoryName?.split("+").join(" ") || "Products"}
+          Biod | {categoryName?.split("+").join(" ") || "Products"}
         </title>
       </Helmet>
 

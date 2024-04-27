@@ -91,7 +91,7 @@ function EditAddress() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Addresses</title>
+        <title>Biod | Addresses</title>
       </Helmet>
 
 

@@ -114,7 +114,7 @@ function Checkout() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Checkout</title>
+        <title>Biod | Checkout</title>
       </Helmet>
 
       <Breadcrumb

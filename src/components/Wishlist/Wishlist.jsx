@@ -30,7 +30,7 @@ function Wishlist() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Wishlist </title>
+        <title>Biod | Wishlist </title>
       </Helmet>
 
       <Breadcrumb

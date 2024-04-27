@@ -74,7 +74,7 @@ function Home() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Home</title>
+        <title>Biod | Home</title>
       </Helmet>
 
       <section className="section-style hero-section w-mr mt-lg-0 mb-0">

@@ -6,7 +6,7 @@ function PurchasePolicy() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Purchase Policy</title>
+        <title>Biod | Purchase Policy</title>
       </Helmet>
       <section className="info-page">
         <div

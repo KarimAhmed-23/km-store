@@ -45,7 +45,7 @@ function RestPassword() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Rest Password</title>
+        <title>Biod | Rest Password</title>
       </Helmet>
       <section className="section-style  sign-section forget-password-section">
         <div className="container">

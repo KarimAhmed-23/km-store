@@ -6,7 +6,7 @@ function AboutUs() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | About Us</title>
+        <title>Biod | About Us</title>
       </Helmet>
       <section className="info-page">
         <div

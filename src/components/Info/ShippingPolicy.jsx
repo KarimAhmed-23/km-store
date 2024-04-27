@@ -7,7 +7,7 @@ function ShippingPolicy() {
    <>
    
    <Helmet>
-        <title>FreshCart | Shipping Policy</title>
+        <title>Biod | Shipping Policy</title>
       </Helmet>
     <section className="info-page">
       <div

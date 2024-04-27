@@ -42,7 +42,7 @@ function ForgetPassword() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Forget Password</title>
+        <title>Biod | Forget Password</title>
       </Helmet>
       <section className="section-style  sign-section forget-password-section">
         <div className="container">

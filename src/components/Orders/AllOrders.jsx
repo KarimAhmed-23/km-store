@@ -23,7 +23,7 @@ function AllOrders() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Orders</title>
+        <title>Biod | Orders</title>
       </Helmet>
 
       <Breadcrumb

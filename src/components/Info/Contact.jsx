@@ -7,7 +7,7 @@ function Contact() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Contact</title>
+        <title>Biod | Contact</title>
       </Helmet>
       <section className="info-page">
         <div

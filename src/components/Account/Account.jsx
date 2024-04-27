@@ -67,7 +67,7 @@ function Account() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | My Account</title>
+        <title>Biod | My Account</title>
       </Helmet>
 
 

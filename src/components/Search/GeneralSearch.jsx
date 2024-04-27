@@ -46,7 +46,7 @@ function GeneralSearch() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Search</title>
+        <title>Biod | Search</title>
       </Helmet>
 
       <Breadcrumb

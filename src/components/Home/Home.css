@@ -6,13 +6,23 @@
 }
 
 .hero-slider .hero-slide {
-  background-color: #fff;
+  background-color: #eee;
+  
+}
+.hero-slider .hero-slide  .img-feedback{
+  font-size: var(--title-0);
 }
 .hero-slider .hero-slide img {
   mix-blend-mode: multiply;
 }
 
 
+@media(max-width:767.98px){
+  .hero-slider .hero-slide{
+    border-radius: 12px;
+  }
+  
+}
 @media(min-width:992px){
   .hero-section{
     padding-top: 0 !important;
@@ -22,6 +32,7 @@
     max-width: none !important;
     width: 100% !important;
   }
+  
 }
 
 /*** banners-area ***/

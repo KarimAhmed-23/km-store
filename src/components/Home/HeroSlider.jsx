@@ -4,23 +4,36 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pagination, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import CatchImage from "../CatchImage"
 
 function HeroSlider() {
   const images = [
     {
-      src: window.innerWidth >= 767 ? require("../../assets/images/banner-10.png") : require("../../assets/images/banner-21.png"),
+      src:
+        window.innerWidth >= 768
+          ? require("../../assets/images/banner-10.png")
+          : require("../../assets/images/banner-21.png"),
       name: "slide1",
     },
     {
-      src: window.innerWidth >= 767 ? require("../../assets/images/banner-12.png") : require("../../assets/images/banner-23.png"),
+      src:
+        window.innerWidth >= 768
+          ? require("../../assets/images/banner-12.png")
+          : require("../../assets/images/banner-23.png"),
       name: "slide2",
     },
     {
-      src: window.innerWidth >= 767 ? require("../../assets/images/banner-13.gif") : require("../../assets/images/banner-24.gif"),
+      src:
+        window.innerWidth >= 768
+          ? require("../../assets/images/banner-13.gif")
+          : require("../../assets/images/banner-24.gif"),
       name: "slide3",
     },
     {
-      src: window.innerWidth >= 767 ? require("../../assets/images/banner-11.png") : require("../../assets/images/banner-22.png"),
+      src:
+        window.innerWidth >= 768
+          ? require("../../assets/images/banner-11.png")
+          : require("../../assets/images/banner-22.png"),
       name: "slide4",
     },
   ];
@@ -53,7 +66,9 @@ function HeroSlider() {
       {images.map((img, index) => (
         <SwiperSlide key={index}>
           <div className="hero-slide">
-            <img className="img-fluid w-100" src={img.src} alt={img.name} />
+            <CatchImage>
+              <img className="img-fluid w-100" src={img.src} alt={img.name} />
+            </CatchImage>
           </div>
         </SwiperSlide>
       ))}

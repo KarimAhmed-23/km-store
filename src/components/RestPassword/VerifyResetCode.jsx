@@ -67,7 +67,7 @@ function VerifyResetCode() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Verify Code</title>
+        <title>Biod | Verify Code</title>
       </Helmet>
       <section className="section-style  sign-section forget-password-section">
         <div className="container">

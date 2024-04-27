@@ -7,7 +7,7 @@ import error from "../../assets/images/error.svg";
   return (
     <>
         <Helmet>
-         <title>FreshCart | NotFound</title>
+         <title>Biod | NotFound</title>
         </Helmet>  
         
         <div className='error-img text-center section-style'>

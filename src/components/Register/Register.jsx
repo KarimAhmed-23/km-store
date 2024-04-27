@@ -70,7 +70,7 @@ function Register() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Register</title>
+        <title>Biod | Register</title>
       </Helmet>
       <section className="section-style  sign-section register-section">
         <div className="container">

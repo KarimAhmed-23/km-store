@@ -166,7 +166,7 @@ function SingleProduct() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | {productName.split("+").join(" ")}</title>
+        <title>Biod | {productName.split("+").join(" ")}</title>
       </Helmet>
 
 

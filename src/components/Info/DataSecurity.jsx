@@ -6,7 +6,7 @@ function DataSecurity() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Data Security</title>
+        <title>Biod | Data Security</title>
       </Helmet>
       <section className="info-page">
         <div

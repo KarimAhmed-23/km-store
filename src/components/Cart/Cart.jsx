@@ -45,7 +45,7 @@ function Cart() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Cart</title>
+        <title>Biod | Cart</title>
       </Helmet>
 
       <Breadcrumb

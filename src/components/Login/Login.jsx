@@ -49,7 +49,7 @@ function Login() {
   return (
     <>
       <Helmet>
-        <title>FreshCart | Login</title>
+        <title>Biod | Login</title>
       </Helmet>
       <section className="section-style  sign-section login-section">
         <div className="container">

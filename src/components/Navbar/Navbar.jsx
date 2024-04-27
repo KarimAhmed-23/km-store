@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./Navbar.css";
-import logo from "../../assets/images/freshcart-logo.svg";
+import logo from "../../assets/images/logo.svg";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/authContext/AuthContext";
 import { CartContext } from "../../context/cartContext/CartContext";
