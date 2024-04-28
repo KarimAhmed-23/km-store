@@ -13,6 +13,7 @@ import { changeLocale } from "../store/general/generalSlice";
 import ToolBar from "../components/ToolBar/ToolBar";
 import Header from "../components/Navbar/Header";
 import { Helmet } from "react-helmet";
+import logo from "../assets/images/logo.svg";
 
 function Layout() {
   const dispatch = useDispatch();
@@ -63,7 +64,7 @@ function Layout() {
     <>
       <Helmet>
 
-      <link rel="icon" href="../assets/images/logo.svg" />
+       <link rel="icon" href={logo} />
       </Helmet>
       <main className={`${loading ? "overflow-hidden" : ""}`}>
         {/* {state === "loading" && (
