@@ -19,7 +19,7 @@ function Footer() {
             </div>
             <div className="col-md-6">
               <div className="contact-us-banner-email">
-                <a href="#">
+                <Link to="mailto:karimahmed250@gmail.com">
                   <svg width="60" height="60" viewBox="0 0 60 60">
                     <link
                       type="text/css"
@@ -69,7 +69,7 @@ function Footer() {
                     </g>
                   </svg>
                   <span>karimahmed250@gmail.com</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

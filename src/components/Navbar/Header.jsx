@@ -76,9 +76,9 @@ function Header() {
               </li>
             </ul>
             <div className="contact-info">
-              <Link to="mailto:karimahemd250@gmail.com">
+              <Link to="mailto:karimahmed250@gmail.com">
                 <i className="far fa-envelope" />
-                <span>karimahemd250@gmail.com</span>
+                <span>karimahmed250@gmail.com</span>
               </Link>
               <span className="dividing-span"> | </span>
               <Link>

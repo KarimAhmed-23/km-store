@@ -18,6 +18,7 @@ function SearchForm({togglePopup}) {
         if(togglePopup){
             togglePopup(false);
         }
+        window.scrollTo(0,0);
     }
 
   return (
